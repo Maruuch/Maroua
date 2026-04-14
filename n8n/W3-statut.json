@@ -1,0 +1,73 @@
+{
+  "name": "W3 — Changement Statut Commande",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "statut-commande",
+        "responseMode": "lastNode"
+      },
+      "name": "🔗 Webhook Statut",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Valider payload statut\nconst body = $input.first().json.body;\nconst STATUTS_VALIDES = ['Expedie', 'Archive'];\n\nif (!body.order_uid) throw new Error('order_uid manquant');\nif (!STATUTS_VALIDES.includes(body.nouveau_statut)) {\n  throw new Error('Statut invalide: ' + body.nouveau_statut + '. Valeurs: ' + STATUTS_VALIDES.join(', '));\n}\n\nreturn [{ json: body }];"
+      },
+      "name": "🛡 Valider statut",
+      "type": "n8n-nodes-base.code",
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "returnAll": false,
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            { "key": "order_uid|rich_text", "condition": "equals", "value": "={{ $json.order_uid }}" }
+          ]
+        }
+      },
+      "name": "🔍 Trouver commande",
+      "type": "n8n-nodes-base.notion",
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": "={{ $json.results[0].id }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "statut|select", "selectValue": "={{ $('🛡 Valider statut').first().json.nouveau_statut }}" }
+          ]
+        }
+      },
+      "name": "✏️ Mettre à jour statut",
+      "type": "n8n-nodes-base.notion",
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"order_uid\": \"{{ $('🛡 Valider statut').first().json.order_uid }}\", \"nouveau_statut\": \"{{ $('🛡 Valider statut').first().json.nouveau_statut }}\" }"
+      },
+      "name": "✅ Réponse OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1100, 300]
+    }
+  ],
+  "connections": {
+    "🔗 Webhook Statut": { "main": [[{ "node": "🛡 Valider statut", "type": "main", "index": 0 }]] },
+    "🛡 Valider statut": { "main": [[{ "node": "🔍 Trouver commande", "type": "main", "index": 0 }]] },
+    "🔍 Trouver commande": { "main": [[{ "node": "✏️ Mettre à jour statut", "type": "main", "index": 0 }]] },
+    "✏️ Mettre à jour statut": { "main": [[{ "node": "✅ Réponse OK", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["maroua-jewelry", "statut"]
+}

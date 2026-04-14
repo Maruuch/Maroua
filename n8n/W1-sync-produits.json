@@ -1,0 +1,165 @@
+{
+  "name": "W1 — Sync Produits Notion → GitHub",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 1 }]
+        }
+      },
+      "name": "⏱ Schedule (toutes les 1h)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sync-produits",
+        "responseMode": "lastNode"
+      },
+      "name": "🔗 Webhook Manuel",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 160]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_PRODUITS_DB_ID }}",
+        "returnAll": true,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "visible_site|checkbox",
+              "condition": "equals",
+              "checkboxValue": true
+            }
+          ]
+        },
+        "sort": {
+          "property": [
+            {
+              "key": "ordre_affichage",
+              "direction": "ascending"
+            }
+          ]
+        }
+      },
+      "name": "📋 Lire PRODUITS Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_IMAGES_DB_ID }}",
+        "returnAll": true
+      },
+      "name": "🖼 Lire PRODUIT_IMAGES",
+      "type": "n8n-nodes-base.notion",
+      "position": [480, 460]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Transformation Notion → products.json\n// ============================================================\n\nconst notionProducts = $input.first().json;\nconst allImages = $('🖼 Lire PRODUIT_IMAGES').all().map(i => i.json);\n\n// Index images par produit_id\nconst imagesByProduct = {};\nfor (const img of allImages) {\n  const produitRelation = img.properties?.produit?.relation;\n  if (!produitRelation || produitRelation.length === 0) continue;\n  const prodId = produitRelation[0].id;\n  if (!imagesByProduct[prodId]) imagesByProduct[prodId] = [];\n  imagesByProduct[prodId].push({\n    path: img.properties?.github_path?.rich_text?.[0]?.plain_text || '',\n    ordre: img.properties?.ordre?.number || 99,\n    alt: img.properties?.alt_text?.rich_text?.[0]?.plain_text || ''\n  });\n}\n\n// Trier images par ordre\nfor (const key of Object.keys(imagesByProduct)) {\n  imagesByProduct[key].sort((a, b) => a.ordre - b.ordre);\n}\n\n// Transformer chaque produit Notion\nconst products = $input.all().map(item => {\n  const p = item.json.properties;\n  const notionId = item.json.id;\n  const idNum = p.id_num?.number || 0;\n\n  // Images : depuis PRODUIT_IMAGES ou fallback sur id_num\n  const images = imagesByProduct[notionId]\n    ? imagesByProduct[notionId].map(img => img.path)\n    : [`/images/${idNum}.jpg`];\n\n  return {\n    id: idNum,\n    notion_id: notionId,\n    sku: p.sku?.rich_text?.[0]?.plain_text || '',\n    slug: p.slug?.rich_text?.[0]?.plain_text || '',\n    name: p.nom?.title?.[0]?.plain_text || '',\n    type: p.type?.select?.name || '',\n    etat: p.etat?.select?.name || 'Neuf',\n    description_courte: p.description_courte?.rich_text?.[0]?.plain_text || '',\n    description_longue: p.description_longue?.rich_text?.[0]?.plain_text || '',\n    price: p.prix_public?.number || 0,\n    stock: p.stock_publie?.number ?? p.stock_initial?.number ?? 0,\n    tag: p.tag?.select?.name || null,\n    sym: p.sym?.rich_text?.[0]?.plain_text || '◇',\n    actif: p.visible_site?.checkbox ?? true,\n    variant_group_id: p.variant_group_id?.rich_text?.[0]?.plain_text || null,\n    ordre: p.ordre_affichage?.number || 99,\n    images\n  };\n});\n\n// Construire le JSON final\nconst output = {\n  _meta: {\n    generated_at: new Date().toISOString(),\n    generated_by: 'n8n W1 — Sync Produits',\n    count: products.length,\n    version: '1.0'\n  },\n  products\n};\n\nreturn [{ json: { content: JSON.stringify(output, null, 2) } }];"
+      },
+      "name": "🔧 Transformer → products.json",
+      "type": "n8n-nodes-base.code",
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Encoder le contenu en base64 pour l'API GitHub\nconst content = $input.first().json.content;\nconst encoded = Buffer.from(content).toString('base64');\nreturn [{ json: { content_b64: encoded, content_raw: content } }];"
+      },
+      "name": "🔐 Encoder Base64",
+      "type": "n8n-nodes-base.code",
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.github.com/repos/{{ $env.GITHUB_OWNER }}/{{ $env.GITHUB_REPO }}/contents/data/products.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github+json" },
+            { "name": "X-GitHub-Api-Version", "value": "2022-11-28" }
+          ]
+        }
+      },
+      "name": "📡 Lire SHA actuel GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1120, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/{{ $env.GITHUB_OWNER }}/{{ $env.GITHUB_REPO }}/contents/data/products.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github+json" },
+            { "name": "X-GitHub-Api-Version", "value": "2022-11-28" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "message", "value": "=chore: sync products.json [{{ new Date().toISOString() }}]" },
+            { "name": "content", "value": "={{ $('🔐 Encoder Base64').first().json.content_b64 }}" },
+            { "name": "sha", "value": "={{ $json.sha || '' }}" },
+            { "name": "branch", "value": "main" }
+          ]
+        }
+      },
+      "name": "⬆️ Push GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1320, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"synced\": {{ $('🔧 Transformer → products.json').first().json.content.length }}, \"timestamp\": \"{{ new Date().toISOString() }}\" }"
+      },
+      "name": "✅ Réponse OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1520, 160]
+    }
+  ],
+  "connections": {
+    "⏱ Schedule (toutes les 1h)": {
+      "main": [[{ "node": "📋 Lire PRODUITS Notion", "type": "main", "index": 0 }]]
+    },
+    "🔗 Webhook Manuel": {
+      "main": [[{ "node": "📋 Lire PRODUITS Notion", "type": "main", "index": 0 }]]
+    },
+    "📋 Lire PRODUITS Notion": {
+      "main": [[{ "node": "🔧 Transformer → products.json", "type": "main", "index": 0 }]]
+    },
+    "🖼 Lire PRODUIT_IMAGES": {
+      "main": [[{ "node": "🔧 Transformer → products.json", "type": "main", "index": 0 }]]
+    },
+    "🔧 Transformer → products.json": {
+      "main": [[{ "node": "🔐 Encoder Base64", "type": "main", "index": 0 }]]
+    },
+    "🔐 Encoder Base64": {
+      "main": [[{ "node": "📡 Lire SHA actuel GitHub", "type": "main", "index": 0 }]]
+    },
+    "📡 Lire SHA actuel GitHub": {
+      "main": [[{ "node": "⬆️ Push GitHub", "type": "main", "index": 0 }]]
+    },
+    "⬆️ Push GitHub": {
+      "main": [[{ "node": "✅ Réponse OK", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["maroua-jewelry", "produits", "sync"]
+}

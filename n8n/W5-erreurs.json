@@ -1,0 +1,74 @@
+{
+  "name": "W5 — Gestion Erreurs",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "erreur",
+        "responseMode": "lastNode"
+      },
+      "name": "🔗 Webhook Erreur",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const err = $input.first().json.body;\nconst niveau = err.niveau || 'WARNING';\nconst message = err.message || 'Erreur sans message';\nconst contexte = err.contexte || {};\n\nconst sujet = `🚨 [MAROUA] ${niveau} — ${message.slice(0, 60)}`;\nconst corps = `\nErreur détectée dans Maroua Jewelry\n\nNiveau : ${niveau}\nMessage : ${message}\nDate : ${new Date().toLocaleString('fr-FR')}\n\nContexte :\n${JSON.stringify(contexte, null, 2)}\n\n---\nSystem Maroua Jewelry n8n\n`;\n\nreturn [{ json: { sujet, corps, niveau, message } }];"
+      },
+      "name": "📋 Formater erreur",
+      "type": "n8n-nodes-base.code",
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "subject": "={{ $json.sujet }}",
+        "text": "={{ $json.corps }}"
+      },
+      "name": "📧 Alerter admin",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [680, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "title": "=ERREUR-{{ Date.now() }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "statut|select", "selectValue": "Erreur" },
+            { "key": "note_client|rich_text", "textValue": "={{ $('📋 Formater erreur').first().json.message }}" }
+          ]
+        }
+      },
+      "name": "📝 Logger erreur Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [680, 460],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"logged\": true }"
+      },
+      "name": "✅ Réponse",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "🔗 Webhook Erreur": { "main": [[{ "node": "📋 Formater erreur", "type": "main", "index": 0 }]] },
+    "📋 Formater erreur": {
+      "main": [[
+        { "node": "📧 Alerter admin", "type": "main", "index": 0 },
+        { "node": "📝 Logger erreur Notion", "type": "main", "index": 0 },
+        { "node": "✅ Réponse", "type": "main", "index": 0 }
+      ]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["maroua-jewelry", "erreurs"]
+}

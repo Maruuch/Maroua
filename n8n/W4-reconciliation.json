@@ -1,0 +1,106 @@
+{
+  "name": "W4 — Réconciliation Stock",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hoursInterval": 6 }] }
+      },
+      "name": "⏱ Schedule 6h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reconciliation-stock",
+        "responseMode": "lastNode"
+      },
+      "name": "🔗 Webhook Manuel",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 160]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_PRODUITS_DB_ID }}",
+        "returnAll": true
+      },
+      "name": "📋 Lire tous les produits",
+      "type": "n8n-nodes-base.notion",
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_LIGNES_DB_ID }}",
+        "returnAll": true
+      },
+      "name": "📋 Lire toutes les lignes",
+      "type": "n8n-nodes-base.notion",
+      "position": [480, 460]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "returnAll": true,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            { "key": "statut|select", "condition": "does_not_equal", "selectValue": "Archive" },
+            { "key": "statut|select", "condition": "does_not_equal", "selectValue": "Erreur" }
+          ]
+        }
+      },
+      "name": "📋 Lire commandes actives",
+      "type": "n8n-nodes-base.notion",
+      "position": [480, 620]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// RÉCONCILIATION : Recalcul complet des stocks\n// stock_publie = stock_initial - SUM(qty lignes de commandes Confirme/Expedie)\n// ============================================================\n\nconst produits = $('📋 Lire tous les produits').all().map(i => i.json);\nconst lignes = $('📋 Lire toutes les lignes').all().map(i => i.json);\nconst commandes = $('📋 Lire commandes actives').all().map(i => i.json);\n\n// Index commandes actives par id\nconst commandesActives = new Set(commandes.map(c => c.id));\n\n// Compter quantités vendues par produit (commandes Confirme + Expedie)\nconst ventesByProduit = {};\nfor (const ligne of lignes) {\n  const commandeId = ligne.properties?.commande?.relation?.[0]?.id;\n  const produitId = ligne.properties?.produit?.relation?.[0]?.id;\n  const qty = ligne.properties?.qty?.number || 0;\n  \n  if (!commandesActives.has(commandeId)) continue;\n  if (!produitId) continue;\n  \n  ventesByProduit[produitId] = (ventesByProduit[produitId] || 0) + qty;\n}\n\n// Calculer nouveau stock_publie pour chaque produit\nconst updates = [];\nfor (const produit of produits) {\n  const stockInitial = produit.properties?.stock_initial?.number || 0;\n  const stockActuel = produit.properties?.stock_publie?.number || 0;\n  const vendus = ventesByProduit[produit.id] || 0;\n  const stockCalcule = Math.max(0, stockInitial - vendus);\n  \n  if (stockCalcule !== stockActuel) {\n    updates.push({\n      notion_id: produit.id,\n      nom: produit.properties?.nom?.title?.[0]?.plain_text || '?',\n      stock_initial: stockInitial,\n      vendus,\n      stock_actuel: stockActuel,\n      stock_recalcule: stockCalcule,\n      diff: stockCalcule - stockActuel\n    });\n  }\n}\n\nconsole.log(`Réconciliation : ${updates.length} corrections nécessaires sur ${produits.length} produits`);\n\nif (updates.length === 0) return [{ json: { corrections: 0, message: 'Stocks cohérents' } }];\nreturn updates.map(u => ({ json: u }));"
+      },
+      "name": "🧮 Recalculer stocks",
+      "type": "n8n-nodes-base.code",
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": "={{ $json.notion_id }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "stock_publie|number", "numberValue": "={{ $json.stock_recalcule }}" }
+          ]
+        }
+      },
+      "name": "🔄 Corriger stock",
+      "type": "n8n-nodes-base.notion",
+      "position": [940, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"corrections\": \"done\", \"timestamp\": \"{{ new Date().toISOString() }}\" }"
+      },
+      "name": "✅ Réponse",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1140, 160]
+    }
+  ],
+  "connections": {
+    "⏱ Schedule 6h": { "main": [[{ "node": "📋 Lire tous les produits", "type": "main", "index": 0 }]] },
+    "🔗 Webhook Manuel": { "main": [[{ "node": "📋 Lire tous les produits", "type": "main", "index": 0 }]] },
+    "📋 Lire tous les produits": { "main": [[{ "node": "🧮 Recalculer stocks", "type": "main", "index": 0 }]] },
+    "📋 Lire toutes les lignes": { "main": [[{ "node": "🧮 Recalculer stocks", "type": "main", "index": 0 }]] },
+    "📋 Lire commandes actives": { "main": [[{ "node": "🧮 Recalculer stocks", "type": "main", "index": 0 }]] },
+    "🧮 Recalculer stocks": { "main": [[{ "node": "🔄 Corriger stock", "type": "main", "index": 0 }]] },
+    "🔄 Corriger stock": { "main": [[{ "node": "✅ Réponse", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["maroua-jewelry", "stock", "reconciliation"]
+}

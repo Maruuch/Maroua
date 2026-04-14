@@ -1,0 +1,324 @@
+{
+  "name": "W2 — Nouvelle Commande",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "commande",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "🔗 Webhook Commande",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// ÉTAPE 1 : Validation payload + idempotence\n// ============================================================\nconst body = $input.first().json.body;\n\n// Champs obligatoires\nconst required = ['nom', 'telephone', 'adresse', 'ville', 'articles'];\nconst missing = required.filter(f => !body[f]);\nif (missing.length > 0) {\n  throw new Error('VALIDATION_ERROR: champs manquants: ' + missing.join(', '));\n}\n\n// Valider articles\nif (!Array.isArray(body.articles) || body.articles.length === 0) {\n  throw new Error('VALIDATION_ERROR: articles vide ou invalide');\n}\n\nfor (const art of body.articles) {\n  if (!art.id || !art.qty || art.qty < 1) {\n    throw new Error('VALIDATION_ERROR: article invalide: ' + JSON.stringify(art));\n  }\n}\n\n// Générer idempotency_key\nconst crypto = require('crypto');\nconst keySource = `${body.telephone}-${JSON.stringify(body.articles)}-${body.adresse}`;\nconst idempotency_key = crypto.createHash('sha256').update(keySource).digest('hex').slice(0, 32);\n\n// Générer order_uid et ref_public\nconst order_uid = crypto.randomUUID();\nconst ref_public = 'MAR-' + Date.now().toString().slice(-6);\n\n// Normaliser téléphone\nlet tel = body.telephone.replace(/\\s/g, '').replace(/[^+0-9]/g, '');\nif (tel.startsWith('0')) tel = '+212' + tel.slice(1);\nif (!tel.startsWith('+')) tel = '+212' + tel;\n\nreturn [{\n  json: {\n    ...body,\n    telephone_normalise: tel,\n    idempotency_key,\n    order_uid,\n    ref_public,\n    validated_at: new Date().toISOString()\n  }\n}];"
+      },
+      "name": "🛡 Valider + Idempotence",
+      "type": "n8n-nodes-base.code",
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "returnAll": false,
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "idempotency_key|rich_text",
+              "condition": "equals",
+              "value": "={{ $json.idempotency_key }}"
+            }
+          ]
+        }
+      },
+      "name": "🔍 Vérif doublon",
+      "type": "n8n-nodes-base.notion",
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.results?.length || 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "❓ Déjà traité ?",
+      "type": "n8n-nodes-base.if",
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"duplicate\": true, \"ref\": \"{{ $('🛡 Valider + Idempotence').first().json.ref_public }}\" }",
+        "responseCode": 200
+      },
+      "name": "↩️ Réponse doublon",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1100, 460]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// ÉTAPE 2 : Vérifier stock + Recalculer prix\n// ============================================================\nconst data = $('🛡 Valider + Idempotence').first().json;\nconst articles = data.articles;\n\n// Charger products.json depuis GitHub raw\nconst GITHUB_RAW = `https://raw.githubusercontent.com/${$env.GITHUB_OWNER}/${$env.GITHUB_REPO}/main/data/products.json`;\nconst res = await $helpers.request({ url: GITHUB_RAW, json: true });\nconst products = res.products;\n\nconst productMap = {};\nfor (const p of products) productMap[p.id] = p;\n\nlet total = 0;\nconst lignes = [];\nconst stockErrors = [];\n\nfor (const art of articles) {\n  const prod = productMap[art.id];\n  if (!prod) {\n    stockErrors.push(`Produit ID ${art.id} introuvable`);\n    continue;\n  }\n  if (prod.stock < art.qty) {\n    stockErrors.push(`${prod.name}: stock insuffisant (dispo: ${prod.stock}, demandé: ${art.qty})`);\n    continue;\n  }\n  const sous_total = prod.price * art.qty;\n  total += sous_total;\n  lignes.push({\n    produit_id: art.id,\n    notion_id: prod.notion_id,\n    nom: prod.name,\n    qty: art.qty,\n    prix_unitaire: prod.price,\n    sous_total\n  });\n}\n\nif (stockErrors.length > 0) {\n  throw new Error('STOCK_ERROR: ' + stockErrors.join(' | '));\n}\n\ntotal += $env.SHIPPING_FEE ? parseInt($env.SHIPPING_FEE) : 35;\n\nreturn [{ json: { ...data, lignes, total_recalcule: total } }];"
+      },
+      "name": "📦 Vérif stock + Prix",
+      "type": "n8n-nodes-base.code",
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "={{ $env.NOTION_CLIENTS_DB_ID }}",
+        "returnAll": false,
+        "limit": 1,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "telephone_normalise|rich_text",
+              "condition": "equals",
+              "value": "={{ $json.telephone_normalise }}"
+            }
+          ]
+        }
+      },
+      "name": "🔍 Chercher client",
+      "type": "n8n-nodes-base.notion",
+      "position": [1320, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.results?.length || 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "❓ Client existe ?",
+      "type": "n8n-nodes-base.if",
+      "position": [1540, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": "={{ $env.NOTION_CLIENTS_DB_ID }}",
+        "title": "={{ $('📦 Vérif stock + Prix').first().json.nom }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "telephone|phone_number", "phoneValue": "={{ $('📦 Vérif stock + Prix').first().json.telephone_normalise }}" },
+            { "key": "telephone_normalise|rich_text", "textValue": "={{ $('📦 Vérif stock + Prix').first().json.telephone_normalise }}" },
+            { "key": "email|email", "emailValue": "={{ $('📦 Vérif stock + Prix').first().json.email || '' }}" },
+            { "key": "ville|rich_text", "textValue": "={{ $('📦 Vérif stock + Prix').first().json.ville }}" },
+            { "key": "adresse|rich_text", "textValue": "={{ $('📦 Vérif stock + Prix').first().json.adresse }}" }
+          ]
+        }
+      },
+      "name": "➕ Créer client",
+      "type": "n8n-nodes-base.notion",
+      "position": [1760, 160]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": "={{ $json.results[0].id }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "ville|rich_text", "textValue": "={{ $('📦 Vérif stock + Prix').first().json.ville }}" },
+            { "key": "adresse|rich_text", "textValue": "={{ $('📦 Vérif stock + Prix').first().json.adresse }}" }
+          ]
+        }
+      },
+      "name": "✏️ MAJ client",
+      "type": "n8n-nodes-base.notion",
+      "position": [1760, 440]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fusionner résultats créer/MAJ client → notion_client_id\nconst clientPage = $input.first().json;\nconst data = $('📦 Vérif stock + Prix').first().json;\nreturn [{ json: { ...data, notion_client_id: clientPage.id } }];"
+      },
+      "name": "🔗 Merge client_id",
+      "type": "n8n-nodes-base.code",
+      "position": [1980, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "title": "={{ $json.ref_public }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "order_uid|rich_text", "textValue": "={{ $json.order_uid }}" },
+            { "key": "idempotency_key|rich_text", "textValue": "={{ $json.idempotency_key }}" },
+            { "key": "statut|select", "selectValue": "Confirme" },
+            { "key": "total_recalcule|number", "numberValue": "={{ $json.total_recalcule }}" },
+            { "key": "client|relation", "relationValue": "={{ $json.notion_client_id }}" },
+            { "key": "created_at|date", "dateValue": "={{ $json.validated_at }}" },
+            { "key": "note_client|rich_text", "textValue": "={{ $json.note || '' }}" },
+            { "key": "ville_livraison|rich_text", "textValue": "={{ $json.ville }}" },
+            { "key": "adresse_livraison|rich_text", "textValue": "={{ $json.adresse }}" }
+          ]
+        }
+      },
+      "name": "📝 Créer COMMANDE Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [2200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Créer une ligne par article\nconst commande = $input.first().json;\nconst data = $('🔗 Merge client_id').first().json;\n\nconst lines = data.lignes.map((ligne, idx) => ({\n  line_uid: `LINE-${data.ref_public.replace('MAR-', '')}-${idx + 1}`,\n  notion_commande_id: commande.id,\n  notion_produit_id: ligne.notion_id,\n  qty: ligne.qty,\n  prix_unitaire_snapshot: ligne.prix_unitaire\n}));\n\nreturn lines.map(l => ({ json: l }));"
+      },
+      "name": "📋 Préparer lignes",
+      "type": "n8n-nodes-base.code",
+      "position": [2420, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": "={{ $env.NOTION_LIGNES_DB_ID }}",
+        "title": "={{ $json.line_uid }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "commande|relation", "relationValue": "={{ $json.notion_commande_id }}" },
+            { "key": "produit|relation", "relationValue": "={{ $json.notion_produit_id }}" },
+            { "key": "qty|number", "numberValue": "={{ $json.qty }}" },
+            { "key": "prix_unitaire_snapshot|number", "numberValue": "={{ $json.prix_unitaire_snapshot }}" }
+          ]
+        }
+      },
+      "name": "➕ Créer LIGNE Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [2640, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// ÉTAPE 3 : Décrémenter stock_publie pour chaque produit\n// ============================================================\nconst data = $('🔗 Merge client_id').first().json;\n\n// Charger stocks actuels depuis Notion et mettre à jour\nconst updates = data.lignes.map(ligne => ({\n  notion_id: ligne.notion_id,\n  nouveau_stock: Math.max(0, (ligne.stock_actuel || 0) - ligne.qty)\n}));\n\nreturn updates.map(u => ({ json: u }));"
+      },
+      "name": "📉 Préparer MAJ stocks",
+      "type": "n8n-nodes-base.code",
+      "position": [2860, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": "={{ $json.notion_id }}",
+        "propertiesUi": {
+          "propertyValues": [
+            { "key": "stock_publie|number", "numberValue": "={{ $json.nouveau_stock }}" }
+          ]
+        }
+      },
+      "name": "🔄 MAJ stock Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [3060, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Construire message WhatsApp + emails\n// ============================================================\nconst data = $('🔗 Merge client_id').first().json;\n\nconst lignesText = data.lignes\n  .map(l => `  • ${l.nom} ×${l.qty} = ${l.sous_total} MAD`)\n  .join('\\n');\n\nconst whatsapp_message =\n  `✨ *NOUVELLE COMMANDE MAROUA* ✨\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `🔖 *Réf:* ${data.ref_public}\\n` +\n  `📅 *Date:* ${new Date().toLocaleDateString('fr-FR')}\\n\\n` +\n  `💎 *ARTICLES*\\n${lignesText}\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `🚚 Livraison: 35 MAD\\n` +\n  `💰 *TOTAL: ${data.total_recalcule} MAD*\\n` +\n  `💳 Paiement à la livraison\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `👤 *CLIENT*\\n` +\n  `Nom: ${data.nom}\\n` +\n  `Tél: ${data.telephone_normalise}\\n` +\n  `Adresse: ${data.adresse}\\n` +\n  `Ville: ${data.ville}` +\n  (data.note ? `\\n📝 Note: ${data.note}` : '') +\n  `\\n━━━━━━━━━━━━━━━━━━━`;\n\nconst email_client_body = `\nBonjour ${data.nom},\n\nVotre commande ${data.ref_public} a bien été confirmée.\n\nDétail :\n${data.lignes.map(l => `- ${l.nom} ×${l.qty} : ${l.sous_total} MAD`).join('\\n')}\n\nLivraison : 35 MAD\nTotal : ${data.total_recalcule} MAD\n\nMode de paiement : à la livraison\nAdresse : ${data.adresse}, ${data.ville}\n\nNous vous contacterons pour confirmer la livraison.\n\nMerci de votre confiance,\nMaroua Jewelry\n`;\n\nreturn [{\n  json: {\n    ...data,\n    whatsapp_message,\n    whatsapp_url: `https://wa.me/${$env.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsapp_message)}`,\n    email_client_body,\n    email_client_subject: `Commande ${data.ref_public} confirmée — Maroua Jewelry`\n  }\n}];"
+      },
+      "name": "💬 Préparer notifications",
+      "type": "n8n-nodes-base.code",
+      "position": [3280, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email || $env.ADMIN_EMAIL }}",
+        "subject": "={{ $json.email_client_subject }}",
+        "text": "={{ $json.email_client_body }}"
+      },
+      "name": "📧 Email client",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [3500, 200],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "subject": "=🛍️ Nouvelle commande {{ $json.ref_public }} — {{ $json.total_recalcule }} MAD",
+        "text": "={{ $json.whatsapp_message }}"
+      },
+      "name": "📧 Email admin",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [3500, 400],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, ref: $('🛡 Valider + Idempotence').first().json.ref_public, total: $('📦 Vérif stock + Prix').first().json.total_recalcule }) }}",
+        "responseCode": 200
+      },
+      "name": "✅ Réponse succès",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [3700, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: false, error: $input.first().json.message }) }}",
+        "responseCode": 422
+      },
+      "name": "❌ Réponse erreur",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [460, 500]
+    }
+  ],
+  "connections": {
+    "🔗 Webhook Commande": { "main": [[{ "node": "🛡 Valider + Idempotence", "type": "main", "index": 0 }]] },
+    "🛡 Valider + Idempotence": { "main": [[{ "node": "🔍 Vérif doublon", "type": "main", "index": 0 }]] },
+    "🔍 Vérif doublon": { "main": [[{ "node": "❓ Déjà traité ?", "type": "main", "index": 0 }]] },
+    "❓ Déjà traité ?": {
+      "main": [
+        [{ "node": "📦 Vérif stock + Prix", "type": "main", "index": 0 }],
+        [{ "node": "↩️ Réponse doublon", "type": "main", "index": 0 }]
+      ]
+    },
+    "📦 Vérif stock + Prix": { "main": [[{ "node": "🔍 Chercher client", "type": "main", "index": 0 }]] },
+    "🔍 Chercher client": { "main": [[{ "node": "❓ Client existe ?", "type": "main", "index": 0 }]] },
+    "❓ Client existe ?": {
+      "main": [
+        [{ "node": "➕ Créer client", "type": "main", "index": 0 }],
+        [{ "node": "✏️ MAJ client", "type": "main", "index": 0 }]
+      ]
+    },
+    "➕ Créer client": { "main": [[{ "node": "🔗 Merge client_id", "type": "main", "index": 0 }]] },
+    "✏️ MAJ client": { "main": [[{ "node": "🔗 Merge client_id", "type": "main", "index": 0 }]] },
+    "🔗 Merge client_id": { "main": [[{ "node": "📝 Créer COMMANDE Notion", "type": "main", "index": 0 }]] },
+    "📝 Créer COMMANDE Notion": { "main": [[{ "node": "📋 Préparer lignes", "type": "main", "index": 0 }]] },
+    "📋 Préparer lignes": { "main": [[{ "node": "➕ Créer LIGNE Notion", "type": "main", "index": 0 }]] },
+    "➕ Créer LIGNE Notion": { "main": [[{ "node": "📉 Préparer MAJ stocks", "type": "main", "index": 0 }]] },
+    "📉 Préparer MAJ stocks": { "main": [[{ "node": "🔄 MAJ stock Notion", "type": "main", "index": 0 }]] },
+    "🔄 MAJ stock Notion": { "main": [[{ "node": "💬 Préparer notifications", "type": "main", "index": 0 }]] },
+    "💬 Préparer notifications": {
+      "main": [[
+        { "node": "📧 Email client", "type": "main", "index": 0 },
+        { "node": "📧 Email admin", "type": "main", "index": 0 },
+        { "node": "✅ Réponse succès", "type": "main", "index": 0 }
+      ]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["maroua-jewelry", "commande", "stock"]
+}
