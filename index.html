@@ -1,51 +1,63 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Maroua Jewelry — Bijoux d'exception</title>
   <meta name="description" content="Bijoux artisanaux de luxe — colliers, bracelets, bagues" />
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
 
-  <!-- ── LOADER ───────────────────────────────────────── -->
+  <!-- LOADER -->
   <div id="loader">
-    <div class="loader-logo">M</div>
+    <div class="loader-emblem">
+      <span class="loader-brand">MAROUA</span>
+      <span class="loader-sub">Jewelry</span>
+    </div>
     <div class="loader-bar"><span></span></div>
   </div>
 
-  <!-- ── HEADER ───────────────────────────────────────── -->
+  <!-- HEADER -->
   <header id="header">
     <div class="header-inner">
+
       <button class="nav-toggle" id="navToggle" aria-label="Menu">
-        <span></span><span></span>
+        <span></span><span></span><span></span>
       </button>
 
       <a href="#" class="logo" data-page="home">
-        <span class="logo-m">M</span>
-        <span class="logo-text">aroua <em>Jewelry</em></span>
+        <span class="logo-name">MAROUA</span>
+        <span class="logo-jewelry">Jewelry</span>
       </a>
 
-      <button class="cart-btn" id="cartBtn" aria-label="Panier">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
+      <div class="header-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Changer le thème">
+          <span class="theme-icon-dark">◐</span>
+          <span class="theme-icon-light">◑</span>
+        </button>
+        <button class="cart-btn" id="cartBtn" aria-label="Panier">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+
     </div>
   </header>
 
-  <!-- ── NAV MOBILE ───────────────────────────────────── -->
+  <!-- NAV MOBILE -->
   <nav id="mobileNav">
+    <div class="nav-logo">
+      <span class="logo-name">MAROUA</span>
+      <span class="logo-jewelry">Jewelry</span>
+    </div>
     <div class="nav-links">
       <a href="#" data-page="home" data-filter="">Accueil</a>
       <a href="#" data-page="catalog" data-filter="">Collection</a>
@@ -54,13 +66,14 @@
       <a href="#" data-page="catalog" data-filter="bague">Bagues</a>
       <a href="#" data-page="catalog" data-filter="pack">Packs</a>
     </div>
+    <div class="nav-footer">Livraison partout au Maroc</div>
   </nav>
   <div id="navOverlay"></div>
 
-  <!-- ── APP ──────────────────────────────────────────── -->
+  <!-- APP -->
   <main id="app">
 
-    <!-- HOME PAGE -->
+    <!-- HOME -->
     <section id="pageHome" class="page active">
 
       <!-- Hero -->
@@ -68,59 +81,88 @@
         <div class="hero-bg">
           <div class="hero-orb orb-1"></div>
           <div class="hero-orb orb-2"></div>
-          <div class="hero-particles" id="particles"></div>
+          <div class="hero-orb orb-3"></div>
+          <div id="particles" class="hero-particles"></div>
         </div>
         <div class="hero-content">
-          <p class="hero-eyebrow reveal">Collection exclusive</p>
+          <div class="hero-line reveal"></div>
+          <p class="hero-eyebrow reveal">Collection exclusive · Maroc</p>
           <h1 class="hero-title reveal">
-            <span>L'art du</span>
-            <em>bijou rare</em>
+            <em>L'art</em>
+            <span>du bijou rare</span>
           </h1>
-          <p class="hero-sub reveal">Pièces uniques façonnées avec soin · Livraison au Maroc</p>
-          <div class="hero-actions reveal">
-            <button class="btn-primary" data-page="catalog" data-filter="">Découvrir la collection</button>
+          <p class="hero-desc reveal">Pièces uniques façonnées avec soin, pour celles qui portent l'élégance comme une seconde nature.</p>
+          <div class="hero-cta reveal">
+            <button class="btn-primary" data-page="catalog" data-filter="">
+              <span>Découvrir la collection</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <button class="btn-ghost" data-page="catalog" data-filter="pack">Voir les packs →</button>
           </div>
         </div>
-        <div class="hero-scroll">
-          <span></span>
+        <div class="hero-marquee">
+          <div class="marquee-track">
+            <span>Colliers ◈</span><span>Bracelets ⟡</span><span>Bagues ◇</span>
+            <span>Packs ◆</span><span>Gravure personnalisée ✦</span><span>Livraison 48h ✦</span>
+            <span>Colliers ◈</span><span>Bracelets ⟡</span><span>Bagues ◇</span>
+            <span>Packs ◆</span><span>Gravure personnalisée ✦</span><span>Livraison 48h ✦</span>
+          </div>
         </div>
       </div>
 
       <!-- Categories -->
       <section class="section-cats">
         <div class="container">
-          <h2 class="section-title reveal">Explorer par catégorie</h2>
+          <div class="section-head reveal">
+            <span class="section-label">Explorer</span>
+            <h2 class="section-title">Par catégorie</h2>
+          </div>
           <div class="cats-grid">
             <div class="cat-card reveal" data-page="catalog" data-filter="collier">
-              <div class="cat-icon">◈</div>
-              <h3>Colliers</h3>
-              <p>Élégance au fil de l'or</p>
+              <div class="cat-sym">◈</div>
+              <div class="cat-body">
+                <h3>Colliers</h3>
+                <p>Élégance au fil de l'or</p>
+                <span class="cat-arrow">→</span>
+              </div>
             </div>
             <div class="cat-card reveal" data-page="catalog" data-filter="bracelet">
-              <div class="cat-icon">⟡</div>
-              <h3>Bracelets</h3>
-              <p>Grâce au poignet</p>
+              <div class="cat-sym">⟡</div>
+              <div class="cat-body">
+                <h3>Bracelets</h3>
+                <p>Grâce au poignet</p>
+                <span class="cat-arrow">→</span>
+              </div>
             </div>
             <div class="cat-card reveal" data-page="catalog" data-filter="bague">
-              <div class="cat-icon">◇</div>
-              <h3>Bagues</h3>
-              <p>Symboles d'éternité</p>
+              <div class="cat-sym">◇</div>
+              <div class="cat-body">
+                <h3>Bagues</h3>
+                <p>Symboles d'éternité</p>
+                <span class="cat-arrow">→</span>
+              </div>
             </div>
             <div class="cat-card reveal" data-page="catalog" data-filter="pack">
-              <div class="cat-icon">◆</div>
-              <h3>Packs</h3>
-              <p>L'ensemble parfait</p>
+              <div class="cat-sym">◆</div>
+              <div class="cat-body">
+                <h3>Packs</h3>
+                <p>L'ensemble parfait</p>
+                <span class="cat-arrow">→</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Featured products -->
+      <!-- Featured -->
       <section class="section-featured">
         <div class="container">
-          <div class="section-header reveal">
-            <h2 class="section-title">Coups de cœur</h2>
-            <button class="btn-ghost" data-page="catalog" data-filter="">Voir tout →</button>
+          <div class="section-head-row reveal">
+            <div>
+              <span class="section-label">Sélection</span>
+              <h2 class="section-title">Coups de cœur</h2>
+            </div>
+            <button class="btn-text" data-page="catalog" data-filter="">Voir tout →</button>
           </div>
           <div class="products-grid" id="featuredGrid"></div>
         </div>
@@ -131,24 +173,24 @@
         <div class="container">
           <div class="promise-grid">
             <div class="promise-item reveal">
-              <div class="promise-icon">✦</div>
+              <div class="promise-num">01</div>
               <h4>Artisanal</h4>
-              <p>Chaque pièce façonnée à la main</p>
+              <p>Chaque pièce façonnée à la main par nos artisans</p>
             </div>
             <div class="promise-item reveal">
-              <div class="promise-icon">✦</div>
+              <div class="promise-num">02</div>
               <h4>Acier premium</h4>
-              <p>Inoxydable, hypoallergénique</p>
+              <p>Inoxydable, hypoallergénique, longue durée</p>
             </div>
             <div class="promise-item reveal">
-              <div class="promise-icon">✦</div>
+              <div class="promise-num">03</div>
               <h4>Livraison Maroc</h4>
-              <p>Partout au royaume en 48h</p>
+              <p>Partout au royaume en 48h chrono</p>
             </div>
             <div class="promise-item reveal">
-              <div class="promise-icon">✦</div>
+              <div class="promise-num">04</div>
               <h4>Gravure</h4>
-              <p>Personnalisation sur commande</p>
+              <p>Personnalisation sur commande disponible</p>
             </div>
           </div>
         </div>
@@ -156,11 +198,11 @@
 
     </section>
 
-    <!-- CATALOG PAGE -->
+    <!-- CATALOG -->
     <section id="pageCatalog" class="page">
-      <div class="container">
-        <div class="catalog-header">
-          <h1 class="page-title">Collection</h1>
+      <div class="catalog-hero">
+        <div class="container">
+          <h1 class="page-title reveal">Collection</h1>
           <div class="filters" id="filters">
             <button class="filter-btn active" data-filter="">Tout</button>
             <button class="filter-btn" data-filter="collier">Colliers</button>
@@ -169,14 +211,17 @@
             <button class="filter-btn" data-filter="pack">Packs</button>
           </div>
         </div>
+      </div>
+      <div class="container">
         <div class="products-grid" id="catalogGrid"></div>
         <div class="empty-state" id="emptyState" style="display:none">
+          <span class="empty-sym">◈</span>
           <p>Aucun produit dans cette catégorie.</p>
         </div>
       </div>
     </section>
 
-    <!-- PRODUCT DETAIL PAGE -->
+    <!-- PRODUCT DETAIL -->
     <section id="pageProduct" class="page">
       <div class="container">
         <button class="back-btn" id="backBtn">← Retour</button>
@@ -184,97 +229,101 @@
       </div>
     </section>
 
-    <!-- CHECKOUT PAGE -->
+    <!-- CHECKOUT -->
     <section id="pageCheckout" class="page">
       <div class="container checkout-container">
         <button class="back-btn" id="backCheckout">← Retour au panier</button>
-        <h1 class="page-title">Finaliser la commande</h1>
+        <h1 class="page-title">Finaliser</h1>
         <div class="checkout-layout">
-          <div class="checkout-form-wrap">
-            <form id="checkoutForm" novalidate>
-              <div class="form-section">
-                <h3 class="form-section-title">Vos coordonnées</h3>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Prénom & Nom *</label>
-                    <input type="text" name="nom" placeholder="Fatima Zahra El Amrani" required />
-                  </div>
-                </div>
-                <div class="form-row two">
-                  <div class="form-group">
-                    <label>Téléphone *</label>
-                    <input type="tel" name="telephone" placeholder="0612345678" required />
-                  </div>
-                  <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" placeholder="email@exemple.com" />
-                  </div>
-                </div>
+          <form id="checkoutForm" class="checkout-form" novalidate>
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <span class="form-step">01</span>Vos coordonnées
+              </h3>
+              <div class="form-group">
+                <label>Prénom & Nom *</label>
+                <input type="text" name="nom" placeholder="Fatima Zahra El Amrani" required />
               </div>
-              <div class="form-section">
-                <h3 class="form-section-title">Livraison</h3>
-                <div class="form-row two">
-                  <div class="form-group">
-                    <label>Ville *</label>
-                    <input type="text" name="ville" placeholder="Casablanca" required />
-                  </div>
-                  <div class="form-group">
-                    <label>Code postal</label>
-                    <input type="text" name="code_postal" placeholder="20000" />
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Adresse complète *</label>
-                    <input type="text" name="adresse" placeholder="12 Rue des Fleurs, Appt 3" required />
-                  </div>
-                </div>
-              </div>
-              <div class="form-section">
-                <h3 class="form-section-title">Note (optionnel)</h3>
+              <div class="form-row-2">
                 <div class="form-group">
-                  <textarea name="note" placeholder="Gravure, message cadeau…" rows="3"></textarea>
+                  <label>Téléphone *</label>
+                  <input type="tel" name="telephone" placeholder="0612345678" required />
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" name="email" placeholder="email@exemple.com" />
                 </div>
               </div>
-              <button type="submit" class="btn-primary btn-full" id="submitOrder">
-                <span class="btn-text">Confirmer la commande</span>
-                <span class="btn-loader" style="display:none">⟳</span>
-              </button>
-            </form>
-          </div>
+            </div>
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <span class="form-step">02</span>Livraison
+              </h3>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Ville *</label>
+                  <input type="text" name="ville" placeholder="Casablanca" required />
+                </div>
+                <div class="form-group">
+                  <label>Code postal</label>
+                  <input type="text" name="code_postal" placeholder="20000" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Adresse complète *</label>
+                <input type="text" name="adresse" placeholder="12 Rue des Fleurs, Appt 3" required />
+              </div>
+            </div>
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <span class="form-step">03</span>Note (optionnel)
+              </h3>
+              <div class="form-group">
+                <textarea name="note" placeholder="Gravure, message cadeau, instructions spéciales…" rows="3"></textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary btn-full" id="submitOrder">
+              <span class="btn-text">Confirmer la commande</span>
+              <span class="btn-spinner" style="display:none">⟳</span>
+            </button>
+          </form>
           <div class="checkout-summary" id="checkoutSummary"></div>
         </div>
       </div>
     </section>
 
-    <!-- SUCCESS PAGE -->
+    <!-- SUCCESS -->
     <section id="pageSuccess" class="page">
       <div class="success-wrap">
-        <div class="success-icon">✦</div>
+        <div class="success-emblem">
+          <span>MAROUA</span>
+          <em>Jewelry</em>
+        </div>
+        <div class="success-check">✦</div>
         <h1>Commande confirmée</h1>
-        <p id="successRef"></p>
-        <p class="success-sub">Vous serez contacté(e) sous 24h pour la confirmation.</p>
-        <button class="btn-primary" data-page="home">Retour à l'accueil</button>
+        <p id="successRef" class="success-ref"></p>
+        <p class="success-msg">Vous serez contacté(e) sous 24h pour confirmer votre commande.</p>
+        <button class="btn-primary" data-page="home"><span>Retour à l'accueil</span></button>
       </div>
     </section>
 
   </main>
 
-  <!-- ── CART DRAWER ───────────────────────────────────── -->
+  <!-- CART DRAWER -->
   <div id="cartOverlay"></div>
   <aside id="cartDrawer">
     <div class="drawer-header">
-      <h2>Votre panier</h2>
+      <h2>Panier</h2>
       <button class="drawer-close" id="drawerClose">✕</button>
     </div>
     <div class="drawer-items" id="drawerItems"></div>
     <div class="drawer-footer" id="drawerFooter"></div>
   </aside>
 
-  <!-- ── TOAST ────────────────────────────────────────── -->
+  <!-- TOAST -->
   <div id="toastContainer"></div>
 
-  <!-- ── SCRIPTS ──────────────────────────────────────── -->
+  <!-- SCRIPTS -->
   <script src="/js/config.js"></script>
   <script src="/js/store.js"></script>
   <script src="/js/toast.js"></script>
