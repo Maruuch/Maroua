@@ -21,8 +21,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.EMAIL_FROM }}",
-        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "fromEmail": "=ta3bir7or@gmail.com",
+        "toEmail": "=ta3bir7or@gmail.com",
         "subject": "={{ $json.sujet }}",
         "text": "={{ $json.corps }}"
       },
@@ -35,7 +35,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "create",
-        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "databaseId": "=b4e92cd3-ea51-4023-9d21-d2bc0a606900",
         "title": "=ERREUR-{{ Date.now() }}",
         "propertiesUi": {
           "propertyValues": [

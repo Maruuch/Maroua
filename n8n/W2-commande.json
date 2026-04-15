@@ -24,7 +24,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
-        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "databaseId": "=b4e92cd3-ea51-4023-9d21-d2bc0a606900",
         "returnAll": false,
         "limit": 1,
         "filterType": "manual",
@@ -70,7 +70,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// ÉTAPE 2 : Vérifier stock + Recalculer prix\n// ============================================================\nconst data = $('🛡 Valider + Idempotence').first().json;\nconst articles = data.articles;\n\n// Charger products.json depuis GitHub raw\nconst GITHUB_RAW = `https://raw.githubusercontent.com/${$env.GITHUB_OWNER}/${$env.GITHUB_REPO}/main/data/products.json`;\nconst res = await $helpers.request({ url: GITHUB_RAW, json: true });\nconst products = res.products;\n\nconst productMap = {};\nfor (const p of products) productMap[p.id] = p;\n\nlet total = 0;\nconst lignes = [];\nconst stockErrors = [];\n\nfor (const art of articles) {\n  const prod = productMap[art.id];\n  if (!prod) {\n    stockErrors.push(`Produit ID ${art.id} introuvable`);\n    continue;\n  }\n  if (prod.stock < art.qty) {\n    stockErrors.push(`${prod.name}: stock insuffisant (dispo: ${prod.stock}, demandé: ${art.qty})`);\n    continue;\n  }\n  const sous_total = prod.price * art.qty;\n  total += sous_total;\n  lignes.push({\n    produit_id: art.id,\n    notion_id: prod.notion_id,\n    nom: prod.name,\n    qty: art.qty,\n    prix_unitaire: prod.price,\n    sous_total\n  });\n}\n\nif (stockErrors.length > 0) {\n  throw new Error('STOCK_ERROR: ' + stockErrors.join(' | '));\n}\n\ntotal += $env.SHIPPING_FEE ? parseInt($env.SHIPPING_FEE) : 35;\n\nreturn [{ json: { ...data, lignes, total_recalcule: total } }];"
+        "jsCode": "// ============================================================\n// ÉTAPE 2 : Vérifier stock + Recalculer prix\n// ============================================================\nconst data = $('🛡 Valider + Idempotence').first().json;\nconst articles = data.articles;\n\n// Charger products.json depuis GitHub raw\nconst GITHUB_RAW = `https://raw.githubusercontent.com/Maruuch/Maroua/main/data/products.json`;\nconst res = await $helpers.request({ url: GITHUB_RAW, json: true });\nconst products = res.products;\n\nconst productMap = {};\nfor (const p of products) productMap[p.id] = p;\n\nlet total = 0;\nconst lignes = [];\nconst stockErrors = [];\n\nfor (const art of articles) {\n  const prod = productMap[art.id];\n  if (!prod) {\n    stockErrors.push(`Produit ID ${art.id} introuvable`);\n    continue;\n  }\n  if (prod.stock < art.qty) {\n    stockErrors.push(`${prod.name}: stock insuffisant (dispo: ${prod.stock}, demandé: ${art.qty})`);\n    continue;\n  }\n  const sous_total = prod.price * art.qty;\n  total += sous_total;\n  lignes.push({\n    produit_id: art.id,\n    notion_id: prod.notion_id,\n    nom: prod.name,\n    qty: art.qty,\n    prix_unitaire: prod.price,\n    sous_total\n  });\n}\n\nif (stockErrors.length > 0) {\n  throw new Error('STOCK_ERROR: ' + stockErrors.join(' | '));\n}\n\ntotal += 35 ? parseInt(35) : 35;\n\nreturn [{ json: { ...data, lignes, total_recalcule: total } }];"
       },
       "name": "📦 Vérif stock + Prix",
       "type": "n8n-nodes-base.code",
@@ -80,7 +80,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
-        "databaseId": "={{ $env.NOTION_CLIENTS_DB_ID }}",
+        "databaseId": "=b5efb575-e089-47cb-8eac-40b1ae712f23",
         "returnAll": false,
         "limit": 1,
         "filterType": "manual",
@@ -118,7 +118,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "create",
-        "databaseId": "={{ $env.NOTION_CLIENTS_DB_ID }}",
+        "databaseId": "=b5efb575-e089-47cb-8eac-40b1ae712f23",
         "title": "={{ $('📦 Vérif stock + Prix').first().json.nom }}",
         "propertiesUi": {
           "propertyValues": [
@@ -162,7 +162,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "create",
-        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "databaseId": "=b4e92cd3-ea51-4023-9d21-d2bc0a606900",
         "title": "={{ $json.ref_public }}",
         "propertiesUi": {
           "propertyValues": [
@@ -194,7 +194,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "create",
-        "databaseId": "={{ $env.NOTION_LIGNES_DB_ID }}",
+        "databaseId": "=229c7308-8be6-420f-9106-80382af7c215",
         "title": "={{ $json.line_uid }}",
         "propertiesUi": {
           "propertyValues": [
@@ -234,7 +234,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// Construire message WhatsApp + emails\n// ============================================================\nconst data = $('🔗 Merge client_id').first().json;\n\nconst lignesText = data.lignes\n  .map(l => `  • ${l.nom} ×${l.qty} = ${l.sous_total} MAD`)\n  .join('\\n');\n\nconst whatsapp_message =\n  `✨ *NOUVELLE COMMANDE MAROUA* ✨\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `🔖 *Réf:* ${data.ref_public}\\n` +\n  `📅 *Date:* ${new Date().toLocaleDateString('fr-FR')}\\n\\n` +\n  `💎 *ARTICLES*\\n${lignesText}\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `🚚 Livraison: 35 MAD\\n` +\n  `💰 *TOTAL: ${data.total_recalcule} MAD*\\n` +\n  `💳 Paiement à la livraison\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `👤 *CLIENT*\\n` +\n  `Nom: ${data.nom}\\n` +\n  `Tél: ${data.telephone_normalise}\\n` +\n  `Adresse: ${data.adresse}\\n` +\n  `Ville: ${data.ville}` +\n  (data.note ? `\\n📝 Note: ${data.note}` : '') +\n  `\\n━━━━━━━━━━━━━━━━━━━`;\n\nconst email_client_body = `\nBonjour ${data.nom},\n\nVotre commande ${data.ref_public} a bien été confirmée.\n\nDétail :\n${data.lignes.map(l => `- ${l.nom} ×${l.qty} : ${l.sous_total} MAD`).join('\\n')}\n\nLivraison : 35 MAD\nTotal : ${data.total_recalcule} MAD\n\nMode de paiement : à la livraison\nAdresse : ${data.adresse}, ${data.ville}\n\nNous vous contacterons pour confirmer la livraison.\n\nMerci de votre confiance,\nMaroua Jewelry\n`;\n\nreturn [{\n  json: {\n    ...data,\n    whatsapp_message,\n    whatsapp_url: `https://wa.me/${$env.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsapp_message)}`,\n    email_client_body,\n    email_client_subject: `Commande ${data.ref_public} confirmée — Maroua Jewelry`\n  }\n}];"
+        "jsCode": "// ============================================================\n// Construire message WhatsApp + emails\n// ============================================================\nconst data = $('🔗 Merge client_id').first().json;\n\nconst lignesText = data.lignes\n  .map(l => `  • ${l.nom} ×${l.qty} = ${l.sous_total} MAD`)\n  .join('\\n');\n\nconst whatsapp_message =\n  `✨ *NOUVELLE COMMANDE MAROUA* ✨\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `🔖 *Réf:* ${data.ref_public}\\n` +\n  `📅 *Date:* ${new Date().toLocaleDateString('fr-FR')}\\n\\n` +\n  `💎 *ARTICLES*\\n${lignesText}\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `🚚 Livraison: 35 MAD\\n` +\n  `💰 *TOTAL: ${data.total_recalcule} MAD*\\n` +\n  `💳 Paiement à la livraison\\n` +\n  `━━━━━━━━━━━━━━━━━━━\\n` +\n  `👤 *CLIENT*\\n` +\n  `Nom: ${data.nom}\\n` +\n  `Tél: ${data.telephone_normalise}\\n` +\n  `Adresse: ${data.adresse}\\n` +\n  `Ville: ${data.ville}` +\n  (data.note ? `\\n📝 Note: ${data.note}` : '') +\n  `\\n━━━━━━━━━━━━━━━━━━━`;\n\nconst email_client_body = `\nBonjour ${data.nom},\n\nVotre commande ${data.ref_public} a bien été confirmée.\n\nDétail :\n${data.lignes.map(l => `- ${l.nom} ×${l.qty} : ${l.sous_total} MAD`).join('\\n')}\n\nLivraison : 35 MAD\nTotal : ${data.total_recalcule} MAD\n\nMode de paiement : à la livraison\nAdresse : ${data.adresse}, ${data.ville}\n\nNous vous contacterons pour confirmer la livraison.\n\nMerci de votre confiance,\nMaroua Jewelry\n`;\n\nreturn [{\n  json: {\n    ...data,\n    whatsapp_message,\n    whatsapp_url: `https://wa.me/${212600000000}?text=${encodeURIComponent(whatsapp_message)}`,\n    email_client_body,\n    email_client_subject: `Commande ${data.ref_public} confirmée — Maroua Jewelry`\n  }\n}];"
       },
       "name": "💬 Préparer notifications",
       "type": "n8n-nodes-base.code",
@@ -242,8 +242,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.EMAIL_FROM }}",
-        "toEmail": "={{ $json.email || $env.ADMIN_EMAIL }}",
+        "fromEmail": "=ta3bir7or@gmail.com",
+        "toEmail": "={{ $json.email || ta3bir7or@gmail.com }}",
         "subject": "={{ $json.email_client_subject }}",
         "text": "={{ $json.email_client_body }}"
       },
@@ -254,8 +254,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.EMAIL_FROM }}",
-        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "fromEmail": "=ta3bir7or@gmail.com",
+        "toEmail": "=ta3bir7or@gmail.com",
         "subject": "=🛍️ Nouvelle commande {{ $json.ref_public }} — {{ $json.total_recalcule }} MAD",
         "text": "={{ $json.whatsapp_message }}"
       },

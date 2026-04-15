@@ -25,7 +25,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
-        "databaseId": "={{ $env.NOTION_PRODUITS_DB_ID }}",
+        "databaseId": "=9177131d-b1bb-450b-b288-8daf9f53a67a",
         "returnAll": true,
         "filterType": "manual",
         "filters": {
@@ -54,7 +54,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
-        "databaseId": "={{ $env.NOTION_IMAGES_DB_ID }}",
+        "databaseId": "=017b3f1a-5400-4c7c-9747-550fe252af98",
         "returnAll": true
       },
       "name": "🖼 Lire PRODUIT_IMAGES",
@@ -80,7 +80,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://api.github.com/repos/{{ $env.GITHUB_OWNER }}/{{ $env.GITHUB_REPO }}/contents/data/products.json",
+        "url": "=https://api.github.com/repos/Maruuch/Maroua/contents/data/products.json",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
@@ -99,7 +99,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "=https://api.github.com/repos/{{ $env.GITHUB_OWNER }}/{{ $env.GITHUB_REPO }}/contents/data/products.json",
+        "url": "=https://api.github.com/repos/Maruuch/Maroua/contents/data/products.json",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,

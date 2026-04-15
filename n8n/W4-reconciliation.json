@@ -23,7 +23,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
-        "databaseId": "={{ $env.NOTION_PRODUITS_DB_ID }}",
+        "databaseId": "=9177131d-b1bb-450b-b288-8daf9f53a67a",
         "returnAll": true
       },
       "name": "📋 Lire tous les produits",
@@ -34,7 +34,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
-        "databaseId": "={{ $env.NOTION_LIGNES_DB_ID }}",
+        "databaseId": "=229c7308-8be6-420f-9106-80382af7c215",
         "returnAll": true
       },
       "name": "📋 Lire toutes les lignes",
@@ -45,7 +45,7 @@
       "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
-        "databaseId": "={{ $env.NOTION_COMMANDES_DB_ID }}",
+        "databaseId": "=b4e92cd3-ea51-4023-9d21-d2bc0a606900",
         "returnAll": true,
         "filterType": "manual",
         "filters": {
