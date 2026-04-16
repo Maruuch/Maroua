@@ -7,7 +7,7 @@
 const CONFIG = {
   WHATSAPP_NUMBER: "212600000000",
   SHIPPING_FEE: 35,
-  N8N_WEBHOOK_URL: "",        // ← Renseigner après déploiement n8n
+  N8N_WEBHOOK_URL: "http://localhost:5678/webhook-test/commande",        // ← Renseigner après déploiement n8n
   PRODUCTS_JSON_URL: "/data/products.json",
 };
 
