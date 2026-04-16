@@ -1,0 +1,31 @@
+{
+  "_meta": {
+    "generated_at": "2026-04-16T14:04:51.728Z",
+    "generated_by": "n8n W1 — Sync Produits",
+    "count": 1,
+    "version": "1.0"
+  },
+  "products": [
+    {
+      "id": 1,
+      "notion_id": "3434c075-4c05-80b8-999b-dc66565c3629",
+      "sku": "",
+      "slug": "produit-1",
+      "name": "Bague test",
+      "type": "",
+      "etat": "Neuf",
+      "description_courte": "test produit bague",
+      "description_longue": "longue description pour tester",
+      "price": 100,
+      "stock": 5,
+      "tag": null,
+      "sym": "◇",
+      "actif": true,
+      "variant_group_id": null,
+      "ordre": 99,
+      "images": [
+        "Maruuch/Maroua/tree/main/images"
+      ]
+    }
+  ]
+}
