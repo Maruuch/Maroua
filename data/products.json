@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-04-16T19:19:27.504Z",
+    "generated_at": "2026-04-16T19:25:11.895Z",
     "generated_by": "n8n W1 — Sync Produits",
     "count": 1,
     "version": "1.0"
@@ -12,13 +12,13 @@
       "sku": "",
       "slug": "produit-1",
       "name": "Bague test",
-      "type": "",
+      "type": "bague",
       "etat": "Neuf",
       "description_courte": "test produit bague",
       "description_longue": "longue description pour tester",
       "price": 100,
       "stock": 5,
-      "tag": null,
+      "tag": "Nouveau",
       "sym": "◇",
       "actif": true,
       "variant_group_id": null,
