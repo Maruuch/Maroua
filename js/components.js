@@ -8,7 +8,7 @@ const Components = (() => {
   function productCard(p, delay = 0) {
     const inStock = p.stock > 0;
     const stockLow = p.stock > 0 && p.stock <= 3;
-    const imgSrc = `/images/${p.id}.jpg`;
+    const imgSrc = (p.images && p.images.length > 0) ? p.images[0] : `/images/${p.id}.webp`;
 
     const card = document.createElement('div');
     card.className = 'product-card';
@@ -65,7 +65,7 @@ const Components = (() => {
   function productDetail(p) {
     const inStock = p.stock > 0;
     const stockLow = inStock && p.stock <= 3;
-    const imgSrc = `/images/${p.id}.jpg`;
+    const imgSrc = (p.images && p.images.length > 0) ? p.images[0] : `/images/${p.id}.webp`;
 
     let qty = 1;
 
@@ -124,7 +124,7 @@ const Components = (() => {
   // ── Cart Item ───────────────────────────────────────────────
   function cartItem(item) {
     const { id, qty, product: p } = item;
-    const imgSrc = `/images/${id}.jpg`;
+    const imgSrc = (p.images && p.images.length > 0) ? p.images[0] : `/images/${id}.webp`;
 
     const el = document.createElement('div');
     el.className = 'cart-item';
