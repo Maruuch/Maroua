@@ -69,15 +69,8 @@ const Components = (() => {
 
     let qty = 1;
 
-    // Toutes les images disponibles (filtrer les 404 via onerror)
     const allImages = (p.images && p.images.length > 0) ? p.images : [imgSrc];
-    const thumbsHtml = allImages.length > 1
-      ? `<div class="detail-thumbs">${allImages.map((src, i) => `
-          <img src="${src}" alt="${p.name} ${i+1}" class="detail-thumb${i===0?' active':''}"
-               data-src="${src}"
-               onerror="this.style.display='none'"
-               loading="lazy">`).join('')}
-        </div>` : '';
+    const hasMultiple = allImages.length > 1;
 
     const el = document.createElement('div');
     el.className = 'product-detail';
@@ -87,8 +80,12 @@ const Components = (() => {
           <img src="${imgSrc}" alt="${p.name}" id="detailMainImg"
                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
           <div class="card-placeholder" style="display:none;aspect-ratio:3/4">${p.sym || '◈'}</div>
+          ${hasMultiple ? `
+          <button class="gallery-arrow gallery-prev" aria-label="Précédent">&#8592;</button>
+          <button class="gallery-arrow gallery-next" aria-label="Suivant">&#8594;</button>
+          <div class="gallery-dots">${allImages.map((_,i) => `<span class="gallery-dot${i===0?' active':''}"></span>`).join('')}</div>
+          ` : ''}
         </div>
-        ${thumbsHtml}
       </div>
       <div class="detail-info">
         <div class="detail-type">${p.type || ''}</div>
@@ -119,15 +116,22 @@ const Components = (() => {
       const plusEl  = el.querySelector('#qtyPlus');
       const addEl   = el.querySelector('#detailAddBtn');
 
-      // Galerie thumbnails
-      el.querySelectorAll('.detail-thumb').forEach(thumb => {
-        thumb.addEventListener('click', () => {
-          const mainImg = el.querySelector('#detailMainImg');
-          if (mainImg) { mainImg.src = thumb.dataset.src; mainImg.style.display = ''; }
-          el.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
-        });
-      });
+      // Carousel flèches
+      if (hasMultiple) {
+        let currentIdx = 0;
+        const mainImg = el.querySelector('#detailMainImg');
+        const dots = el.querySelectorAll('.gallery-dot');
+
+        const goTo = (idx) => {
+          currentIdx = (idx + allImages.length) % allImages.length;
+          mainImg.src = allImages[currentIdx];
+          mainImg.style.display = '';
+          dots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+        };
+
+        el.querySelector('.gallery-prev').addEventListener('click', () => goTo(currentIdx - 1));
+        el.querySelector('.gallery-next').addEventListener('click', () => goTo(currentIdx + 1));
+      }
 
       minusEl.addEventListener('click', () => { if (qty > 1) valEl.textContent = --qty; });
       plusEl.addEventListener('click', () => { if (qty < p.stock) valEl.textContent = ++qty; });
