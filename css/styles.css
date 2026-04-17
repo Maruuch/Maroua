@@ -514,6 +514,7 @@ img { display: block; max-width: 100%; }
   background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 100%);
   transform: translateY(100%);
   transition: transform var(--t) var(--ease);
+  z-index: 4;
 }
 [data-theme="light"] .card-action {
   background: linear-gradient(to top, rgba(28,18,8,.8) 0%, transparent 100%);
@@ -560,12 +561,14 @@ img { display: block; max-width: 100%; }
 /* ── Carousel zones ─────────────────────────────────────────── */
 .gallery-zone {
   position: absolute; top: 0; width: 50%; height: 100%;
-  cursor: pointer; z-index: 2;
+  cursor: pointer; z-index: 3;
   display: flex; align-items: center;
   opacity: 0; transition: opacity .3s var(--ease);
 }
-.detail-main-img:hover .gallery-zone { opacity: 1; }
+.detail-main-img:hover .gallery-zone,
+.card-image:hover .gallery-zone { opacity: 1; }
 
+/* Detail page — gradient léger */
 .gallery-zone-prev {
   left: 0; justify-content: flex-start;
   background: linear-gradient(to right, rgba(0,0,0,.22) 0%, transparent 100%);
@@ -590,6 +593,17 @@ img { display: block; max-width: 100%; }
 }
 .gallery-zone-prev:hover::after { transform: translateX(-3px); color: #fff; }
 .gallery-zone-next:hover::after { transform: translateX(3px);  color: #fff; }
+
+/* Card variant — filtre grisé plus marqué, sans dots */
+.card-gallery-zone.gallery-zone-prev {
+  background: linear-gradient(to right, rgba(10,10,10,.52) 0%, rgba(10,10,10,.08) 100%);
+}
+.card-gallery-zone.gallery-zone-next {
+  background: linear-gradient(to left, rgba(10,10,10,.52) 0%, rgba(10,10,10,.08) 100%);
+}
+.card-gallery-zone::after { font-size: 1.9rem; }
+.card-gallery-zone.gallery-zone-prev::after { padding-left: .6rem; }
+.card-gallery-zone.gallery-zone-next::after { padding-right: .6rem; }
 
 .gallery-dots {
   position: absolute; bottom: .7rem; left: 50%; transform: translateX(-50%);
