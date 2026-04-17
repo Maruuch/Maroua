@@ -69,15 +69,26 @@ const Components = (() => {
 
     let qty = 1;
 
+    // Toutes les images disponibles (filtrer les 404 via onerror)
+    const allImages = (p.images && p.images.length > 0) ? p.images : [imgSrc];
+    const thumbsHtml = allImages.length > 1
+      ? `<div class="detail-thumbs">${allImages.map((src, i) => `
+          <img src="${src}" alt="${p.name} ${i+1}" class="detail-thumb${i===0?' active':''}"
+               data-src="${src}"
+               onerror="this.style.display='none'"
+               loading="lazy">`).join('')}
+        </div>` : '';
+
     const el = document.createElement('div');
     el.className = 'product-detail';
     el.innerHTML = `
       <div class="detail-gallery">
         <div class="detail-main-img">
-          <img src="${imgSrc}" alt="${p.name}"
+          <img src="${imgSrc}" alt="${p.name}" id="detailMainImg"
                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
           <div class="card-placeholder" style="display:none;aspect-ratio:3/4">${p.sym || '◈'}</div>
         </div>
+        ${thumbsHtml}
       </div>
       <div class="detail-info">
         <div class="detail-type">${p.type || ''}</div>
@@ -107,6 +118,16 @@ const Components = (() => {
       const minusEl = el.querySelector('#qtyMinus');
       const plusEl  = el.querySelector('#qtyPlus');
       const addEl   = el.querySelector('#detailAddBtn');
+
+      // Galerie thumbnails
+      el.querySelectorAll('.detail-thumb').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          const mainImg = el.querySelector('#detailMainImg');
+          if (mainImg) { mainImg.src = thumb.dataset.src; mainImg.style.display = ''; }
+          el.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+      });
 
       minusEl.addEventListener('click', () => { if (qty > 1) valEl.textContent = --qty; });
       plusEl.addEventListener('click', () => { if (qty < p.stock) valEl.textContent = ++qty; });
