@@ -129,15 +129,13 @@ const Components = (() => {
         dotsEl.innerHTML = validImgs.map((_, i) =>
           `<span class="gallery-dot${i===0?' active':''}"></span>`).join('');
 
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'gallery-arrow gallery-prev';
-        prevBtn.innerHTML = '&#8592;';
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'gallery-arrow gallery-next';
-        nextBtn.innerHTML = '&#8594;';
+        const prevZone = document.createElement('div');
+        prevZone.className = 'gallery-zone gallery-zone-prev';
+        const nextZone = document.createElement('div');
+        nextZone.className = 'gallery-zone gallery-zone-next';
 
-        mainImgDiv.appendChild(prevBtn);
-        mainImgDiv.appendChild(nextBtn);
+        mainImgDiv.appendChild(prevZone);
+        mainImgDiv.appendChild(nextZone);
         mainImgDiv.appendChild(dotsEl);
 
         const dots = dotsEl.querySelectorAll('.gallery-dot');
@@ -147,8 +145,12 @@ const Components = (() => {
           mainImgEl.style.display = '';
           dots.forEach((d, j) => d.classList.toggle('active', j === idx));
         };
-        prevBtn.addEventListener('click', () => goTo(idx - 1));
-        nextBtn.addEventListener('click', () => goTo(idx + 1));
+
+        // Dots cliquables
+        dots.forEach((d, j) => d.addEventListener('click', () => goTo(j)));
+
+        prevZone.addEventListener('click', () => goTo(idx - 1));
+        nextZone.addEventListener('click', () => goTo(idx + 1));
       });
 
       minusEl.addEventListener('click', () => { if (qty > 1) valEl.textContent = --qty; });
