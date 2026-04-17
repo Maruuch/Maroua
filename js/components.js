@@ -70,7 +70,6 @@ const Components = (() => {
     let qty = 1;
 
     const allImages = (p.images && p.images.length > 0) ? p.images : [imgSrc];
-    const hasMultiple = allImages.length > 1;
 
     const el = document.createElement('div');
     el.className = 'product-detail';
@@ -80,11 +79,6 @@ const Components = (() => {
           <img src="${imgSrc}" alt="${p.name}" id="detailMainImg"
                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
           <div class="card-placeholder" style="display:none;aspect-ratio:3/4">${p.sym || '◈'}</div>
-          ${hasMultiple ? `
-          <button class="gallery-arrow gallery-prev" aria-label="Précédent">&#8592;</button>
-          <button class="gallery-arrow gallery-next" aria-label="Suivant">&#8594;</button>
-          <div class="gallery-dots">${allImages.map((_,i) => `<span class="gallery-dot${i===0?' active':''}"></span>`).join('')}</div>
-          ` : ''}
         </div>
       </div>
       <div class="detail-info">
@@ -116,22 +110,46 @@ const Components = (() => {
       const plusEl  = el.querySelector('#qtyPlus');
       const addEl   = el.querySelector('#detailAddBtn');
 
-      // Carousel flèches
-      if (hasMultiple) {
-        let currentIdx = 0;
-        const mainImg = el.querySelector('#detailMainImg');
-        const dots = el.querySelectorAll('.gallery-dot');
+      // Carousel : tester les images réelles avant de créer les flèches/dots
+      const mainImgEl = el.querySelector('#detailMainImg');
+      const mainImgDiv = el.querySelector('.detail-main-img');
+      Promise.all(allImages.map(src => new Promise(res => {
+        const t = new Image();
+        t.onload  = () => res(src);
+        t.onerror = () => res(null);
+        t.src = src;
+      }))).then(results => {
+        const validImgs = results.filter(Boolean);
+        if (validImgs.length <= 1) return; // une seule image, pas de carousel
 
-        const goTo = (idx) => {
-          currentIdx = (idx + allImages.length) % allImages.length;
-          mainImg.src = allImages[currentIdx];
-          mainImg.style.display = '';
-          dots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+        let idx = 0;
+
+        const dotsEl = document.createElement('div');
+        dotsEl.className = 'gallery-dots';
+        dotsEl.innerHTML = validImgs.map((_, i) =>
+          `<span class="gallery-dot${i===0?' active':''}"></span>`).join('');
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'gallery-arrow gallery-prev';
+        prevBtn.innerHTML = '&#8592;';
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'gallery-arrow gallery-next';
+        nextBtn.innerHTML = '&#8594;';
+
+        mainImgDiv.appendChild(prevBtn);
+        mainImgDiv.appendChild(nextBtn);
+        mainImgDiv.appendChild(dotsEl);
+
+        const dots = dotsEl.querySelectorAll('.gallery-dot');
+        const goTo = (i) => {
+          idx = (i + validImgs.length) % validImgs.length;
+          mainImgEl.src = validImgs[idx];
+          mainImgEl.style.display = '';
+          dots.forEach((d, j) => d.classList.toggle('active', j === idx));
         };
-
-        el.querySelector('.gallery-prev').addEventListener('click', () => goTo(currentIdx - 1));
-        el.querySelector('.gallery-next').addEventListener('click', () => goTo(currentIdx + 1));
-      }
+        prevBtn.addEventListener('click', () => goTo(idx - 1));
+        nextBtn.addEventListener('click', () => goTo(idx + 1));
+      });
 
       minusEl.addEventListener('click', () => { if (qty > 1) valEl.textContent = --qty; });
       plusEl.addEventListener('click', () => { if (qty < p.stock) valEl.textContent = ++qty; });
