@@ -37,6 +37,41 @@ const Components = (() => {
         </div>
       </div>`;
 
+    // Carousel lazy : init au premier survol de la carte
+    const cardImgEl  = card.querySelector('.card-image img');
+    const cardImgDiv = card.querySelector('.card-image');
+    const allCardImgs = (p.images && p.images.length > 0) ? p.images : [`/images/${p.id}.webp`];
+    let carouselReady = false;
+    let curIdx = 0;
+
+    cardImgDiv.addEventListener('mouseenter', () => {
+      if (carouselReady) return;
+      carouselReady = true;
+      Promise.all(allCardImgs.map(src => new Promise(res => {
+        const t = new Image();
+        t.onload  = () => res(src);
+        t.onerror = () => res(null);
+        t.src = src;
+      }))).then(results => {
+        const valid = results.filter(Boolean);
+        if (valid.length <= 1) return;
+
+        const pz = document.createElement('div');
+        pz.className = 'gallery-zone gallery-zone-prev card-gallery-zone';
+        const nz = document.createElement('div');
+        nz.className = 'gallery-zone gallery-zone-next card-gallery-zone';
+        cardImgDiv.appendChild(pz);
+        cardImgDiv.appendChild(nz);
+
+        const goTo = i => {
+          curIdx = (i + valid.length) % valid.length;
+          cardImgEl.src = valid[curIdx];
+        };
+        pz.addEventListener('click', e => { e.stopPropagation(); goTo(curIdx - 1); });
+        nz.addEventListener('click', e => { e.stopPropagation(); goTo(curIdx + 1); });
+      });
+    });
+
     // Clic carte → page produit
     card.addEventListener('click', e => {
       if (e.target.closest('.card-add')) return;
