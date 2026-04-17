@@ -557,29 +557,52 @@ img { display: block; max-width: 100%; }
 }
 .detail-main-img img { width: 100%; height: 100%; object-fit: cover; }
 
-.detail-main-img { position: relative; }
-
-.gallery-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: rgba(0,0,0,.45); color: #fff; border: none;
-  width: 36px; height: 36px; border-radius: 50%;
-  font-size: 1rem; cursor: pointer; z-index: 2;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .2s;
+/* ── Carousel zones ─────────────────────────────────────────── */
+.gallery-zone {
+  position: absolute; top: 0; width: 50%; height: 100%;
+  cursor: pointer; z-index: 2;
+  display: flex; align-items: center;
+  opacity: 0; transition: opacity .3s var(--ease);
 }
-.gallery-arrow:hover { background: var(--gold); color: #000; }
-.gallery-prev { left: .5rem; }
-.gallery-next { right: .5rem; }
+.detail-main-img:hover .gallery-zone { opacity: 1; }
+
+.gallery-zone-prev {
+  left: 0; justify-content: flex-start;
+  background: linear-gradient(to right, rgba(0,0,0,.22) 0%, transparent 100%);
+}
+.gallery-zone-next {
+  right: 0; justify-content: flex-end;
+  background: linear-gradient(to left, rgba(0,0,0,.22) 0%, transparent 100%);
+}
+.gallery-zone-prev::after {
+  content: '‹'; color: rgba(255,255,255,.85);
+  font-size: 2.4rem; line-height: 1;
+  padding-left: .9rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,.5);
+  transition: transform .2s var(--ease), color .2s;
+}
+.gallery-zone-next::after {
+  content: '›'; color: rgba(255,255,255,.85);
+  font-size: 2.4rem; line-height: 1;
+  padding-right: .9rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,.5);
+  transition: transform .2s var(--ease), color .2s;
+}
+.gallery-zone-prev:hover::after { transform: translateX(-3px); color: #fff; }
+.gallery-zone-next:hover::after { transform: translateX(3px);  color: #fff; }
 
 .gallery-dots {
-  position: absolute; bottom: .6rem; left: 50%; transform: translateX(-50%);
-  display: flex; gap: .4rem;
+  position: absolute; bottom: .7rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: .45rem; z-index: 3;
 }
 .gallery-dot {
   width: 6px; height: 6px; border-radius: 50%;
-  background: rgba(255,255,255,.4); transition: background .2s;
+  background: rgba(255,255,255,.35);
+  transition: background .25s, transform .25s;
+  cursor: pointer;
 }
-.gallery-dot.active { background: var(--gold); }
+.gallery-dot:hover { background: rgba(255,255,255,.7); }
+.gallery-dot.active { background: var(--gold); transform: scale(1.3); }
 
 .detail-info { padding-top: .5rem; }
 .detail-type {
