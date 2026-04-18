@@ -140,7 +140,15 @@ const CheckoutDrawer = (() => {
         el.classList.remove('error');
       }
     });
-    if (!valid) Toast.error('Veuillez remplir les champs obligatoires');
+
+    // Consentements obligatoires
+    ['accept_cgv', 'accept_livraison'].forEach(name => {
+      const cb = form.elements[name];
+      if (cb && !cb.checked) { cb.classList.add('error'); valid = false; }
+      else if (cb) cb.classList.remove('error');
+    });
+
+    if (!valid) Toast.error('Champs requis ou conditions non acceptées');
     return valid;
   }
 
@@ -192,6 +200,60 @@ const CheckoutDrawer = (() => {
       Drawer.open();
     });
     document.getElementById('cdrSubmit').addEventListener('click', _submit);
+
+    // Liens légaux → Legal Panel (sans quitter le drawer)
+    document.querySelectorAll('#checkoutDrawer [data-legal]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        LegalPanel.open(link.dataset.legal);
+      });
+    });
+  }
+
+  return { init, open, close };
+})();
+
+// ================================================================
+// 📄 LEGAL PANEL — overlay plein-écran pour CGV / Livraison
+//    S'ouvre par-dessus le checkout drawer sans le fermer
+// ================================================================
+
+const LegalPanel = (() => {
+
+  function open(type) {
+    const pageId  = 'page' + type.charAt(0).toUpperCase() + type.slice(1);
+    const source  = document.getElementById(pageId);
+    const body    = document.getElementById('legalPanelBody');
+    const titleEl = document.getElementById('legalPanelTitle');
+    if (!source || !body) return;
+
+    titleEl.textContent = type === 'cgv'
+      ? 'Conditions Générales de Vente'
+      : 'Modalités de Livraison';
+
+    // Copier le contenu de la page légale dans le panel
+    const content = source.querySelector('.legal-content');
+    body.innerHTML = content ? content.innerHTML : '';
+
+    // Les liens data-page dans le panel légal redirigent normalement
+    body.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        close();
+        Store.navigate(el.dataset.page);
+      });
+    });
+
+    document.getElementById('legalPanel').classList.add('open');
+  }
+
+  function close() {
+    document.getElementById('legalPanel').classList.remove('open');
+  }
+
+  function init() {
+    document.getElementById('legalPanelClose').addEventListener('click', close);
   }
 
   return { init, open, close };
