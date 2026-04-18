@@ -495,41 +495,66 @@ img { display: block; max-width: 100%; }
 
 /* ── CAT CARDS ──────────────────────────────────────────────── */
 .cats-grid {
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+  display: grid; grid-template-columns: repeat(5,1fr); gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
 }
 .cat-card {
-  background: var(--bg);
-  padding: 2.8rem 2rem;
+  background-color: var(--bg);
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  padding: 2.5rem 1.8rem;
   cursor: pointer;
-  display: flex; flex-direction: column; gap: 1.2rem;
-  transition: background var(--t) var(--ease);
+  display: flex; flex-direction: column; justify-content: flex-end; gap: .9rem;
+  transition: background-color var(--t) var(--ease);
   position: relative; overflow: hidden;
+  min-height: 270px;
 }
+
+/* Image selon le thème — custom properties injectées en inline */
+[data-theme="dark"]  .cat-card { background-image: var(--img-d, none); }
+[data-theme="light"] .cat-card { background-image: var(--img-l, none); }
+
+/* Overlay gradient bas → haut : lisibilité du texte sur photo */
+.cat-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(to top,
+    rgba(0,0,0,.82) 0%, rgba(0,0,0,.38) 45%, rgba(0,0,0,.08) 100%);
+  transition: opacity var(--t) var(--ease);
+}
+.cat-card:hover::before { opacity: .85; }
+
+/* Ligne dorée bas au hover */
 .cat-card::after {
   content: '';
   position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: var(--gold);
+  background: var(--gold); z-index: 2;
   transform: scaleX(0); transform-origin: left;
   transition: transform var(--t) var(--ease);
 }
-.cat-card:hover { background: var(--surface); }
 .cat-card:hover::after { transform: scaleX(1); }
+
+/* Tout le contenu au-dessus de l'overlay */
+.cat-sym, .cat-body, .cat-arrow { position: relative; z-index: 1; }
+
 .cat-sym {
-  font-size: 2.2rem; color: var(--gold);
+  font-size: 2rem; color: var(--gold);
   transition: transform var(--t) var(--ease);
+  text-shadow: 0 2px 8px rgba(0,0,0,.4);
 }
 .cat-card:hover .cat-sym { transform: scale(1.15) rotate(-5deg); }
 .cat-body h3 {
-  font-family: var(--serif); font-size: 1.35rem; font-weight: 400;
-  margin-bottom: .35rem;
+  font-family: var(--serif); font-size: 1.2rem; font-weight: 400;
+  margin-bottom: .3rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,.5);
 }
-.cat-body p { color: var(--text2); font-size: .82rem; }
+.cat-body p {
+  color: var(--text2); font-size: .78rem; line-height: 1.5;
+  text-shadow: 0 1px 4px rgba(0,0,0,.4);
+}
 .cat-arrow {
-  display: block; color: var(--gold); font-size: 1.1rem;
-  transform: translateX(0);
+  display: block; color: var(--gold); font-size: 1rem;
   transition: transform var(--t) var(--ease);
+  text-shadow: 0 1px 4px rgba(0,0,0,.4);
 }
 .cat-card:hover .cat-arrow { transform: translateX(6px); }
 
@@ -1270,7 +1295,7 @@ img { display: block; max-width: 100%; }
 
 /* ── RESPONSIVE ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .cats-grid { grid-template-columns: repeat(2,1fr); }
+  .cats-grid { grid-template-columns: repeat(3,1fr); }
   .promise-grid { grid-template-columns: repeat(2,1fr); }
   .promise-item:nth-child(2) { border-right: none; }
   .promise-item:nth-child(3) { border-right: 1px solid var(--border); border-top: 1px solid var(--border); }
