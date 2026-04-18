@@ -59,7 +59,7 @@ const Drawer = (() => {
 
     document.getElementById('drawerCheckoutBtn').addEventListener('click', () => {
       close();
-      Store.navigate('checkout');
+      CheckoutDrawer.open();
     });
   }
 
