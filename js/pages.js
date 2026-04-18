@@ -93,17 +93,25 @@ const Pages = (() => {
   // ── CGV ──────────────────────────────────────────────────────
   function renderCgv() { showPage('cgv'); }
 
+  // ── CONTACT ──────────────────────────────────────────────────
+  function renderContact() { showPage('contact'); }
+
+  // ── CERTIFICATION ─────────────────────────────────────────────
+  function renderCertification() { showPage('certification'); }
+
   // ── Router ──────────────────────────────────────────────────
   function route({ page, filter, currentProductId }) {
     switch (page) {
-      case 'home':      renderHome(); break;
-      case 'catalog':   renderCatalog(filter); break;
-      case 'product':   renderProduct(currentProductId); break;
-      case 'checkout':  renderCheckout(); break;
-      case 'success':   renderSuccess(); break;
-      case 'livraison': renderLivraison(); break;
-      case 'cgv':       renderCgv(); break;
-      default:          renderHome();
+      case 'home':          renderHome(); break;
+      case 'catalog':       renderCatalog(filter); break;
+      case 'product':       renderProduct(currentProductId); break;
+      case 'checkout':      renderCheckout(); break;
+      case 'success':       renderSuccess(); break;
+      case 'livraison':     renderLivraison(); break;
+      case 'cgv':           renderCgv(); break;
+      case 'contact':       renderContact(); break;
+      case 'certification': renderCertification(); break;
+      default:              renderHome();
     }
   }
 
