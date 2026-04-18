@@ -48,11 +48,15 @@
   });
   navOverlay.addEventListener('click', _closeNav);
 
-  // ── 6. Drawer + Checkout + Filtres ────────────────────────
+  // ── 6. Drawer + Checkout + Filtres + Modules ──────────────
   Drawer.init();
   Checkout.init();
   CheckoutDrawer.init();
   LegalPanel.init();
+  AccountDrawer.init();
+  ContactDrawer.init();
+  Chat.init();
+  HeroCards.init();
   Pages.initFilters();
 
   // ── 7. Router ─────────────────────────────────────────────
@@ -66,6 +70,7 @@
       new Promise(r => setTimeout(r, 3000))
     ]);
     Store.setProducts(products);
+    Store.emit('productsLoaded');
   } catch (err) {
     console.error('Produits :', err);
     Toast.error('Impossible de charger le catalogue', 5000);
