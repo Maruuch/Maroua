@@ -140,20 +140,30 @@ const CheckoutDrawer = (() => {
         el.classList.remove('error');
       }
     });
+    if (!valid) Toast.error('Veuillez remplir les champs obligatoires');
+    return valid;
+  }
 
-    // Consentements obligatoires
+  // Auto-coche les cases de consentement avec animation si non cochées
+  async function _autoAcceptConsent(form) {
+    let hadUnchecked = false;
     ['accept_cgv', 'accept_livraison'].forEach(name => {
       const cb = form.elements[name];
-      if (cb && !cb.checked) { cb.classList.add('error'); valid = false; }
-      else if (cb) cb.classList.remove('error');
+      if (cb && !cb.checked) {
+        hadUnchecked = true;
+        cb.checked = true;
+        cb.classList.add('auto-checked');
+        setTimeout(() => cb.classList.remove('auto-checked'), 700);
+      }
     });
-
-    if (!valid) Toast.error('Champs requis ou conditions non acceptées');
-    return valid;
+    // Petite pause visuelle si des cases ont été auto-cochées
+    if (hadUnchecked) await new Promise(r => setTimeout(r, 480));
   }
 
   async function _submit() {
     const form = document.getElementById('checkoutDrawerForm');
+    // Les conditions sont acceptées implicitement au clic — auto-coche si besoin
+    await _autoAcceptConsent(form);
     if (!_validate(form) || !Cart.canCheckout()) return;
 
     const btn     = document.getElementById('cdrSubmit');
