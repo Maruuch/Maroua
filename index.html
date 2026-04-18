@@ -1,1773 +1,891 @@
-/* ================================================================
-   MAROUA JEWELRY — Design éditorial luxe v2
-   Dark  : #080808 · #111 · gold #C9A455
-   Light : #FAF5EE · #F0E8D8 · caramel #B8793A · rose #A8586E
-================================================================ */
-
-/* ── TOKENS ─────────────────────────────────────────────────── */
-:root {
-  --serif: 'Cormorant Garamond', Georgia, serif;
-  --sans:  'Inter', system-ui, sans-serif;
-  --h:     72px;
-  --ease:  cubic-bezier(.4,0,.2,1);
-  --t:     .38s;
-  --r:     2px;
-}
-
-/* DARK (défaut) — warm ebony, pas de noir froid */
-[data-theme="dark"] {
-  --bg:        #181009;
-  --bg2:       #211510;
-  --surface:   #2A1C12;
-  --surface2:  #332318;
-  --border:    rgba(210,170,100,.12);
-  --border2:   rgba(210,170,100,.28);
-  --gold:      #D4AA62;
-  --gold-lt:   #EDD080;
-  --gold-dim:  rgba(212,170,98,.18);
-  --text:      #EDE6D4;
-  --text2:     #B09878;
-  --text3:     #705840;
-  --accent:    #D4AA62;
-  --accent2:   #9B7040;
-  --success:   #5C9E6E;
-  --error:     #C05050;
-}
-
-/* LIGHT */
-[data-theme="light"] {
-  --bg:        #FAF5EE;
-  --bg2:       #F4EDE0;
-  --surface:   #EDE4D5;
-  --surface2:  #E4D8C6;
-  --border:    rgba(140,90,50,.15);
-  --border2:   rgba(140,90,50,.3);
-  --gold:      #9A6230;
-  --gold-lt:   #C4864A;
-  --gold-dim:  rgba(154,98,48,.12);
-  --text:      #1C1208;
-  --text2:     #6B4E30;
-  --text3:     #A08060;
-  --accent:    #A8586E;
-  --accent2:   #7A3A50;
-  --success:   #3A7A52;
-  --error:     #A03030;
-}
-
-/* ── RESET ───────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  font-size: 15px;
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  transition: background var(--t) var(--ease), color var(--t) var(--ease);
-}
-a { color: inherit; text-decoration: none; }
-button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
-input, textarea { font: inherit; color: inherit; }
-img { display: block; max-width: 100%; }
-
-/* ── LOADER — splash cinématique ────────────────────────────── */
-#loader {
-  position: fixed; inset: 0;
-  background: #16100A;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  z-index: 9999; overflow: hidden;
-  transition: opacity 1s var(--ease), visibility 1s;
-}
-#loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-/* Lueur ambiante */
-.loader-glow {
-  position: absolute; border-radius: 50%; pointer-events: none;
-  width: 520px; height: 520px;
-  background: radial-gradient(circle, rgba(212,170,98,.06) 0%, transparent 70%);
-  animation: loaderPulse 4s ease-in-out infinite;
-}
-.loader-glow-2 {
-  width: 260px; height: 260px;
-  background: radial-gradient(circle, rgba(212,170,98,.11) 0%, transparent 70%);
-  animation-delay: .9s;
-}
-@keyframes loaderPulse {
-  0%,100% { transform: scale(.88); opacity: .6; }
-  50%      { transform: scale(1.12); opacity: 1; }
-}
-
-/* Nom de marque */
-.loader-emblem {
-  position: relative; z-index: 1;
-  display: flex; flex-direction: column; align-items: center; gap: .5rem;
-  opacity: 0;
-  animation: loaderUp 1s ease .3s forwards;
-}
-.loader-brand {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 3.2rem; font-weight: 400;
-  letter-spacing: .55em; padding-right: .55em;
-  color: #EDE2CE;
-}
-.loader-sub {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1rem; font-style: italic; font-weight: 300;
-  letter-spacing: .42em; padding-right: .42em;
-  color: #D4AA62;
-}
-
-/* Tagline */
-.loader-tagline {
-  position: relative; z-index: 1;
-  margin-top: 2.5rem;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1rem; font-style: italic; font-weight: 300;
-  letter-spacing: .2em;
-  color: rgba(212,170,98,.5);
-  opacity: 0;
-  animation: loaderUp .6s ease 1s forwards;
-}
-
-/* Barre de progression — 3 secondes exactes */
-.loader-progress {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 2px; background: rgba(201,164,85,.07);
-}
-.loader-progress-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg,
-    transparent 0%, #A07830 15%, #D4AA62 45%,
-    #EDD080 55%, #D4AA62 70%, #A07830 85%, transparent 100%);
-  animation: loaderBar 3s cubic-bezier(.25,.46,.45,.94) .05s forwards;
-}
-@keyframes loaderBar { to { width: 100%; } }
-@keyframes loaderUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeOsc {
-  0%,100% { opacity: .35; } 50% { opacity: 1; }
-}
-
-/* ── HEADER — inversé selon le thème ───────────────────────── */
-#header {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: var(--h); z-index: 100;
-  transition: background var(--t) var(--ease), box-shadow var(--t) var(--ease);
-}
-
-/* Mode sombre → header crème ivoire */
-[data-theme="dark"] #header {
-  background: rgba(238,226,205,.97);
-  backdrop-filter: blur(24px) saturate(130%);
-  border-bottom: 1px solid rgba(170,130,70,.14);
-  box-shadow: 0 2px 20px rgba(0,0,0,.08);
-}
-
-/* Mode clair → header brun profond */
-[data-theme="light"] #header {
-  background: rgba(20,12,6,.96);
-  backdrop-filter: blur(24px) saturate(140%);
-  border-bottom: 1px solid rgba(210,170,98,.14);
-  box-shadow: 0 2px 20px rgba(0,0,0,.18);
-}
-
-.header-inner {
-  max-width: 1340px; margin: 0 auto;
-  height: 100%; padding: 0 2rem;
-  display: flex; align-items: center; justify-content: space-between;
-}
-
-/* Logo */
-.logo {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 0; line-height: 1;
-  transition: opacity var(--t);
-}
-.logo:hover { opacity: .6; }
-.logo-name {
-  font-family: var(--serif);
-  font-size: 1.25rem; font-weight: 500;
-  letter-spacing: .32em; display: block;
-  transition: color var(--t);
-}
-[data-theme="dark"]  .logo-name { color: #1E1208; }
-[data-theme="light"] .logo-name { color: #D4AA62; }
-.logo-jewelry {
-  font-family: var(--serif);
-  font-size: .72rem; font-style: italic; font-weight: 300;
-  letter-spacing: .22em; display: block; margin-top: 1px;
-  transition: color var(--t);
-}
-[data-theme="dark"]  .logo-jewelry { color: #8A6540; }
-[data-theme="light"] .logo-jewelry { color: #907050; }
-
-/* Nav toggle */
-.nav-toggle {
-  display: flex; flex-direction: column; gap: 5px; padding: 8px;
-  transition: opacity var(--t);
-}
-.nav-toggle:hover { opacity: .4; }
-.nav-toggle span {
-  display: block; height: 1px;
-  transition: width var(--t) var(--ease), transform var(--t) var(--ease),
-              opacity var(--t), background var(--t);
-}
-[data-theme="dark"]  .nav-toggle span { background: #1E1208; }
-[data-theme="light"] .nav-toggle span { background: #EDE6D4; }
-.nav-toggle span:nth-child(1) { width: 22px; }
-.nav-toggle span:nth-child(2) { width: 16px; }
-.nav-toggle span:nth-child(3) { width: 22px; }
-.nav-toggle.open span:nth-child(1) { width: 22px; transform: translateY(6px)  rotate(45deg);  }
-.nav-toggle.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.nav-toggle.open span:nth-child(3) { width: 22px; transform: translateY(-6px) rotate(-45deg); }
-
-.header-right { display: flex; align-items: center; gap: 1rem; }
-
-/* Theme toggle */
-.theme-toggle {
-  width: 38px; height: 38px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; font-size: 1rem;
-  transition: border-color var(--t), color var(--t), transform var(--t);
-}
-[data-theme="dark"]  .theme-toggle { border: 1px solid rgba(30,18,8,.16); color: #8A6540; }
-[data-theme="light"] .theme-toggle { border: 1px solid rgba(237,230,212,.16); color: #907050; }
-.theme-toggle:hover { transform: rotate(180deg); }
-[data-theme="dark"]  .theme-toggle:hover { border-color: rgba(30,18,8,.5); color: #1E1208; }
-[data-theme="light"] .theme-toggle:hover { border-color: #D4AA62; color: #D4AA62; }
-[data-theme="dark"]  .theme-icon-light { display: none; }
-[data-theme="light"] .theme-icon-dark  { display: none; }
-
-/* Cart btn */
-.cart-btn { position: relative; padding: 8px; }
-.cart-btn svg { width: 22px; height: 22px; transition: stroke var(--t); }
-[data-theme="dark"]  .cart-btn svg { stroke: #1E1208; }
-[data-theme="light"] .cart-btn svg { stroke: #EDE6D4; }
-[data-theme="dark"]  .cart-btn:hover svg { stroke: #9A7030; }
-[data-theme="light"] .cart-btn:hover svg { stroke: #D4AA62; }
-.cart-count {
-  position: absolute; top: 0; right: 0;
-  width: 17px; height: 17px;
-  background: var(--accent); color: #fff;
-  font-size: 9px; font-weight: 600;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transform: scale(0);
-  transition: opacity var(--t), transform var(--t);
-}
-.cart-count.visible { opacity: 1; transform: scale(1); }
-
-/* ── MOBILE NAV ─────────────────────────────────────────────── */
-#mobileNav {
-  position: fixed; top: 0; left: 0;
-  width: min(310px, 88vw); height: 100vh;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  z-index: 200;
-  transform: translateX(-100%);
-  transition: transform var(--t) var(--ease);
-  padding: 2rem;
-  display: flex; flex-direction: column;
-}
-#mobileNav.open { transform: translateX(0); }
-.nav-logo {
-  display: flex; flex-direction: column; align-items: flex-start;
-  padding: calc(var(--h) - 1rem) 0 2rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2rem;
-}
-.nav-logo .logo-name { font-size: 1.6rem; letter-spacing: .3em; }
-.nav-logo .logo-jewelry { font-size: .9rem; letter-spacing: .2em; }
-.nav-links { display: flex; flex-direction: column; flex: 1; }
-.nav-links a {
-  padding: .9rem 0;
-  border-bottom: 1px solid var(--border);
-  font-family: var(--serif); font-size: 1.25rem; font-weight: 300;
-  letter-spacing: .04em; color: var(--text2);
-  transition: color var(--t), padding-left var(--t);
-}
-.nav-links a:hover { color: var(--gold); padding-left: .6rem; }
-.nav-footer {
-  font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--text3); padding-top: 2rem;
-}
-#navOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.65);
-  z-index: 150; opacity: 0; visibility: hidden;
-  transition: opacity var(--t), visibility var(--t);
-}
-#navOverlay.open { opacity: 1; visibility: visible; }
-
-/* ── PAGES ──────────────────────────────────────────────────── */
-.page { display: none; min-height: 100vh; padding-top: var(--h); }
-.page.active { display: block; }
-.container { max-width: 1340px; margin: 0 auto; padding: 0 2rem; }
-
-/* ── HERO ───────────────────────────────────────────────────── */
-.hero {
-  position: relative;
-  min-height: calc(100vh - var(--h));
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  overflow: hidden;
-  text-align: center;
-}
-.hero-bg {
-  position: absolute; inset: 0; pointer-events: none;
-}
-.hero-orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(100px); opacity: 0;
-  animation: orbFloat 10s ease-in-out infinite;
-}
-[data-theme="dark"] .hero-orb { opacity: .1; }
-[data-theme="light"] .hero-orb { opacity: .18; }
-.orb-1 {
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, #C9A455, transparent 65%);
-  top: -20%; left: -15%; animation-delay: 0s;
-}
-.orb-2 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, #A8586E, transparent 65%);
-  bottom: -10%; right: -10%; animation-delay: -5s;
-}
-.orb-3 {
-  width: 350px; height: 350px;
-  background: radial-gradient(circle, #5B8A6E, transparent 65%);
-  top: 40%; left: 50%; animation-delay: -2.5s;
-}
-@keyframes orbFloat {
-  0%,100% { transform: translate(0,0) scale(1); }
-  33%      { transform: translate(25px,-30px) scale(1.06); }
-  66%      { transform: translate(-15px,20px) scale(.96); }
-}
-.hero-particles { position: absolute; inset: 0; pointer-events: none; }
-.particle {
-  position: absolute; border-radius: 50%; background: var(--gold);
-  opacity: 0; animation: particleRise linear infinite;
-}
-@keyframes particleRise {
-  0%   { opacity: 0; transform: translateY(0) scale(0); }
-  15%  { opacity: .7; }
-  85%  { opacity: .2; }
-  100% { opacity: 0; transform: translateY(-220px) scale(1.5); }
-}
-
-.hero-content {
-  position: relative; z-index: 2;
-  max-width: 760px; padding: 2rem 1.5rem;
-}
-.hero-line {
-  width: 40px; height: 1px;
-  background: var(--gold); margin: 0 auto 1.8rem;
-  transform-origin: center;
-}
-.hero-eyebrow {
-  font-size: .72rem; letter-spacing: .3em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 1.6rem;
-}
-.hero-title {
-  font-family: var(--serif);
-  font-size: clamp(3.2rem, 8vw, 6rem);
-  font-weight: 300; line-height: 1.05;
-  margin-bottom: 1.8rem;
-}
-.hero-title em {
-  font-style: italic; display: block;
-  background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 40%, var(--accent) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.hero-title span { display: block; }
-.hero-desc {
-  font-size: .9rem; line-height: 1.85;
-  color: var(--text2); max-width: 500px; margin: 0 auto 2.5rem;
-}
-.hero-cta { display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
-
-/* Marquee */
-.hero-marquee {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  overflow: hidden;
-  border-top: 1px solid var(--border);
-  padding: .85rem 0;
-  background: var(--bg2);
-}
-.marquee-track {
-  display: flex; gap: 3rem;
-  width: max-content;
-  animation: marquee 24s linear infinite;
-  white-space: nowrap;
-}
-.marquee-track span,
-.marquee-track a {
-  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--text3); white-space: nowrap; text-decoration: none;
-}
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-/* ── BUTTONS ────────────────────────────────────────────────── */
-.btn-primary {
-  position: relative; overflow: hidden;
-  display: inline-flex; align-items: center; gap: .6rem;
-  padding: .9rem 2.4rem;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  font-size: .73rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 500;
-  transition: color var(--t) var(--ease), box-shadow var(--t);
-}
-.btn-primary::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--gold);
-  transform: translateX(-101%);
-  transition: transform var(--t) var(--ease);
-}
-.btn-primary:hover::before  { transform: translateX(0); }
-.btn-primary:hover { color: var(--bg); box-shadow: 0 8px 30px var(--gold-dim); }
-.btn-primary > * { position: relative; z-index: 1; }
-.btn-primary svg { width: 16px; height: 16px; }
-.btn-primary.btn-full { width: 100%; justify-content: center; padding: 1.05rem; }
-
-.btn-ghost {
-  font-size: .82rem; color: var(--text2); letter-spacing: .05em;
-  transition: color var(--t);
-}
-.btn-ghost:hover { color: var(--gold); }
-
-.btn-text {
-  font-size: .78rem; letter-spacing: .1em;
-  color: var(--text2); font-weight: 400;
-  transition: color var(--t);
-  white-space: nowrap;
-}
-.btn-text:hover { color: var(--gold); }
-
-/* ── SECTIONS ───────────────────────────────────────────────── */
-.section-cats, .section-featured { padding: 7rem 0; }
-.section-promise {
-  padding: 5rem 0;
-  border-top: 1px solid var(--border);
-  background: var(--bg2);
-}
-
-.section-head { margin-bottom: 3.5rem; }
-.section-head-row {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 3rem; gap: 1rem;
-}
-.section-label {
-  display: block; font-size: .65rem; letter-spacing: .3em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: .6rem;
-}
-.section-title {
-  font-family: var(--serif);
-  font-size: clamp(2rem, 3.5vw, 2.8rem);
-  font-weight: 300; color: var(--text);
-}
-
-/* ── CAT CARDS ──────────────────────────────────────────────── */
-.cats-grid {
-  display: grid; grid-template-columns: repeat(5,1fr); gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-}
-.cat-card {
-  background-color: var(--bg);
-  background-size: cover; background-position: center; background-repeat: no-repeat;
-  padding: 2.5rem 1.8rem;
-  cursor: pointer;
-  display: flex; flex-direction: column; justify-content: flex-end; gap: .9rem;
-  transition: background-color var(--t) var(--ease);
-  position: relative; overflow: hidden;
-  min-height: 270px;
-}
-
-/* Image selon le thème — custom properties injectées en inline */
-[data-theme="dark"]  .cat-card { background-image: var(--img-d, none); }
-[data-theme="light"] .cat-card { background-image: var(--img-l, none); }
-
-/* Overlay gradient bas → haut : lisibilité du texte sur photo */
-.cat-card::before {
-  content: ''; position: absolute; inset: 0; z-index: 0;
-  background: linear-gradient(to top,
-    rgba(0,0,0,.82) 0%, rgba(0,0,0,.38) 45%, rgba(0,0,0,.08) 100%);
-  transition: opacity var(--t) var(--ease);
-}
-.cat-card:hover::before { opacity: .85; }
-
-/* Ligne dorée bas au hover */
-.cat-card::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: var(--gold); z-index: 2;
-  transform: scaleX(0); transform-origin: left;
-  transition: transform var(--t) var(--ease);
-}
-.cat-card:hover::after { transform: scaleX(1); }
-
-/* Tout le contenu au-dessus de l'overlay */
-.cat-sym, .cat-body, .cat-arrow { position: relative; z-index: 1; }
-
-.cat-sym {
-  font-size: 2rem; color: var(--gold);
-  transition: transform var(--t) var(--ease);
-  text-shadow: 0 2px 8px rgba(0,0,0,.4);
-}
-.cat-card:hover .cat-sym { transform: scale(1.15) rotate(-5deg); }
-.cat-body h3 {
-  font-family: var(--serif); font-size: 1.2rem; font-weight: 400;
-  margin-bottom: .3rem;
-  text-shadow: 0 1px 6px rgba(0,0,0,.5);
-}
-.cat-body p {
-  color: var(--text2); font-size: .78rem; line-height: 1.5;
-  text-shadow: 0 1px 4px rgba(0,0,0,.4);
-}
-.cat-arrow {
-  display: block; color: var(--gold); font-size: 1rem;
-  transition: transform var(--t) var(--ease);
-  text-shadow: 0 1px 4px rgba(0,0,0,.4);
-}
-.cat-card:hover .cat-arrow { transform: translateX(6px); }
-
-/* ── PRODUCT GRID ───────────────────────────────────────────── */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 2px; background: var(--border);
-}
-
-.product-card {
-  background: var(--bg);
-  cursor: pointer; overflow: hidden;
-  transition: background var(--t) var(--ease);
-  animation: fadeUp .5s var(--ease) both;
-}
-.product-card:hover { background: var(--surface); }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.card-image {
-  aspect-ratio: 3/4; overflow: hidden; position: relative;
-}
-.card-image img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform .7s var(--ease);
-}
-.product-card:hover .card-image img { transform: scale(1.06); }
-
-.card-placeholder {
-  width: 100%; height: 100%;
-  display: none; align-items: center; justify-content: center;
-  font-size: 3.5rem; color: var(--border2);
-  background: var(--surface2);
-}
-
-.card-badge {
-  position: absolute; top: 1rem; left: 1rem;
-  padding: .3rem .75rem;
-  background: var(--gold); color: var(--bg);
-  font-size: .6rem; letter-spacing: .15em; text-transform: uppercase; font-weight: 600;
-}
-.card-out {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,.55);
-  display: flex; align-items: center; justify-content: center;
-  font-size: .7rem; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--text3);
-}
-[data-theme="light"] .card-out { background: rgba(250,245,238,.7); }
-
-.card-action {
-  position: absolute; inset-x: 0; bottom: 0;
-  padding: 1.2rem 1rem 1rem;
-  background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 100%);
-  transform: translateY(100%);
-  transition: transform var(--t) var(--ease);
-  z-index: 4;
-}
-[data-theme="light"] .card-action {
-  background: linear-gradient(to top, rgba(28,18,8,.8) 0%, transparent 100%);
-}
-.product-card:hover .card-action { transform: translateY(0); }
-.card-add {
-  width: 100%; padding: .65rem;
-  background: var(--gold); color: var(--bg);
-  font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
-  transition: background var(--t);
-}
-.card-add:hover { background: var(--gold-lt); }
-.card-add:disabled { opacity: .5; cursor: not-allowed; background: var(--text3); }
-
-.card-body { padding: 1.2rem; }
-.card-type {
-  font-size: .62rem; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: .4rem;
-}
-.card-name {
-  font-family: var(--serif); font-size: 1.1rem; font-weight: 400;
-  margin-bottom: .6rem; line-height: 1.3;
-}
-.card-footer { display: flex; align-items: baseline; justify-content: space-between; }
-.card-price { font-size: .95rem; font-weight: 500; }
-.card-stock-low {
-  font-size: .68rem; color: #D4882A;
-  letter-spacing: .05em;
-}
-
-/* ── PRODUCT DETAIL ─────────────────────────────────────────── */
-.product-detail {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 5rem; padding: 3rem 0 7rem;
-  align-items: start;
-}
-.detail-main-img {
-  aspect-ratio: 3/4; overflow: hidden;
-  border: 1px solid var(--border);
-  position: relative;
-}
-.detail-main-img img { width: 100%; height: 100%; object-fit: cover; }
-
-/* ── Carousel zones ─────────────────────────────────────────── */
-.gallery-zone {
-  position: absolute; top: 0; width: 50%; height: 100%;
-  cursor: pointer; z-index: 3;
-  display: flex; align-items: center;
-  opacity: 0; transition: opacity .3s var(--ease);
-}
-.detail-main-img:hover .gallery-zone,
-.card-image:hover .gallery-zone { opacity: 1; }
-
-/* Detail page — gradient léger */
-.gallery-zone-prev {
-  left: 0; justify-content: flex-start;
-  background: linear-gradient(to right, rgba(0,0,0,.22) 0%, transparent 100%);
-}
-.gallery-zone-next {
-  right: 0; justify-content: flex-end;
-  background: linear-gradient(to left, rgba(0,0,0,.22) 0%, transparent 100%);
-}
-.gallery-zone-prev::after {
-  content: '‹'; color: rgba(255,255,255,.85);
-  font-size: 2.4rem; line-height: 1;
-  padding-left: .9rem;
-  text-shadow: 0 1px 6px rgba(0,0,0,.5);
-  transition: transform .2s var(--ease), color .2s;
-}
-.gallery-zone-next::after {
-  content: '›'; color: rgba(255,255,255,.85);
-  font-size: 2.4rem; line-height: 1;
-  padding-right: .9rem;
-  text-shadow: 0 1px 6px rgba(0,0,0,.5);
-  transition: transform .2s var(--ease), color .2s;
-}
-.gallery-zone-prev:hover::after { transform: translateX(-3px); color: #fff; }
-.gallery-zone-next:hover::after { transform: translateX(3px);  color: #fff; }
-
-/* Card variant — filtre grisé plus marqué, sans dots */
-.card-gallery-zone.gallery-zone-prev {
-  background: linear-gradient(to right, rgba(10,10,10,.52) 0%, rgba(10,10,10,.08) 100%);
-}
-.card-gallery-zone.gallery-zone-next {
-  background: linear-gradient(to left, rgba(10,10,10,.52) 0%, rgba(10,10,10,.08) 100%);
-}
-.card-gallery-zone::after { font-size: 1.9rem; }
-.card-gallery-zone.gallery-zone-prev::after { padding-left: .6rem; }
-.card-gallery-zone.gallery-zone-next::after { padding-right: .6rem; }
-
-.gallery-dots {
-  position: absolute; bottom: .7rem; left: 50%; transform: translateX(-50%);
-  display: flex; gap: .45rem; z-index: 3;
-}
-.gallery-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: rgba(255,255,255,.35);
-  transition: background .25s, transform .25s;
-  cursor: pointer;
-}
-.gallery-dot:hover { background: rgba(255,255,255,.7); }
-.gallery-dot.active { background: var(--gold); transform: scale(1.3); }
-
-.detail-info { padding-top: .5rem; }
-.detail-type {
-  font-size: .68rem; letter-spacing: .28em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 1.2rem;
-}
-.detail-name {
-  font-family: var(--serif);
-  font-size: clamp(2rem, 3.5vw, 3rem);
-  font-weight: 300; line-height: 1.1;
-  margin-bottom: .8rem;
-}
-.detail-sym { font-size: 1.8rem; color: var(--border2); margin-bottom: 1.5rem; }
-.detail-desc-short {
-  font-size: .9rem; line-height: 1.9;
-  color: var(--text2); margin-bottom: 2rem;
-}
-.detail-price {
-  font-family: var(--serif); font-size: 2.4rem; font-weight: 300;
-  color: var(--gold); margin-bottom: .4rem;
-}
-.detail-price span { font-size: 1rem; font-family: var(--sans); font-weight: 400; }
-.detail-etat {
-  font-size: .68rem; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--text3); margin-bottom: 2rem;
-  padding-bottom: 2rem; border-bottom: 1px solid var(--border);
-}
-.detail-stock-msg {
-  font-size: .78rem; margin-bottom: 1.5rem; letter-spacing: .05em;
-}
-.detail-stock-msg.low { color: #D4882A; }
-.detail-stock-msg.out { color: var(--error); }
-
-.detail-qty {
-  display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
-}
-.qty-label { font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text2); }
-.qty-controls { display: flex; align-items: center; gap: .8rem; }
-.qty-btn {
-  width: 38px; height: 38px; border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem;
-  transition: border-color var(--t), color var(--t);
-}
-.qty-btn:hover { border-color: var(--gold); color: var(--gold); }
-.qty-val { font-family: var(--serif); font-size: 1.2rem; min-width: 2rem; text-align: center; }
-
-.detail-desc-full {
-  margin-top: 2.5rem; padding-top: 2.5rem;
-  border-top: 1px solid var(--border);
-  font-size: .88rem; line-height: 1.95; color: var(--text2);
-}
-
-/* ── CATALOG PAGE ───────────────────────────────────────────── */
-.catalog-hero {
-  padding: 3.5rem 0 2.5rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 3rem;
-}
-.page-title {
-  font-family: var(--serif); font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 300; margin-bottom: 1.8rem;
-}
-.filters { display: flex; gap: .5rem; flex-wrap: wrap; }
-.filter-btn {
-  padding: .45rem 1.2rem;
-  border: 1px solid var(--border);
-  font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--text2);
-  transition: border-color var(--t), color var(--t), background var(--t);
-}
-.filter-btn:hover { border-color: var(--border2); color: var(--text); }
-.filter-btn.active {
-  border-color: var(--gold); color: var(--gold);
-  background: var(--gold-dim);
-}
-
-/* Empty state */
-.empty-state {
-  padding: 6rem 0; text-align: center; color: var(--text2);
-}
-.empty-sym { display: block; font-size: 3rem; color: var(--border2); margin-bottom: 1rem; }
-
-/* ── PROMISE ────────────────────────────────────────────────── */
-.promise-grid {
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 0;
-  border: 1px solid var(--border);
-}
-.promise-item {
-  padding: 3rem 2rem;
-  border-right: 1px solid var(--border);
-  position: relative;
-}
-.promise-item:last-child { border-right: none; }
-.promise-num {
-  font-family: var(--serif); font-size: 2.8rem; font-weight: 300;
-  color: var(--border2); margin-bottom: 1rem; line-height: 1;
-}
-.promise-item h4 {
-  font-family: var(--serif); font-size: 1.15rem; font-weight: 400;
-  margin-bottom: .5rem;
-}
-.promise-item p { font-size: .82rem; color: var(--text2); line-height: 1.7; }
-
-/* ── BACK BTN ───────────────────────────────────────────────── */
-.back-btn {
-  display: inline-flex; align-items: center;
-  margin: 2rem 0 0;
-  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--text2);
-  transition: color var(--t), gap var(--t);
-  gap: .4rem;
-}
-.back-btn:hover { color: var(--gold); gap: .6rem; }
-
-/* ── CART DRAWER ────────────────────────────────────────────── */
-#cartOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.6);
-  z-index: 300; opacity: 0; visibility: hidden;
-  transition: opacity var(--t), visibility var(--t);
-}
-#cartOverlay.open { opacity: 1; visibility: visible; }
-
-#cartDrawer {
-  position: fixed; top: 0; right: 0;
-  width: min(440px, 100vw); height: 100vh;
-  background: var(--surface);
-  border-left: 1px solid var(--border);
-  z-index: 400; display: flex; flex-direction: column;
-  transform: translateX(100%);
-  transition: transform var(--t) var(--ease);
-}
-#cartDrawer.open { transform: translateX(0); }
-
-.drawer-header {
-  flex-shrink: 0; padding: 1.8rem 2rem;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.drawer-header h2 {
-  font-family: var(--serif); font-size: 1.5rem; font-weight: 300;
-  letter-spacing: .1em;
-}
-.drawer-close {
-  font-size: 1rem; color: var(--text2);
-  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border);
-  transition: border-color var(--t), color var(--t);
-}
-.drawer-close:hover { border-color: var(--gold); color: var(--text); }
-
-.drawer-items {
-  flex: 1; overflow-y: auto; padding: 1.5rem 2rem;
-}
-.drawer-items::-webkit-scrollbar { width: 3px; }
-.drawer-items::-webkit-scrollbar-thumb { background: var(--border); }
-
-.drawer-empty {
-  height: 100%; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 1rem;
-  font-family: var(--serif); font-size: 1.2rem; color: var(--text2);
-}
-.drawer-empty::before { content: '◈'; font-size: 2rem; color: var(--border2); }
-
-.cart-item {
-  display: flex; gap: 1.2rem; align-items: flex-start;
-  padding: 1.2rem 0; border-bottom: 1px solid var(--border);
-  animation: fadeUp .3s var(--ease);
-}
-.cart-item-img {
-  width: 68px; height: 85px; flex-shrink: 0;
-  background: var(--surface2); overflow: hidden;
-}
-.cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
-.cart-item-img .sym {
-  width: 100%; height: 100%; display: flex;
-  align-items: center; justify-content: center;
-  color: var(--text3); font-size: 1.3rem;
-}
-.cart-item-info { flex: 1; min-width: 0; }
-.cart-item-name {
-  font-family: var(--serif); font-size: 1rem; font-weight: 400;
-  margin-bottom: .25rem;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.cart-item-price { color: var(--gold); font-size: .88rem; margin-bottom: .7rem; }
-.cart-item-qty { display: flex; align-items: center; gap: .6rem; }
-.cart-item-qty button {
-  width: 28px; height: 28px; border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center; font-size: 1rem;
-  transition: border-color var(--t);
-}
-.cart-item-qty button:hover { border-color: var(--gold); }
-.cart-item-qty span { font-size: .88rem; min-width: 1.5rem; text-align: center; }
-.cart-item-remove {
-  font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text3); margin-top: .3rem; display: block;
-  transition: color var(--t);
-}
-.cart-item-remove:hover { color: var(--error); }
-
-.drawer-footer {
-  flex-shrink: 0; padding: 1.8rem 2rem;
-  border-top: 1px solid var(--border);
-}
-.drawer-total-row {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding: .35rem 0; font-size: .85rem; color: var(--text2);
-}
-.drawer-total-row.main {
-  margin-top: .8rem; padding-top: .8rem;
-  border-top: 1px solid var(--border);
-  color: var(--text);
-}
-.drawer-total-row.main span:first-child { font-family: var(--serif); font-size: 1.1rem; }
-.drawer-total-row.main span:last-child { font-family: var(--serif); font-size: 1.3rem; color: var(--gold); }
-.drawer-note {
-  font-size: .7rem; letter-spacing: .08em; color: var(--text3);
-  margin: .6rem 0 1.2rem;
-}
-
-/* ── CHECKOUT ───────────────────────────────────────────────── */
-.checkout-container { padding-bottom: 7rem; }
-.checkout-layout {
-  display: grid; grid-template-columns: 1fr 380px;
-  gap: 4rem; margin-top: 2.5rem;
-}
-.form-section { margin-bottom: 3rem; }
-.form-section-title {
-  display: flex; align-items: center; gap: 1rem;
-  font-family: var(--serif); font-size: 1.15rem; font-weight: 400;
-  margin-bottom: 2rem; padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
-}
-.form-step {
-  font-size: .65rem; letter-spacing: .2em;
-  color: var(--gold); font-family: var(--sans);
-}
-.form-group { display: flex; flex-direction: column; gap: .45rem; margin-bottom: 1.2rem; }
-.form-group label {
-  font-size: .67rem; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--text2);
-}
-.form-group input,
-.form-group textarea {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: .85rem 1.1rem;
-  outline: none; resize: vertical;
-  transition: border-color var(--t);
-}
-.form-group input:focus,
-.form-group textarea:focus { border-color: var(--gold); }
-.form-group input.error { border-color: var(--error); }
-.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
-.checkout-summary {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 2rem;
-  height: fit-content;
-  position: sticky; top: calc(var(--h) + 2rem);
-}
-.summary-title {
-  font-family: var(--serif); font-size: 1.2rem; font-weight: 400;
-  margin-bottom: 1.5rem; padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
-}
-.summary-item {
-  display: flex; justify-content: space-between;
-  padding: .75rem 0; border-bottom: 1px solid var(--border);
-  gap: .8rem;
-}
-.summary-item-name { font-size: .88rem; flex: 1; }
-.summary-item-qty { font-size: .78rem; color: var(--text2); }
-.summary-item-price { color: var(--gold); font-size: .88rem; white-space: nowrap; }
-.summary-totals { margin-top: 1.5rem; }
-.summary-row {
-  display: flex; justify-content: space-between;
-  padding: .4rem 0; font-size: .85rem; color: var(--text2);
-}
-.summary-row.total {
-  margin-top: 1rem; padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  color: var(--text);
-}
-.summary-row.total span:first-child { font-family: var(--serif); font-size: 1.05rem; }
-.summary-row.total span:last-child { color: var(--gold); font-family: var(--serif); font-size: 1.15rem; }
-
-/* ── SUCCESS ────────────────────────────────────────────────── */
-.success-wrap {
-  min-height: calc(100vh - var(--h));
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center; padding: 2rem; gap: 1.5rem;
-}
-.success-emblem {
-  display: flex; flex-direction: column; align-items: center; gap: .1rem;
-  margin-bottom: .5rem;
-}
-.success-emblem span {
-  font-family: var(--serif); font-size: 1.5rem; font-weight: 500;
-  letter-spacing: .3em; color: var(--gold);
-}
-.success-emblem em {
-  font-family: var(--serif); font-style: italic; font-size: .85rem;
-  letter-spacing: .2em; color: var(--text2);
-}
-.success-check {
-  font-size: 2.5rem; color: var(--gold);
-  animation: fadeOsc 2.5s ease-in-out infinite;
-}
-.success-wrap h1 { font-family: var(--serif); font-size: 2.5rem; font-weight: 300; }
-.success-ref { font-family: var(--serif); font-size: 1.1rem; color: var(--gold); }
-.success-msg { font-size: .85rem; color: var(--text2); max-width: 380px; line-height: 1.8; }
-
-/* ── TOAST ──────────────────────────────────────────────────── */
-#toastContainer {
-  position: fixed; bottom: 2rem; right: 2rem;
-  display: flex; flex-direction: column; gap: .6rem;
-  z-index: 9000; pointer-events: none;
-}
-.toast {
-  display: flex; align-items: center; gap: .8rem;
-  padding: .9rem 1.3rem;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--gold);
-  min-width: 250px; max-width: 330px;
-  font-size: .82rem;
-  animation: toastIn .35s var(--ease);
-  transition: opacity .3s, transform .3s;
-  pointer-events: all;
-}
-.toast.success { border-left-color: var(--success); }
-.toast.error   { border-left-color: var(--error); }
-.toast.removing { opacity: 0; transform: translateX(16px); }
-.toast-icon { font-size: .9rem; flex-shrink: 0; color: var(--gold); }
-.toast.success .toast-icon { color: var(--success); }
-.toast.error   .toast-icon { color: var(--error); }
-@keyframes toastIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-/* ── CHECKOUT DRAWER ─────────────────────────────────────────── */
-#cdrOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.62);
-  z-index: 398; opacity: 0; visibility: hidden;
-  transition: opacity var(--t), visibility var(--t);
-}
-#cdrOverlay.open { opacity: 1; visibility: visible; }
-
-#checkoutDrawer {
-  position: fixed; top: 0; right: 0;
-  width: min(500px, 100vw); height: 100vh;
-  background: var(--surface);
-  border-left: 1px solid var(--border2);
-  z-index: 399;
-  display: flex; flex-direction: column;
-  transform: translateX(100%);
-  transition: transform var(--t) var(--ease);
-}
-#checkoutDrawer.open { transform: translateX(0); }
-
-.cdr-header {
-  flex-shrink: 0;
-  display: flex; align-items: center;
-  padding: 1.5rem 2rem 1.2rem;
-  border-bottom: 1px solid var(--border);
-  gap: .8rem;
-}
-.cdr-back {
-  font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--text3); white-space: nowrap;
-  transition: color var(--t);
-}
-.cdr-back:hover { color: var(--gold); }
-.cdr-title {
-  flex: 1; text-align: center;
-  font-family: var(--serif); font-size: 1.3rem; font-weight: 300;
-  letter-spacing: .14em;
-}
-
-.cdr-body {
-  flex: 1; overflow-y: auto;
-  padding: 1.5rem 2rem 0;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border2) transparent;
-}
-.cdr-body::-webkit-scrollbar { width: 3px; }
-.cdr-body::-webkit-scrollbar-thumb { background: var(--border2); }
-
-/* Récapitulatif compact */
-.cdr-summary {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  padding: 1rem 1.2rem;
-  margin-bottom: 2rem;
-}
-.cdr-row {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding: .28rem 0; font-size: .82rem; color: var(--text2);
-}
-.cdr-row span:first-child { flex: 1; padding-right: 1rem; }
-.cdr-row.cdr-total {
-  margin-top: .65rem; padding-top: .75rem;
-  border-top: 1px solid var(--border);
-  font-family: var(--serif); font-size: 1rem; color: var(--text);
-}
-.cdr-row.cdr-total span:last-child { color: var(--gold); font-size: 1.12rem; }
-
-/* Footer sticky */
-.cdr-footer {
-  flex-shrink: 0;
-  padding: 1.2rem 2rem 2rem;
-  border-top: 1px solid var(--border);
-}
-.cdr-disclaimer {
-  margin-top: .9rem;
-  font-size: .7rem; line-height: 1.65;
-  color: var(--text3); text-align: center;
-}
-.cdr-disclaimer a {
-  color: var(--text3);
-  text-decoration: underline; text-underline-offset: 2px;
-  transition: color var(--t);
-}
-.cdr-disclaimer a:hover { color: var(--gold); }
-
-/* ── CONSENTEMENTS (checkout drawer) ────────────────────────── */
-.cdr-consent {
-  border-top: 1px solid var(--border);
-  padding-top: 1.2rem;
-  margin-bottom: 1.5rem;
-}
-.consent-check {
-  display: flex; align-items: flex-start; gap: .75rem;
-  cursor: pointer; font-size: .81rem; color: var(--text2);
-  line-height: 1.55; padding: .45rem 0;
-  user-select: none;
-}
-.consent-check + .consent-check { border-top: 1px solid var(--border); }
-.consent-check input[type="checkbox"] {
-  appearance: none; -webkit-appearance: none;
-  width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;
-  border: 1px solid var(--border2); background: var(--bg2);
-  cursor: pointer; position: relative;
-  transition: border-color var(--t), background var(--t);
-}
-.consent-check input[type="checkbox"]:checked {
-  background: var(--gold); border-color: var(--gold);
-}
-.consent-check input[type="checkbox"]:checked::after {
-  content: ''; position: absolute; left: 4px; top: 1px;
-  width: 5px; height: 9px;
-  border: 2px solid #fff; border-top: none; border-left: none;
-  transform: rotate(40deg);
-}
-.consent-check input[type="checkbox"].error { border-color: var(--error) !important; }
-
-/* Animation quand la case est cochée automatiquement */
-.consent-check input[type="checkbox"].auto-checked {
-  animation: autoCheck .45s cubic-bezier(.34,1.56,.64,1) forwards;
-}
-@keyframes autoCheck {
-  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(212,170,98,.4); }
-  45%  { transform: scale(1.5); box-shadow: 0 0 0 6px rgba(212,170,98,.15); }
-  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(212,170,98,0); }
-}
-.consent-check a {
-  color: var(--gold);
-  text-decoration: underline; text-underline-offset: 2px;
-  transition: opacity var(--t);
-}
-.consent-check a:hover { opacity: .65; }
-
-/* ── LEGAL PANEL ─────────────────────────────────────────────── */
-#legalPanel {
-  position: fixed; inset: 0;
-  background: var(--bg);
-  z-index: 600;
-  display: flex; flex-direction: column;
-  transform: translateY(100%);
-  transition: transform var(--t) var(--ease);
-}
-#legalPanel.open { transform: translateY(0); }
-.lp-header {
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1.4rem 2rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-}
-.lp-header h2 {
-  font-family: var(--serif); font-size: 1.2rem; font-weight: 300;
-  letter-spacing: .1em;
-}
-.lp-body {
-  flex: 1; overflow-y: auto;
-  padding: 2rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border2) transparent;
-}
-.lp-body::-webkit-scrollbar { width: 3px; }
-.lp-body::-webkit-scrollbar-thumb { background: var(--border2); }
-
-/* ── PAGES LÉGALES ───────────────────────────────────────────── */
-.legal-page { padding-bottom: 7rem; }
-.legal-updated {
-  font-size: .76rem; color: var(--text3); letter-spacing: .08em;
-  margin-top: -.2rem; margin-bottom: 2rem;
-}
-.legal-content { max-width: 780px; margin: 2rem auto 0; }
-.legal-section {
-  margin-bottom: 2.8rem; padding-bottom: 2.8rem;
-  border-bottom: 1px solid var(--border);
-}
-.legal-section:last-child { border-bottom: none; }
-.legal-section h2 {
-  font-family: var(--serif); font-size: 1.2rem; font-weight: 400;
-  margin-bottom: 1rem; color: var(--gold); letter-spacing: .04em;
-}
-.legal-section p {
-  font-size: .88rem; line-height: 1.95; color: var(--text2);
-}
-.legal-section p + p { margin-top: .8rem; }
-.legal-section a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
-.legal-section strong { color: var(--text); font-weight: 500; }
-.legal-note {
-  font-size: .78rem; color: var(--text3); font-style: italic;
-  margin-top: 1.2rem; padding: .75rem 1rem;
-  border-left: 2px solid var(--border2); line-height: 1.8;
-}
-
-/* Grille délais de livraison */
-.delivery-grid {
-  display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 1.2rem; margin: 1.5rem 0;
-}
-.delivery-zone {
-  padding: 1.4rem 1.2rem;
-  border: 1px solid var(--border); background: var(--surface);
-}
-.delivery-zone h4 {
-  font-family: var(--serif); font-size: .95rem; font-weight: 400;
-  margin-bottom: .35rem;
-}
-.delivery-zone p {
-  font-size: .75rem; color: var(--text3);
-  line-height: 1.6; margin-bottom: .8rem;
-}
-.delivery-time {
-  font-family: var(--serif); font-size: 1.25rem; color: var(--gold);
-}
-
-/* Nav legal footer */
-.nav-legal {
-  margin-top: .6rem;
-  display: flex; gap: .5rem; align-items: center;
-  font-size: .65rem;
-}
-.nav-legal a {
-  color: var(--text3); letter-spacing: .08em;
-  transition: color var(--t);
-}
-.nav-legal a:hover { color: var(--gold); }
-.nav-legal span { color: var(--text3); }
-
-/* ── REVEAL ─────────────────────────────────────────────────── */
-.reveal {
-  opacity: 0; transform: translateY(22px);
-  transition: opacity .75s var(--ease), transform .75s var(--ease);
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
-
-/* ── HEADER icons supplémentaires ──────────────────────────── */
-.header-icon-btn {
-  width: 38px; height: 38px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  transition: border-color var(--t), transform var(--t);
-}
-.header-icon-btn svg { width: 20px; height: 20px; transition: stroke var(--t); }
-[data-theme="dark"]  .header-icon-btn svg { stroke: #1E1208; }
-[data-theme="light"] .header-icon-btn svg { stroke: #EDE6D4; }
-[data-theme="dark"]  .header-icon-btn:hover svg { stroke: #9A7030; }
-[data-theme="light"] .header-icon-btn:hover svg { stroke: #D4AA62; }
-.header-icon-btn:hover { transform: scale(1.08); }
-
-/* ── HEADER gradient transition ─────────────────────────────── */
-#header::after {
-  content: '';
-  position: absolute; left: 0; right: 0; top: 100%;
-  height: 80px; pointer-events: none;
-  transition: opacity var(--t);
-}
-[data-theme="dark"] #header::after {
-  background: linear-gradient(to bottom, rgba(24,16,9,.55) 0%, transparent 100%);
-}
-[data-theme="light"] #header::after {
-  background: linear-gradient(to bottom, rgba(250,245,238,.55) 0%, transparent 100%);
-}
-
-/* ── HERO SPLIT ─────────────────────────────────────────────── */
-.hero {
-  min-height: calc(100vh - var(--h));
-  display: flex; flex-direction: column;
-  position: relative; overflow: hidden;
-}
-.hero-split {
-  flex: 1;
-  display: grid; grid-template-columns: 1fr 1fr;
-  align-items: center;
-  max-width: 1340px; width: 100%; margin: 0 auto;
-  padding: 5rem 2rem 4rem;
-  gap: 4rem;
-  position: relative; z-index: 2;
-}
-.hero-left {
-  display: flex; flex-direction: column;
-  align-items: flex-start; text-align: left;
-}
-.hero-left .hero-line { margin: 0 0 1.8rem; }
-.hero-left .hero-desc { margin: 0 0 2.5rem; max-width: 480px; }
-.hero-left .hero-cta { justify-content: flex-start; }
-
-.hero-right {
-  display: flex; flex-direction: column; gap: 1.2rem;
-  align-items: stretch;
-}
-
-/* ── HERO CARDS ─────────────────────────────────────────────── */
-.hero-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; gap: 1.2rem;
-  padding: 1rem 1.4rem;
-  cursor: pointer;
-  transition: background var(--t) var(--ease), border-color var(--t), transform .3s var(--ease);
-  position: relative; overflow: hidden;
-}
-.hero-card:hover { background: var(--surface2); border-color: var(--border2); transform: translateX(4px); }
-.hero-card::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 2px; background: var(--gold);
-  transform: scaleY(0); transform-origin: bottom;
-  transition: transform var(--t) var(--ease);
-}
-.hero-card:hover::before { transform: scaleY(1); }
-.hero-card-label {
-  position: absolute; top: .6rem; right: .9rem;
-  font-size: .58rem; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--gold); opacity: .8;
-}
-.hero-card-img-wrap {
-  width: 70px; height: 88px; flex-shrink: 0;
-  background: var(--surface2); overflow: hidden; position: relative;
-}
-.hero-card-img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform .6s var(--ease);
-}
-.hero-card:hover .hero-card-img { transform: scale(1.07); }
-.hero-card-placeholder {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; color: var(--border2);
-}
-.hero-card-info {
-  display: flex; flex-direction: column; gap: .3rem; flex: 1;
-}
-.hero-card-name {
-  font-family: var(--serif); font-size: 1rem; font-weight: 400;
-  color: var(--text); line-height: 1.3;
-}
-.hero-card-price {
-  font-size: .82rem; color: var(--gold);
-}
-
-/* ── MARQUEE — liens cliquables ─────────────────────────────── */
-.marquee-item {
-  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--text3);
-  cursor: pointer;
-  transition: color var(--t);
-  white-space: nowrap;
-  text-decoration: none;
-}
-.marquee-item:hover { color: var(--gold); }
-.marquee-sep {
-  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--text3); white-space: nowrap;
-}
-
-/* ── GRILLE CATÉGORIES 5 cartes ─────────────────────────────── */
-/* Desktop : 3+2 asymétrique pour remplir proprement */
-.cats-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  grid-template-rows: auto auto;
-  gap: 1px;
-  background: var(--border);
-}
-.cats-grid .cat-card:nth-child(4),
-.cats-grid .cat-card:nth-child(5) {
-  /* 2 dernières centrées sur 3 colonnes → chacune prend 1.5 col */
-}
-/* Technique : 4e card débute col 1 sur la 2e ligne,
-   5e commence col 2 → les 2 cartes se retrouvent centrées si on
-   force grid-column span sur un wrapper */
-/* Approche simple : 2+3 sur desktop large */
-@media (min-width: 1025px) {
-  .cats-grid {
-    grid-template-columns: repeat(5,1fr);
-    grid-template-rows: auto;
-  }
-}
-
-/* ── SECTION AVIS ────────────────────────────────────────────── */
-.section-reviews {
-  padding: 7rem 0;
-  border-top: 1px solid var(--border);
-  background: var(--bg2);
-}
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 1px;
-  background: var(--border);
-}
-.review-card {
-  background: var(--bg2);
-  padding: 2.5rem 2rem;
-  display: flex; flex-direction: column; gap: 1.2rem;
-  transition: background var(--t);
-}
-.review-card:hover { background: var(--surface); }
-.review-stars {
-  font-size: .62rem; letter-spacing: .22em;
-  color: var(--gold); opacity: .85;
-}
-.review-text {
-  font-family: var(--serif); font-size: 1rem; font-weight: 300;
-  font-style: italic; line-height: 1.85;
-  color: var(--text2); flex: 1;
-}
-.review-author {
-  display: flex; align-items: baseline; gap: .6rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-.review-name {
-  font-size: .78rem; font-weight: 500; letter-spacing: .06em;
-  color: var(--text);
-}
-.review-city {
-  font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--gold); opacity: .75;
-}
-
-/* ── SIDE DRAWERS (Account + Contact) ──────────────────────── */
-#accountOverlay, #contactOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.6);
-  z-index: 300; opacity: 0; visibility: hidden;
-  transition: opacity var(--t), visibility var(--t);
-}
-#accountOverlay.open, #contactOverlay.open { opacity: 1; visibility: visible; }
-
-#accountDrawer, #contactDrawer {
-  position: fixed; top: 0; left: 0;
-  width: min(400px, 100vw); height: 100vh;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  z-index: 400;
-  display: flex; flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform var(--t) var(--ease);
-}
-#accountDrawer.open, #contactDrawer.open { transform: translateX(0); }
-
-.side-drawer-header {
-  flex-shrink: 0; padding: 1.8rem 2rem;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.side-drawer-title {
-  font-family: var(--serif); font-size: 1.4rem; font-weight: 300;
-  letter-spacing: .1em;
-}
-.side-drawer-body {
-  flex: 1; overflow-y: auto;
-  padding: 2rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border2) transparent;
-}
-.side-drawer-body::-webkit-scrollbar { width: 3px; }
-.side-drawer-body::-webkit-scrollbar-thumb { background: var(--border2); }
-
-/* Account */
-.account-avatar {
-  width: 68px; height: 68px; border: 1px solid var(--border);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; color: var(--gold);
-  margin: 0 auto 1.4rem;
-}
-.account-hello {
-  text-align: center; font-family: var(--serif);
-  font-size: 1.1rem; font-weight: 300; margin-bottom: .5rem;
-}
-.account-sub {
-  text-align: center; font-size: .82rem; color: var(--text2);
-  line-height: 1.7; margin-bottom: 2rem;
-}
-.account-empty {
-  text-align: center; padding: 2rem 0;
-  font-size: .85rem; color: var(--text2);
-}
-.account-empty p { margin-top: .4rem; font-size: .78rem; color: var(--text3); }
-
-/* Contact Drawer */
-.contact-drawer-sub {
-  font-size: .88rem; color: var(--text2); line-height: 1.7;
-  margin-bottom: 2rem;
-}
-.contact-drawer-links { display: flex; flex-direction: column; gap: 1px; background: var(--border); margin-bottom: 2rem; }
-.contact-drawer-item {
-  background: var(--surface); padding: 1.4rem 1.6rem;
-  display: flex; align-items: center; gap: 1.2rem;
-  transition: background var(--t);
-  text-decoration: none; color: inherit;
-}
-.contact-drawer-item:hover { background: var(--surface2); }
-.cdi-icon {
-  width: 40px; height: 40px; flex-shrink: 0;
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-}
-.cdi-icon svg { width: 18px; height: 18px; stroke: var(--gold); }
-.cdi-text { flex: 1; display: flex; flex-direction: column; gap: .2rem; }
-.cdi-label { font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text3); }
-.cdi-val { font-size: .88rem; color: var(--text); }
-.cdi-arrow { width: 16px; height: 16px; stroke: var(--text3); flex-shrink: 0; }
-.contact-drawer-hours {
-  padding: 1.4rem 0; border-top: 1px solid var(--border);
-}
-.contact-label {
-  display: block; font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: .6rem;
-}
-.contact-drawer-hours p { font-size: .88rem; color: var(--text2); }
-
-/* ── CONTACT PAGE ────────────────────────────────────────────── */
-.contact-layout {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 6rem; margin-top: 3rem;
-  max-width: 900px;
-}
-.contact-block {
-  margin-bottom: 2.5rem; padding-bottom: 2.5rem;
-  border-bottom: 1px solid var(--border);
-}
-.contact-block:last-child { border-bottom: none; }
-.contact-main-link {
-  display: flex; align-items: center; gap: .8rem;
-  font-family: var(--serif); font-size: 1.2rem; font-weight: 300;
-  color: var(--text); margin: .6rem 0 1.2rem;
-  transition: color var(--t);
-}
-.contact-main-link:hover { color: var(--gold); }
-.contact-main-link svg { width: 20px; height: 20px; stroke: var(--gold); flex-shrink: 0; }
-.btn-whatsapp { display: inline-flex; margin-top: .4rem; }
-.contact-text {
-  font-size: .88rem; color: var(--text2); line-height: 1.75;
-}
-.contact-deco {
-  display: flex; align-items: center; justify-content: center;
-}
-.contact-quote {
-  padding: 3rem 2.5rem;
-  border: 1px solid var(--border);
-  text-align: center; position: relative;
-}
-.contact-quote-sym {
-  display: block; font-size: 2rem; color: var(--gold);
-  margin-bottom: 1.5rem;
-  animation: fadeOsc 3s ease-in-out infinite;
-}
-.contact-quote p {
-  font-family: var(--serif); font-size: 1.2rem; font-weight: 300;
-  font-style: italic; color: var(--text2); line-height: 1.75;
-}
-
-/* ── CERTIFICATION PAGE ─────────────────────────────────────── */
-.cert-layout { margin-top: 2rem; }
-.cert-hero {
-  text-align: center; padding: 4rem 0;
-  max-width: 680px; margin: 0 auto 5rem;
-}
-.cert-badge {
-  display: inline-flex; flex-direction: column;
-  align-items: center; gap: .3rem;
-  border: 1px solid var(--gold);
-  padding: 1.2rem 2rem; margin-bottom: 2rem;
-}
-.cert-badge-sym { font-size: 1.4rem; color: var(--gold); }
-.cert-badge-text {
-  font-family: var(--serif); font-size: 2.2rem; font-weight: 300;
-  color: var(--gold); letter-spacing: .15em;
-}
-.cert-hero h2 {
-  font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 2.6rem);
-  font-weight: 300; margin-bottom: 1.5rem;
-}
-.cert-hero h2 em { font-style: italic; color: var(--gold); }
-.cert-hero p { font-size: .9rem; color: var(--text2); line-height: 1.9; }
-.cert-grid {
-  display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 1px; background: var(--border); margin-bottom: 5rem;
-}
-.cert-item {
-  background: var(--bg); padding: 2.8rem 2.2rem;
-  transition: background var(--t);
-}
-.cert-item:hover { background: var(--surface); }
-.cert-icon {
-  font-size: 1.6rem; color: var(--gold);
-  margin-bottom: 1.2rem;
-}
-.cert-item h4 {
-  font-family: var(--serif); font-size: 1.1rem; font-weight: 400;
-  margin-bottom: .7rem;
-}
-.cert-item p { font-size: .83rem; color: var(--text2); line-height: 1.75; }
-.cert-footer {
-  text-align: center; padding: 4rem 0;
-  border-top: 1px solid var(--border);
-}
-.cert-footer p {
-  font-family: var(--serif); font-size: 1.15rem; font-weight: 300;
-  color: var(--text2); margin-bottom: 1.8rem;
-}
-
-/* ── CHAT FLOATING BUTTON ────────────────────────────────────── */
-.chat-fab {
-  position: fixed; bottom: 2rem; right: 2rem;
-  width: 56px; height: 56px;
-  background: var(--gold);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 8000;
-  box-shadow: 0 4px 24px rgba(0,0,0,.28);
-  transition: transform var(--t), box-shadow var(--t);
-}
-.chat-fab:hover { transform: scale(1.1); box-shadow: 0 8px 32px rgba(0,0,0,.36); }
-.chat-fab svg { width: 22px; height: 22px; stroke: var(--bg); }
-.chat-fab-dot {
-  position: absolute; top: 5px; right: 4px;
-  width: 10px; height: 10px; border-radius: 50%;
-  background: #5C9E6E;
-  border: 2px solid var(--bg);
-}
-
-/* ── CHAT WINDOW ─────────────────────────────────────────────── */
-.chat-window {
-  position: fixed; bottom: 5.5rem; right: 2rem;
-  width: min(360px, calc(100vw - 2rem));
-  max-height: 520px;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  z-index: 7999;
-  display: flex; flex-direction: column;
-  transform: translateY(20px) scale(.95);
-  opacity: 0; visibility: hidden;
-  transition: transform var(--t) var(--ease), opacity var(--t), visibility var(--t);
-  box-shadow: 0 12px 40px rgba(0,0,0,.28);
-}
-.chat-window.open {
-  transform: translateY(0) scale(1);
-  opacity: 1; visibility: visible;
-}
-.chat-win-header {
-  display: flex; align-items: center; gap: .9rem;
-  padding: 1rem 1.4rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
-.chat-win-avatar {
-  width: 36px; height: 36px; border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; color: var(--gold); flex-shrink: 0;
-}
-.chat-win-info { flex: 1; display: flex; flex-direction: column; gap: .15rem; }
-.chat-win-name { font-size: .82rem; font-weight: 500; }
-.chat-win-status { font-size: .66rem; letter-spacing: .1em; color: #5C9E6E; }
-.chat-win-body {
-  flex: 1; overflow-y: auto; padding: 1.2rem;
-  display: flex; flex-direction: column; gap: .7rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
-}
-.chat-bubble {
-  max-width: 85%; padding: .7rem 1rem;
-  font-size: .82rem; line-height: 1.6;
-  border: 1px solid var(--border);
-}
-.chat-bubble.bot {
-  background: var(--surface2); align-self: flex-start;
-  border-color: var(--border2);
-}
-.chat-bubble.user {
-  background: var(--gold-dim); align-self: flex-end;
-  border-color: var(--gold);
-  color: var(--text);
-}
-.chat-quick-replies {
-  padding: .6rem 1rem;
-  display: flex; gap: .5rem; flex-wrap: wrap;
-  border-top: 1px solid var(--border);
-}
-.chat-qr {
-  padding: .35rem .9rem;
-  border: 1px solid var(--border2);
-  font-size: .7rem; letter-spacing: .08em;
-  color: var(--text2);
-  transition: border-color var(--t), color var(--t);
-}
-.chat-qr:hover { border-color: var(--gold); color: var(--gold); }
-.chat-win-input {
-  display: flex; align-items: center;
-  border-top: 1px solid var(--border);
-}
-#chatInput {
-  flex: 1; padding: .85rem 1.1rem;
-  background: transparent;
-  border: none; outline: none;
-  font-size: .82rem; color: var(--text);
-}
-#chatSend {
-  padding: .85rem 1.2rem;
-  color: var(--gold); font-size: 1rem;
-  border-left: 1px solid var(--border);
-  transition: background var(--t);
-}
-#chatSend:hover { background: var(--gold-dim); }
-
-/* ── RESPONSIVE ─────────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .cats-grid { grid-template-columns: repeat(3,1fr); }
-  .reviews-grid { grid-template-columns: repeat(2,1fr); }
-  .product-detail { grid-template-columns: 1fr; gap: 2.5rem; }
-  .checkout-layout { grid-template-columns: 1fr; }
-  .checkout-summary { position: static; }
-  .cert-grid { grid-template-columns: repeat(2,1fr); }
-  .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
-  .hero-split { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 2rem 3rem; }
-  .hero-left { align-items: center; text-align: center; }
-  .hero-left .hero-line { margin: 0 auto 1.8rem; }
-  .hero-left .hero-cta { justify-content: center; }
-  .hero-right { flex-direction: row; }
-}
-@media (max-width: 640px) {
-  :root { --h: 62px; }
-  .cats-grid { grid-template-columns: repeat(2,1fr); }
-  .reviews-grid { grid-template-columns: 1fr; }
-  .cert-grid { grid-template-columns: 1fr; }
-  .hero-title { font-size: 2.8rem; }
-  .form-row-2 { grid-template-columns: 1fr; }
-  #toastContainer { right: 1rem; left: 1rem; }
-  .toast { min-width: auto; }
-  .section-head-row { flex-direction: column; align-items: flex-start; }
-  .delivery-grid { grid-template-columns: 1fr; }
-  .lp-body { padding: 1.2rem; }
-  .hero-right { flex-direction: column; }
-  .chat-fab { bottom: 1.2rem; right: 1.2rem; }
-  .chat-window { right: 1rem; bottom: 5rem; }
-}
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maroua Jewelry — Bijoux d'exception</title>
+  <meta name="description" content="Bijoux artisanaux de luxe — colliers, bracelets, bagues" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-glow"></div>
+    <div class="loader-glow loader-glow-2"></div>
+    <div class="loader-emblem">
+      <span class="loader-brand">MAROUA</span>
+      <span class="loader-sub">Jewelry</span>
+    </div>
+    <div class="loader-tagline">Bienvenue</div>
+    <div class="loader-progress">
+      <div class="loader-progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="header-inner">
+
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <a href="#" class="logo" data-page="home">
+        <span class="logo-name">MAROUA</span>
+        <span class="logo-jewelry">Jewelry</span>
+      </a>
+
+      <div class="header-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Changer le thème">
+          <span class="theme-icon-dark">◐</span>
+          <span class="theme-icon-light">◑</span>
+        </button>
+        <button class="header-icon-btn" id="contactBtn" aria-label="Contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </button>
+        <button class="header-icon-btn" id="accountBtn" aria-label="Mon compte">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </button>
+        <button class="cart-btn" id="cartBtn" aria-label="Panier">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- NAV MOBILE -->
+  <nav id="mobileNav">
+    <div class="nav-logo">
+      <span class="logo-name">MAROUA</span>
+      <span class="logo-jewelry">Jewelry</span>
+    </div>
+    <div class="nav-links">
+      <a href="#" data-page="home" data-filter="">Accueil</a>
+      <a href="#" data-page="catalog" data-filter="">Collection</a>
+      <a href="#" data-page="catalog" data-filter="collier">Colliers</a>
+      <a href="#" data-page="catalog" data-filter="bracelet">Bracelets</a>
+      <a href="#" data-page="catalog" data-filter="bague">Bagues</a>
+      <a href="#" data-page="catalog" data-filter="boucle">Boucles d'oreilles</a>
+      <a href="#" data-page="catalog" data-filter="pack">Packs</a>
+      <a href="#" data-page="certification">Nos matériaux</a>
+      <a href="#" data-page="contact">Contact</a>
+    </div>
+    <div class="nav-footer">
+      Livraison partout au Maroc
+      <div class="nav-legal">
+        <a href="#" data-page="livraison">Livraison</a>
+        <span>·</span>
+        <a href="#" data-page="cgv">CGV</a>
+        <span>·</span>
+        <a href="#" data-page="certification">Certification</a>
+      </div>
+    </div>
+  </nav>
+  <div id="navOverlay"></div>
+
+  <!-- APP -->
+  <main id="app">
+
+    <!-- HOME -->
+    <section id="pageHome" class="page active">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-bg">
+          <div class="hero-orb orb-1"></div>
+          <div class="hero-orb orb-2"></div>
+          <div class="hero-orb orb-3"></div>
+          <div id="particles" class="hero-particles"></div>
+        </div>
+        <div class="hero-split">
+          <!-- Gauche : texte + CTA -->
+          <div class="hero-left">
+            <div class="hero-line reveal"></div>
+            <p class="hero-eyebrow reveal">Votre bijouterie en ligne · Maroc</p>
+            <h1 class="hero-title reveal">
+              <em>L'élégance</em>
+              <span>à portée de main</span>
+            </h1>
+            <p class="hero-desc reveal">Des bijoux d'exception façonnés pour celles qui savent que le luxe se vit au quotidien — livraison partout au Maroc.</p>
+            <div class="hero-cta reveal">
+              <button class="btn-primary" data-page="catalog" data-filter="">
+                <span>Découvrir la collection</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="btn-ghost" data-page="catalog" data-filter="pack">Voir les packs →</button>
+            </div>
+          </div>
+          <!-- Droite : 2 cartes dynamiques -->
+          <div class="hero-right reveal">
+            <div class="hero-card" id="heroCardNew">
+              <div class="hero-card-label">Nouveautés</div>
+              <div class="hero-card-img-wrap">
+                <img class="hero-card-img" src="" alt="" />
+                <div class="hero-card-placeholder">✦</div>
+              </div>
+              <div class="hero-card-info">
+                <span class="hero-card-name">—</span>
+                <span class="hero-card-price">—</span>
+              </div>
+            </div>
+            <div class="hero-card" id="heroCardFav">
+              <div class="hero-card-label">Coups de cœur</div>
+              <div class="hero-card-img-wrap">
+                <img class="hero-card-img" src="" alt="" />
+                <div class="hero-card-placeholder">◈</div>
+              </div>
+              <div class="hero-card-info">
+                <span class="hero-card-name">—</span>
+                <span class="hero-card-price">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-marquee">
+          <div class="marquee-track">
+            <a class="marquee-item" data-page="catalog" data-filter="collier">Colliers ◈</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bracelet">Bracelets ⟡</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bague">Bagues ◇</a>
+            <a class="marquee-item" data-page="catalog" data-filter="boucle">Boucles d'oreilles ◉</a>
+            <a class="marquee-item" data-page="catalog" data-filter="pack">Packs ◆</a>
+            <span class="marquee-sep">Livraison 48h ✦</span>
+            <span class="marquee-sep">Paiement à la livraison ✦</span>
+            <a class="marquee-item" data-page="catalog" data-filter="collier">Colliers ◈</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bracelet">Bracelets ⟡</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bague">Bagues ◇</a>
+            <a class="marquee-item" data-page="catalog" data-filter="boucle">Boucles d'oreilles ◉</a>
+            <a class="marquee-item" data-page="catalog" data-filter="pack">Packs ◆</a>
+            <span class="marquee-sep">Livraison 48h ✦</span>
+            <span class="marquee-sep">Paiement à la livraison ✦</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <section class="section-cats">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-label">Explorer</span>
+            <h2 class="section-title">Par catégorie</h2>
+          </div>
+          <div class="cats-grid">
+            <div class="cat-card reveal" data-page="catalog" data-filter="collier"
+                 style="--img-d:url('/images/categories/dark_col.png'); --img-l:url('/images/categories/light_col.png')">
+              <div class="cat-sym">◈</div>
+              <div class="cat-body">
+                <h3>Colliers</h3>
+                <p>Élégance au fil de l'or</p>
+                <span class="cat-arrow">→</span>
+              </div>
+            </div>
+            <div class="cat-card reveal" data-page="catalog" data-filter="bracelet"
+                 style="--img-d:url('/images/categories/dark_bra.png'); --img-l:url('/images/categories/light_bra.png')">
+              <div class="cat-sym">⟡</div>
+              <div class="cat-body">
+                <h3>Bracelets</h3>
+                <p>Grâce au poignet</p>
+                <span class="cat-arrow">→</span>
+              </div>
+            </div>
+            <div class="cat-card reveal" data-page="catalog" data-filter="bague"
+                 style="--img-d:url('/images/categories/dark_bag.png'); --img-l:url('/images/categories/light_bag.png')">
+              <div class="cat-sym">◇</div>
+              <div class="cat-body">
+                <h3>Bagues</h3>
+                <p>Symboles d'éternité</p>
+                <span class="cat-arrow">→</span>
+              </div>
+            </div>
+            <div class="cat-card reveal" data-page="catalog" data-filter="boucle"
+                 style="--img-d:url('/images/categories/dark_bou.png'); --img-l:url('/images/categories/light_bou.png')">
+              <div class="cat-sym">◉</div>
+              <div class="cat-body">
+                <h3>Boucles d'oreilles</h3>
+                <p>Dormeuses, créoles &amp; piercings</p>
+                <span class="cat-arrow">→</span>
+              </div>
+            </div>
+            <div class="cat-card reveal" data-page="catalog" data-filter="pack"
+                 style="--img-d:url('/images/categories/dark_pac.png'); --img-l:url('/images/categories/light_pac.png')">
+              <div class="cat-sym">◆</div>
+              <div class="cat-body">
+                <h3>Packs</h3>
+                <p>L'ensemble parfait</p>
+                <span class="cat-arrow">→</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured -->
+      <section class="section-featured">
+        <div class="container">
+          <div class="section-head-row reveal">
+            <div>
+              <span class="section-label">Sélection</span>
+              <h2 class="section-title">Coups de cœur</h2>
+            </div>
+            <button class="btn-text" data-page="catalog" data-filter="">Voir tout →</button>
+          </div>
+          <div class="products-grid" id="featuredGrid"></div>
+        </div>
+      </section>
+
+      <!-- Avis clients -->
+      <section class="section-reviews">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-label">Témoignages</span>
+            <h2 class="section-title">Ce qu'elles disent</h2>
+          </div>
+          <div class="reviews-grid">
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« Un collier magnifique, exactement comme sur les photos. L'emballage était somptueux, parfait pour offrir. Je recommande les yeux fermés ! »</p>
+              <div class="review-author">
+                <span class="review-name">Fatima Z.</span>
+                <span class="review-city">Casablanca</span>
+              </div>
+            </div>
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« Livraison ultra rapide, bijou de très belle qualité. Le bracelet ne s'est pas terni du tout après plusieurs semaines. Je suis conquise. »</p>
+              <div class="review-author">
+                <span class="review-name">Salma B.</span>
+                <span class="review-city">Rabat</span>
+              </div>
+            </div>
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« Service client très réactif sur WhatsApp, suivi impeccable. La bague dépasse toutes mes attentes — fine, élégante, parfaite. »</p>
+              <div class="review-author">
+                <span class="review-name">Nadia M.</span>
+                <span class="review-city">Marrakech</span>
+              </div>
+            </div>
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« J'ai commandé un pack cadeau pour l'anniversaire de ma sœur. Elle était aux anges ! La présentation est vraiment haut de gamme. »</p>
+              <div class="review-author">
+                <span class="review-name">Imane R.</span>
+                <span class="review-city">Agadir</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- CATALOG -->
+    <section id="pageCatalog" class="page">
+      <div class="catalog-hero">
+        <div class="container">
+          <h1 class="page-title reveal">Collection</h1>
+          <div class="filters" id="filters">
+            <button class="filter-btn active" data-filter="">Tout</button>
+            <button class="filter-btn" data-filter="collier">Colliers</button>
+            <button class="filter-btn" data-filter="bracelet">Bracelets</button>
+            <button class="filter-btn" data-filter="bague">Bagues</button>
+            <button class="filter-btn" data-filter="boucle">Boucles d'oreilles</button>
+            <button class="filter-btn" data-filter="pack">Packs</button>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="products-grid" id="catalogGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <span class="empty-sym">◈</span>
+          <p>Aucun produit dans cette catégorie.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCT DETAIL -->
+    <section id="pageProduct" class="page">
+      <div class="container">
+        <button class="back-btn" id="backBtn">← Retour</button>
+        <div id="productDetail"></div>
+      </div>
+    </section>
+
+    <!-- CHECKOUT -->
+    <section id="pageCheckout" class="page">
+      <div class="container checkout-container">
+        <button class="back-btn" id="backCheckout">← Retour au panier</button>
+        <h1 class="page-title">Finaliser</h1>
+        <div class="checkout-layout">
+          <form id="checkoutForm" class="checkout-form" novalidate>
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <span class="form-step">01</span>Vos coordonnées
+              </h3>
+              <div class="form-group">
+                <label>Prénom & Nom *</label>
+                <input type="text" name="nom" placeholder="Fatima Zahra El Amrani" required />
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Téléphone *</label>
+                  <input type="tel" name="telephone" placeholder="0612345678" required />
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" name="email" placeholder="email@exemple.com" />
+                </div>
+              </div>
+            </div>
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <span class="form-step">02</span>Livraison
+              </h3>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Ville *</label>
+                  <input type="text" name="ville" placeholder="Casablanca" required />
+                </div>
+                <div class="form-group">
+                  <label>Code postal</label>
+                  <input type="text" name="code_postal" placeholder="20000" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Adresse complète *</label>
+                <input type="text" name="adresse" placeholder="12 Rue des Fleurs, Appt 3" required />
+              </div>
+            </div>
+            <div class="form-section">
+              <h3 class="form-section-title">
+                <span class="form-step">03</span>Message cadeau (optionnel)
+              </h3>
+              <div class="form-group">
+                <input type="text" name="note" placeholder="Ex : Bon anniversaire, avec tout mon amour…" />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary btn-full" id="submitOrder">
+              <span class="btn-text">Confirmer la commande</span>
+              <span class="btn-spinner" style="display:none">⟳</span>
+            </button>
+          </form>
+          <div class="checkout-summary" id="checkoutSummary"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUCCESS -->
+    <section id="pageSuccess" class="page">
+      <div class="success-wrap">
+        <div class="success-emblem">
+          <span>MAROUA</span>
+          <em>Jewelry</em>
+        </div>
+        <div class="success-check">✦</div>
+        <h1>Commande confirmée</h1>
+        <p id="successRef" class="success-ref"></p>
+        <p class="success-msg">Vous serez contacté(e) sous 24h pour confirmer votre commande.</p>
+        <button class="btn-primary" data-page="home"><span>Retour à l'accueil</span></button>
+      </div>
+    </section>
+
+    <!-- LIVRAISON -->
+    <section id="pageLivraison" class="page">
+      <div class="container legal-page">
+        <button class="back-btn" data-page="home">← Retour</button>
+        <h1 class="page-title">Livraison</h1>
+        <div class="legal-content">
+
+          <div class="legal-section">
+            <h2>Zones de livraison</h2>
+            <p>Maroua Jewelry livre partout au Royaume du Maroc — des grandes métropoles aux zones rurales les plus reculées. Aucune adresse n'est exclue.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Délais estimés</h2>
+            <div class="delivery-grid">
+              <div class="delivery-zone">
+                <h4>Grandes villes</h4>
+                <p>Casablanca · Rabat · Marrakech · Fès · Tanger</p>
+                <span class="delivery-time">24 — 48h</span>
+              </div>
+              <div class="delivery-zone">
+                <h4>Villes moyennes</h4>
+                <p>Agadir · Meknès · Oujda · Tétouan · Kenitra</p>
+                <span class="delivery-time">48 — 72h</span>
+              </div>
+              <div class="delivery-zone">
+                <h4>Zones éloignées</h4>
+                <p>Localités rurales et zones enclavées</p>
+                <span class="delivery-time">3 — 5 jours</span>
+              </div>
+            </div>
+            <p class="legal-note">Les délais sont calculés à partir de la confirmation téléphonique de votre commande. Ils peuvent varier lors des périodes de forte activité (Aïd, fêtes).</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Frais de livraison</h2>
+            <p>Les frais de livraison sont forfaitaires à <strong>35 MAD</strong> pour toute commande, quelle que soit la destination. Ce montant est indiqué clairement avant la validation de votre panier.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Transporteurs partenaires</h2>
+            <p>Nous travaillons avec des partenaires logistiques sélectionnés pour leur fiabilité sur l'ensemble du territoire national : <strong>Amana</strong> et <strong>CTM</strong>. Le choix du transporteur est effectué en fonction de votre zone géographique, afin de garantir les meilleurs délais.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Emballage cadeau</h2>
+            <p>Chaque bijou Maroua Jewelry est livré dans son écrin signature — boîte rigide, ruban doré, papier de soie. L'emballage cadeau est <strong>inclus sans supplément</strong> sur toutes les commandes.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Suivi de commande</h2>
+            <p>Après validation de votre commande, notre équipe vous contacte par <strong>téléphone ou WhatsApp sous 24h</strong> pour confirmer les détails et vous communiquer le suivi de livraison. Vous pouvez également nous joindre à tout moment via WhatsApp pour obtenir une mise à jour en temps réel.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Absence lors de la livraison</h2>
+            <p>En cas d'absence au moment de la livraison, le livreur vous contactera par téléphone pour convenir d'un second passage ou d'un point de retrait. Contactez-nous directement sur WhatsApp si vous souhaitez modifier les modalités de livraison.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Colis endommagé ou manquant</h2>
+            <p>Si votre colis vous parvient endommagé ou incomplet, contactez-nous <strong>dans les 48h suivant la réception</strong> avec des photos à l'appui. Nous prendrons en charge le remplacement ou le remboursement sans frais supplémentaires.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CGV -->
+    <section id="pageCgv" class="page">
+      <div class="container legal-page">
+        <button class="back-btn" data-page="home">← Retour</button>
+        <h1 class="page-title">Conditions Générales de Vente</h1>
+        <p class="legal-updated">Dernière mise à jour : Avril 2026</p>
+        <div class="legal-content">
+
+          <div class="legal-section">
+            <h2>Article 1 — Objet</h2>
+            <p>Les présentes Conditions Générales de Vente (CGV) régissent l'ensemble des ventes conclues entre <strong>Maroua Jewelry</strong> (ci-après « le Vendeur ») et tout client (ci-après « le Client ») passant commande via le site <em>maroua-jewelry.vercel.app</em>. Toute commande implique l'acceptation sans réserve des présentes conditions. Le Vendeur se réserve le droit de les modifier à tout moment ; les CGV applicables sont celles en vigueur à la date de la commande.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 2 — Produits</h2>
+            <p>Maroua Jewelry commercialise des bijoux artisanaux en acier inoxydable 316L (colliers, bracelets, bagues, packs cadeaux). Les photographies et descriptions figurant sur le site sont reproduites aussi fidèlement que possible. Des légères variations de teinte, de finition ou de dimensions inhérentes au caractère artisanal des pièces ne sauraient constituer un motif de réclamation. La disponibilité des produits est indiquée en temps réel et peut évoluer sans préavis.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 3 — Prix</h2>
+            <p>Les prix sont affichés en <strong>Dirham Marocain (MAD)</strong>, toutes taxes comprises. Maroua Jewelry se réserve le droit de modifier ses tarifs à tout moment. Le prix applicable à une commande est celui affiché au moment de la validation du panier. Les frais de livraison (35 MAD forfaitaires) sont indiqués séparément et s'ajoutent au montant des produits.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 4 — Passation de commande</h2>
+            <p>Le Client sélectionne les articles souhaités, les ajoute au panier et complète le formulaire de commande (coordonnées, adresse de livraison). La commande est <strong>confirmée par notre équipe par téléphone ou WhatsApp dans un délai de 24h ouvrables</strong>. Aucune commande n'est expédiée sans confirmation préalable. Maroua Jewelry se réserve le droit d'annuler toute commande en cas d'erreur de prix manifeste, de produit indisponible ou de données incorrectes, avec information du Client dans les meilleurs délais.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 5 — Paiement</h2>
+            <p>Le règlement s'effectue <strong>à la livraison</strong>, en espèces remises directement au livreur. Maroua Jewelry ne collecte aucune information bancaire via son site. Des modalités de paiement anticipé (virement) peuvent être proposées sur demande, à convenir lors de la confirmation téléphonique.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 6 — Livraison</h2>
+            <p>Les modalités complètes sont décrites sur notre <a href="#" data-page="livraison">page Livraison</a>. Les délais indiqués sont donnés à titre indicatif. Maroua Jewelry ne peut être tenu responsable des retards imputables au transporteur, à des conditions météorologiques exceptionnelles ou à tout événement de force majeure. En cas de retard significatif, le Client sera informé par téléphone ou WhatsApp.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 7 — Droit de retour et échanges</h2>
+            <p>Tout retour doit être <strong>signalé dans les 7 jours</strong> suivant la réception, via WhatsApp, avec photos à l'appui. Les retours sont acceptés uniquement en cas de défaut avéré de fabrication. Le produit doit être retourné dans son emballage d'origine, non porté et non altéré. Les bijoux ayant fait l'objet d'une personnalisation (gravure, modification sur mesure) ne sont ni repris ni échangés, sauf défaut imputable à Maroua Jewelry. En cas de retour accepté, le Client est remboursé intégralement ou bénéficie d'un échange, selon sa préférence.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 8 — Garantie</h2>
+            <p>Nos bijoux en acier inoxydable 316L sont garantis <strong>3 mois</strong> contre tout défaut de fabrication à compter de la date de livraison. Cette garantie ne couvre pas les dommages liés à un mauvais entretien, un choc, une exposition prolongée à des produits chimiques (parfums, crèmes) ou un usage non conforme. La garantie légale de conformité prévue par la loi marocaine s'applique de plein droit.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 9 — Propriété intellectuelle</h2>
+            <p>L'intégralité du contenu du site Maroua Jewelry — textes, photographies, visuels, logos, éléments graphiques — est la propriété exclusive de Maroua Jewelry et est protégée par la législation marocaine et internationale relative à la propriété intellectuelle. Toute reproduction, même partielle, sans autorisation écrite préalable est strictement interdite.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 10 — Données personnelles</h2>
+            <p>Les données collectées lors de la commande (nom, téléphone, adresse, email) sont utilisées exclusivement pour le traitement et le suivi de la commande. Elles ne sont jamais vendues ni cédées à des tiers à des fins commerciales. Conformément à la <strong>loi 09-08</strong> relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel au Maroc, le Client dispose d'un droit d'accès, de rectification et de suppression de ses données, exerçable par contact WhatsApp.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 11 — Responsabilité</h2>
+            <p>Maroua Jewelry s'engage à mettre tout en œuvre pour assurer la satisfaction du Client. Sa responsabilité ne saurait être engagée pour des dommages indirects ou immatériels résultant de l'utilisation de ses produits. En toute hypothèse, la responsabilité du Vendeur est plafonnée au montant total de la commande concernée.</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Article 12 — Loi applicable et litiges</h2>
+            <p>Les présentes CGV sont soumises au <strong>droit marocain</strong>. En cas de différend, une résolution amiable sera prioritairement recherchée. À défaut d'accord, le litige sera soumis aux tribunaux compétents de Casablanca (Maroc).</p>
+          </div>
+
+          <div class="legal-section">
+            <h2>Contact</h2>
+            <p>Pour toute question relative à vos droits, une commande ou une réclamation :<br>
+            WhatsApp : <strong>+212 6 00 00 00 00</strong><br>
+            Email : <strong>contact@maroua-jewelry.ma</strong></p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="pageContact" class="page">
+      <div class="container legal-page">
+        <button class="back-btn" data-page="home">← Retour</button>
+        <h1 class="page-title">Contact</h1>
+        <div class="contact-layout">
+          <div class="contact-info reveal">
+            <div class="contact-block">
+              <span class="contact-label">WhatsApp</span>
+              <a href="https://wa.me/212600000000" class="contact-main-link" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                +212 6 00 00 00 00
+              </a>
+              <a href="https://wa.me/212600000000" class="btn-primary btn-whatsapp" target="_blank" rel="noopener">
+                <span>Écrire sur WhatsApp</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Téléphone</span>
+              <a href="tel:+212600000000" class="contact-main-link">+212 6 00 00 00 00</a>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Email</span>
+              <a href="mailto:contact@maroua-jewelry.ma" class="contact-main-link">contact@maroua-jewelry.ma</a>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Horaires</span>
+              <p class="contact-text">Lundi — Samedi, 9h — 20h<br>Dimanche : fermé</p>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Réponse garantie</span>
+              <p class="contact-text">Nous répondons à toutes vos demandes sous <strong>2h</strong> pendant les heures d'ouverture.</p>
+            </div>
+          </div>
+          <div class="contact-deco reveal">
+            <div class="contact-quote">
+              <span class="contact-quote-sym">✦</span>
+              <p>Chaque question mérite une réponse. Chaque cliente mérite une attention particulière.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATION -->
+    <section id="pageCertification" class="page">
+      <div class="container legal-page">
+        <button class="back-btn" data-page="home">← Retour</button>
+        <h1 class="page-title">Nos matériaux</h1>
+        <p class="legal-updated">Qualité certifiée · Acier inoxydable 316L</p>
+        <div class="cert-layout">
+
+          <div class="cert-hero reveal">
+            <div class="cert-badge">
+              <span class="cert-badge-sym">◈</span>
+              <span class="cert-badge-text">316L</span>
+            </div>
+            <h2>L'acier chirurgical<br><em>au service de votre peau</em></h2>
+            <p>Chez Maroua Jewelry, nous utilisons exclusivement l'acier inoxydable de grade <strong>316L</strong>, le même utilisé en milieu médical et chirurgical — garantie d'une pureté et d'une durabilité sans compromis.</p>
+          </div>
+
+          <div class="cert-grid">
+            <div class="cert-item reveal">
+              <div class="cert-icon">✦</div>
+              <h4>Hypoallergénique</h4>
+              <p>L'acier 316L ne contient pas de nickel libre. Il est spécialement conçu pour les peaux les plus sensibles et les plus réactives.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◈</div>
+              <h4>Anti-oxydation</h4>
+              <p>Résistant à la corrosion, à la sueur et au contact de l'eau. Vos bijoux conservent leur éclat dans le temps, sans ternissement.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◇</div>
+              <h4>Longue durabilité</h4>
+              <p>Un bijou en acier 316L peut être porté quotidiennement pendant des années sans perdre sa brillance ni sa forme — avec un entretien minimal.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">⟡</div>
+              <h4>Finitions premium</h4>
+              <p>Nos bijoux bénéficient d'un placage or 18k ou d'un polissage miroir selon les modèles — réalisés avec soin pour un rendu luxueux.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◆</div>
+              <h4>Emballage signature</h4>
+              <p>Chaque pièce est livrée dans son écrin Maroua Jewelry — boîte rigide, ruban doré, papier de soie. Un cadeau prêt à offrir, sans supplément.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◉</div>
+              <h4>Garantie 3 mois</h4>
+              <p>Tous nos bijoux sont garantis 3 mois contre les défauts de fabrication. En cas de problème, nous assurons le remplacement ou le remboursement.</p>
+            </div>
+          </div>
+
+          <div class="cert-footer reveal">
+            <p>Des questions sur la qualité de nos bijoux ?</p>
+            <button class="btn-primary" data-page="contact">
+              <span>Nous contacter</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CART DRAWER -->
+  <div id="cartOverlay"></div>
+  <aside id="cartDrawer">
+    <div class="drawer-header">
+      <h2>Panier</h2>
+      <button class="drawer-close" id="drawerClose">✕</button>
+    </div>
+    <div class="drawer-items" id="drawerItems"></div>
+    <div class="drawer-footer" id="drawerFooter"></div>
+  </aside>
+
+  <!-- CHECKOUT DRAWER -->
+  <div id="cdrOverlay"></div>
+  <aside id="checkoutDrawer">
+    <div class="cdr-header">
+      <button class="cdr-back" id="cdrBack">← Panier</button>
+      <h2 class="cdr-title">Commander</h2>
+      <button class="drawer-close" id="cdrClose">✕</button>
+    </div>
+    <div class="cdr-body">
+      <div class="cdr-summary" id="cdrSummary"></div>
+      <form id="checkoutDrawerForm" novalidate>
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="form-step">01</span>Vos coordonnées
+          </h3>
+          <div class="form-group">
+            <label>Prénom &amp; Nom *</label>
+            <input type="text" name="nom" placeholder="Fatima Zahra El Amrani" required />
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Téléphone *</label>
+              <input type="tel" name="telephone" placeholder="0612345678" required />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="email" placeholder="email@exemple.com" />
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="form-step">02</span>Livraison
+          </h3>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Ville *</label>
+              <input type="text" name="ville" placeholder="Casablanca" required />
+            </div>
+            <div class="form-group">
+              <label>Code postal</label>
+              <input type="text" name="code_postal" placeholder="20000" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Adresse complète *</label>
+            <input type="text" name="adresse" placeholder="12 Rue des Fleurs, Appt 3" required />
+          </div>
+        </div>
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="form-step">03</span>Note (optionnel)
+          </h3>
+          <div class="form-group">
+            <input type="text" name="note" placeholder="Message cadeau, instructions de livraison…" />
+          </div>
+        </div>
+        <!-- Consentements -->
+        <div class="cdr-consent">
+          <label class="consent-check">
+            <input type="checkbox" name="accept_cgv" />
+            <span>J'accepte les <a href="#" data-legal="cgv">conditions générales de vente</a></span>
+          </label>
+          <label class="consent-check">
+            <input type="checkbox" name="accept_livraison" />
+            <span>J'ai pris connaissance des <a href="#" data-legal="livraison">modalités de livraison</a></span>
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="cdr-footer">
+      <button type="button" class="btn-primary btn-full" id="cdrSubmit">
+        <span class="btn-text">Confirmer la commande</span>
+        <span class="btn-loader" style="display:none">⟳</span>
+      </button>
+      <p class="cdr-disclaimer">
+        En confirmant, vous acceptez nos
+        <a href="#" data-legal="cgv">conditions de vente</a>
+        et nos <a href="#" data-legal="livraison">modalités de livraison</a>.
+      </p>
+    </div>
+  </aside>
+
+  <!-- LEGAL PANEL — lecture des conditions sans quitter le checkout -->
+  <div id="legalPanel">
+    <div class="lp-header">
+      <h2 id="legalPanelTitle"></h2>
+      <button class="drawer-close" id="legalPanelClose">✕</button>
+    </div>
+    <div class="lp-body" id="legalPanelBody"></div>
+  </div>
+
+  <!-- ACCOUNT DRAWER -->
+  <div id="accountOverlay"></div>
+  <aside id="accountDrawer">
+    <div class="side-drawer-header">
+      <h2 class="side-drawer-title">Mon espace</h2>
+      <button class="drawer-close" id="accountClose">✕</button>
+    </div>
+    <div class="side-drawer-body">
+      <div class="account-avatar">
+        <span class="account-avatar-sym">◉</span>
+      </div>
+      <p class="account-hello">Bienvenue chez <strong>Maroua Jewelry</strong></p>
+      <p class="account-sub">Retrouvez ici l'historique de vos commandes après confirmation par notre équipe.</p>
+      <div class="account-orders" id="accountOrders">
+        <div class="account-empty">
+          <span>Aucune commande enregistrée pour le moment.</span>
+          <p>Passez votre première commande et elle apparaîtra ici.</p>
+          <button class="btn-primary" id="accountShopBtn" style="margin-top:1.4rem">
+            <span>Voir la collection</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTACT DRAWER -->
+  <div id="contactOverlay"></div>
+  <aside id="contactDrawer">
+    <div class="side-drawer-header">
+      <h2 class="side-drawer-title">Nous contacter</h2>
+      <button class="drawer-close" id="contactClose">✕</button>
+    </div>
+    <div class="side-drawer-body">
+      <p class="contact-drawer-sub">Nous répondons sous <strong>2h</strong> pendant les heures d'ouverture.</p>
+      <div class="contact-drawer-links">
+        <a href="https://wa.me/212600000000" class="contact-drawer-item" target="_blank" rel="noopener">
+          <div class="cdi-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="cdi-text">
+            <span class="cdi-label">WhatsApp</span>
+            <span class="cdi-val">+212 6 00 00 00 00</span>
+          </div>
+          <svg class="cdi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="tel:+212600000000" class="contact-drawer-item">
+          <div class="cdi-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.4 2 2 0 0 1 3.62 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.22 6.22l.97-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+          </div>
+          <div class="cdi-text">
+            <span class="cdi-label">Téléphone</span>
+            <span class="cdi-val">+212 6 00 00 00 00</span>
+          </div>
+        </a>
+        <a href="mailto:contact@maroua-jewelry.ma" class="contact-drawer-item">
+          <div class="cdi-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="cdi-text">
+            <span class="cdi-label">Email</span>
+            <span class="cdi-val">contact@maroua-jewelry.ma</span>
+          </div>
+        </a>
+      </div>
+      <div class="contact-drawer-hours">
+        <span class="contact-label">Horaires</span>
+        <p>Lundi — Samedi · 9h — 20h</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CHAT BUTTON -->
+  <button class="chat-fab" id="chatFab" aria-label="Assistance">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <span class="chat-fab-dot"></span>
+  </button>
+
+  <!-- CHAT WINDOW -->
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-win-header">
+      <div class="chat-win-avatar">✦</div>
+      <div class="chat-win-info">
+        <span class="chat-win-name">Maroua Jewelry</span>
+        <span class="chat-win-status">En ligne</span>
+      </div>
+      <button class="drawer-close" id="chatClose">✕</button>
+    </div>
+    <div class="chat-win-body" id="chatBody">
+      <div class="chat-bubble bot">
+        Bonjour 👋 Bienvenue chez <strong>Maroua Jewelry</strong> !<br>Comment puis-je vous aider ?
+      </div>
+    </div>
+    <div class="chat-quick-replies" id="chatQuickReplies">
+      <button class="chat-qr" data-msg="Je veux voir la collection">Voir la collection</button>
+      <button class="chat-qr" data-msg="Infos sur la livraison">Livraison ?</button>
+      <button class="chat-qr" data-msg="Contact WhatsApp">WhatsApp</button>
+    </div>
+    <div class="chat-win-input">
+      <input type="text" id="chatInput" placeholder="Votre message…" />
+      <button id="chatSend">→</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toastContainer"></div>
+
+  <!-- SCRIPTS -->
+  <script src="/js/config.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/toast.js"></script>
+  <script src="/js/animations.js"></script>
+  <script src="/js/components.js"></script>
+  <script src="/js/drawer.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/checkout.js"></script>
+  <script src="/js/pages.js"></script>
+  <script src="/js/account.js"></script>
+  <script src="/js/contact-drawer.js"></script>
+  <script src="/js/chat.js"></script>
+  <script src="/js/hero-cards.js"></script>
+  <script src="/js/app.js"></script>
+
+</body>
+</html>
