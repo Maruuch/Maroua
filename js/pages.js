@@ -85,18 +85,25 @@ const Pages = (() => {
   // ── SUCCESS ─────────────────────────────────────────────────
   function renderSuccess() {
     showPage('success');
-    // Bouton retour accueil (délégation dans app.js)
   }
+
+  // ── LIVRAISON ────────────────────────────────────────────────
+  function renderLivraison() { showPage('livraison'); }
+
+  // ── CGV ──────────────────────────────────────────────────────
+  function renderCgv() { showPage('cgv'); }
 
   // ── Router ──────────────────────────────────────────────────
   function route({ page, filter, currentProductId }) {
     switch (page) {
-      case 'home':     renderHome(); break;
-      case 'catalog':  renderCatalog(filter); break;
-      case 'product':  renderProduct(currentProductId); break;
-      case 'checkout': renderCheckout(); break;
-      case 'success':  renderSuccess(); break;
-      default:         renderHome();
+      case 'home':      renderHome(); break;
+      case 'catalog':   renderCatalog(filter); break;
+      case 'product':   renderProduct(currentProductId); break;
+      case 'checkout':  renderCheckout(); break;
+      case 'success':   renderSuccess(); break;
+      case 'livraison': renderLivraison(); break;
+      case 'cgv':       renderCgv(); break;
+      default:          renderHome();
     }
   }
 
