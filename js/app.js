@@ -51,19 +51,24 @@
   // ── 6. Drawer + Checkout + Filtres ────────────────────────
   Drawer.init();
   Checkout.init();
+  CheckoutDrawer.init();
   Pages.initFilters();
 
   // ── 7. Router ─────────────────────────────────────────────
   Store.on('navigate', Pages.route);
 
-  // ── 8. Chargement produits ────────────────────────────────
+  // ── 8. Chargement produits — splash minimum 3 secondes ───
   const loader = document.getElementById('loader');
   try {
-    const products = await loadProducts();
+    const [products] = await Promise.all([
+      loadProducts(),
+      new Promise(r => setTimeout(r, 3000))
+    ]);
     Store.setProducts(products);
   } catch (err) {
     console.error('Produits :', err);
     Toast.error('Impossible de charger le catalogue', 5000);
+    await new Promise(r => setTimeout(r, 3000));
   }
 
   // ── 9. Afficher le site ───────────────────────────────────
