@@ -52,6 +52,7 @@
   Drawer.init();
   Checkout.init();
   CheckoutDrawer.init();
+  LegalPanel.init();
   Pages.initFilters();
 
   // ── 7. Router ─────────────────────────────────────────────
