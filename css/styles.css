@@ -1109,8 +1109,18 @@ img { display: block; max-width: 100%; }
   flex-shrink: 0;
   padding: 1.2rem 2rem 2rem;
   border-top: 1px solid var(--border);
-  background: var(--surface);
 }
+.cdr-disclaimer {
+  margin-top: .9rem;
+  font-size: .7rem; line-height: 1.65;
+  color: var(--text3); text-align: center;
+}
+.cdr-disclaimer a {
+  color: var(--text3);
+  text-decoration: underline; text-underline-offset: 2px;
+  transition: color var(--t);
+}
+.cdr-disclaimer a:hover { color: var(--gold); }
 
 /* ── CONSENTEMENTS (checkout drawer) ────────────────────────── */
 .cdr-consent {
@@ -1142,6 +1152,16 @@ img { display: block; max-width: 100%; }
   transform: rotate(40deg);
 }
 .consent-check input[type="checkbox"].error { border-color: var(--error) !important; }
+
+/* Animation quand la case est cochée automatiquement */
+.consent-check input[type="checkbox"].auto-checked {
+  animation: autoCheck .45s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes autoCheck {
+  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(212,170,98,.4); }
+  45%  { transform: scale(1.5); box-shadow: 0 0 0 6px rgba(212,170,98,.15); }
+  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(212,170,98,0); }
+}
 .consent-check a {
   color: var(--gold);
   text-decoration: underline; text-underline-offset: 2px;
