@@ -1307,22 +1307,22 @@ img { display: block; max-width: 100%; }
 #header::after {
   content: '';
   position: absolute; left: 0; right: 0; top: 100%;
-  height: 220px; pointer-events: none; z-index: 99;
+  height: 110px; pointer-events: none; z-index: 99;
 }
 /* Dark mode : header CRÈME → fond brun sombre */
 [data-theme="dark"] #header::after {
   background: linear-gradient(to bottom,
-    rgba(238,226,205,.88) 0%,
-    rgba(220,204,178,.50) 25%,
-    rgba(180,155,110,.14) 55%,
+    rgba(238,226,205,.42) 0%,
+    rgba(220,204,178,.18) 35%,
+    rgba(180,155,110,.06) 65%,
     transparent 100%);
 }
 /* Light mode : header BRUN SOMBRE → fond ivoire */
 [data-theme="light"] #header::after {
   background: linear-gradient(to bottom,
-    rgba(20,12,6,.82) 0%,
-    rgba(20,12,6,.44) 28%,
-    rgba(20,12,6,.12) 58%,
+    rgba(20,12,6,.36) 0%,
+    rgba(20,12,6,.16) 35%,
+    rgba(20,12,6,.05) 65%,
     transparent 100%);
 }
 
