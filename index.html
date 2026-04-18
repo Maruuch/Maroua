@@ -16,18 +16,11 @@
   <div id="loader">
     <div class="loader-glow"></div>
     <div class="loader-glow loader-glow-2"></div>
-    <svg class="loader-diamond" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path class="ld-outer" d="M55 4 L106 55 L55 106 L4 55 Z"
-            stroke="#C9A455" stroke-width=".9"/>
-      <path class="ld-inner" d="M55 24 L82 55 L55 82 L28 55 Z"
-            stroke="#C9A455" stroke-width=".55" opacity=".5"/>
-      <circle class="ld-center" cx="55" cy="55" r="2.8" fill="#D4AA62" opacity=".8"/>
-    </svg>
     <div class="loader-emblem">
       <span class="loader-brand">MAROUA</span>
       <span class="loader-sub">Jewelry</span>
     </div>
-    <div class="loader-tagline">Bijoux d'exception · Maroc</div>
+    <div class="loader-tagline">Bienvenue</div>
     <div class="loader-progress">
       <div class="loader-progress-fill"></div>
     </div>
@@ -50,6 +43,17 @@
         <button class="theme-toggle" id="themeToggle" aria-label="Changer le thème">
           <span class="theme-icon-dark">◐</span>
           <span class="theme-icon-light">◑</span>
+        </button>
+        <button class="header-icon-btn" id="contactBtn" aria-label="Contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </button>
+        <button class="header-icon-btn" id="accountBtn" aria-label="Mon compte">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
         </button>
         <button class="cart-btn" id="cartBtn" aria-label="Panier">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -78,6 +82,8 @@
       <a href="#" data-page="catalog" data-filter="bague">Bagues</a>
       <a href="#" data-page="catalog" data-filter="boucle">Boucles d'oreilles</a>
       <a href="#" data-page="catalog" data-filter="pack">Packs</a>
+      <a href="#" data-page="certification">Nos matériaux</a>
+      <a href="#" data-page="contact">Contact</a>
     </div>
     <div class="nav-footer">
       Livraison partout au Maroc
@@ -85,6 +91,8 @@
         <a href="#" data-page="livraison">Livraison</a>
         <span>·</span>
         <a href="#" data-page="cgv">CGV</a>
+        <span>·</span>
+        <a href="#" data-page="certification">Certification</a>
       </div>
     </div>
   </nav>
@@ -104,30 +112,66 @@
           <div class="hero-orb orb-3"></div>
           <div id="particles" class="hero-particles"></div>
         </div>
-        <div class="hero-content">
-          <div class="hero-line reveal"></div>
-          <p class="hero-eyebrow reveal">Collection exclusive · Maroc</p>
-          <h1 class="hero-title reveal">
-            <em>L'art</em>
-            <span>du bijou rare</span>
-          </h1>
-          <p class="hero-desc reveal">Pièces uniques façonnées avec soin, pour celles qui portent l'élégance comme une seconde nature.</p>
-          <div class="hero-cta reveal">
-            <button class="btn-primary" data-page="catalog" data-filter="">
-              <span>Découvrir la collection</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-            <button class="btn-ghost" data-page="catalog" data-filter="pack">Voir les packs →</button>
+        <div class="hero-split">
+          <!-- Gauche : texte + CTA -->
+          <div class="hero-left">
+            <div class="hero-line reveal"></div>
+            <p class="hero-eyebrow reveal">Votre bijouterie en ligne · Maroc</p>
+            <h1 class="hero-title reveal">
+              <em>L'élégance</em>
+              <span>à portée de main</span>
+            </h1>
+            <p class="hero-desc reveal">Des bijoux d'exception façonnés pour celles qui savent que le luxe se vit au quotidien — livraison partout au Maroc.</p>
+            <div class="hero-cta reveal">
+              <button class="btn-primary" data-page="catalog" data-filter="">
+                <span>Découvrir la collection</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="btn-ghost" data-page="catalog" data-filter="pack">Voir les packs →</button>
+            </div>
+          </div>
+          <!-- Droite : 2 cartes dynamiques -->
+          <div class="hero-right reveal">
+            <div class="hero-card" id="heroCardNew">
+              <div class="hero-card-label">Nouveautés</div>
+              <div class="hero-card-img-wrap">
+                <img class="hero-card-img" src="" alt="" />
+                <div class="hero-card-placeholder">✦</div>
+              </div>
+              <div class="hero-card-info">
+                <span class="hero-card-name">—</span>
+                <span class="hero-card-price">—</span>
+              </div>
+            </div>
+            <div class="hero-card" id="heroCardFav">
+              <div class="hero-card-label">Coups de cœur</div>
+              <div class="hero-card-img-wrap">
+                <img class="hero-card-img" src="" alt="" />
+                <div class="hero-card-placeholder">◈</div>
+              </div>
+              <div class="hero-card-info">
+                <span class="hero-card-name">—</span>
+                <span class="hero-card-price">—</span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="hero-marquee">
           <div class="marquee-track">
-            <span>Colliers ◈</span><span>Bracelets ⟡</span><span>Bagues ◇</span>
-            <span>Boucles d'oreilles ◉</span><span>Packs ◆</span>
-            <span>Gravure sur mesure ✦ service payant</span><span>Livraison 48h ✦</span>
-            <span>Colliers ◈</span><span>Bracelets ⟡</span><span>Bagues ◇</span>
-            <span>Boucles d'oreilles ◉</span><span>Packs ◆</span>
-            <span>Gravure sur mesure ✦ service payant</span><span>Livraison 48h ✦</span>
+            <a class="marquee-item" data-page="catalog" data-filter="collier">Colliers ◈</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bracelet">Bracelets ⟡</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bague">Bagues ◇</a>
+            <a class="marquee-item" data-page="catalog" data-filter="boucle">Boucles d'oreilles ◉</a>
+            <a class="marquee-item" data-page="catalog" data-filter="pack">Packs ◆</a>
+            <span class="marquee-sep">Livraison 48h ✦</span>
+            <span class="marquee-sep">Paiement à la livraison ✦</span>
+            <a class="marquee-item" data-page="catalog" data-filter="collier">Colliers ◈</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bracelet">Bracelets ⟡</a>
+            <a class="marquee-item" data-page="catalog" data-filter="bague">Bagues ◇</a>
+            <a class="marquee-item" data-page="catalog" data-filter="boucle">Boucles d'oreilles ◉</a>
+            <a class="marquee-item" data-page="catalog" data-filter="pack">Packs ◆</a>
+            <span class="marquee-sep">Livraison 48h ✦</span>
+            <span class="marquee-sep">Paiement à la livraison ✦</span>
           </div>
         </div>
       </div>
@@ -203,29 +247,45 @@
         </div>
       </section>
 
-      <!-- Promise -->
-      <section class="section-promise">
+      <!-- Avis clients -->
+      <section class="section-reviews">
         <div class="container">
-          <div class="promise-grid">
-            <div class="promise-item reveal">
-              <div class="promise-num">01</div>
-              <h4>Artisanal</h4>
-              <p>Chaque pièce façonnée à la main par nos artisans</p>
+          <div class="section-head reveal">
+            <span class="section-label">Témoignages</span>
+            <h2 class="section-title">Ce qu'elles disent</h2>
+          </div>
+          <div class="reviews-grid">
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« Un collier magnifique, exactement comme sur les photos. L'emballage était somptueux, parfait pour offrir. Je recommande les yeux fermés ! »</p>
+              <div class="review-author">
+                <span class="review-name">Fatima Z.</span>
+                <span class="review-city">Casablanca</span>
+              </div>
             </div>
-            <div class="promise-item reveal">
-              <div class="promise-num">02</div>
-              <h4>Acier premium</h4>
-              <p>Inoxydable, hypoallergénique, longue durée</p>
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« Livraison ultra rapide, bijou de très belle qualité. Le bracelet ne s'est pas terni du tout après plusieurs semaines. Je suis conquise. »</p>
+              <div class="review-author">
+                <span class="review-name">Salma B.</span>
+                <span class="review-city">Rabat</span>
+              </div>
             </div>
-            <div class="promise-item reveal">
-              <div class="promise-num">03</div>
-              <h4>Livraison Maroc</h4>
-              <p>Partout au royaume en 48h chrono</p>
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« Service client très réactif sur WhatsApp, suivi impeccable. La bague dépasse toutes mes attentes — fine, élégante, parfaite. »</p>
+              <div class="review-author">
+                <span class="review-name">Nadia M.</span>
+                <span class="review-city">Marrakech</span>
+              </div>
             </div>
-            <div class="promise-item reveal">
-              <div class="promise-num">04</div>
-              <h4>Gravure sur mesure</h4>
-              <p>Service payant · tarif communiqué à la commande</p>
+            <div class="review-card reveal">
+              <div class="review-stars">✦✦✦✦✦</div>
+              <p class="review-text">« J'ai commandé un pack cadeau pour l'anniversaire de ma sœur. Elle était aux anges ! La présentation est vraiment haut de gamme. »</p>
+              <div class="review-author">
+                <span class="review-name">Imane R.</span>
+                <span class="review-city">Agadir</span>
+              </div>
             </div>
           </div>
         </div>
@@ -312,10 +372,10 @@
             </div>
             <div class="form-section">
               <h3 class="form-section-title">
-                <span class="form-step">03</span>Note (optionnel)
+                <span class="form-step">03</span>Message cadeau (optionnel)
               </h3>
               <div class="form-group">
-                <textarea name="note" placeholder="Ex : gravure souhaitée (service payant), message cadeau, instructions…" rows="3"></textarea>
+                <input type="text" name="note" placeholder="Ex : Bon anniversaire, avec tout mon amour…" />
               </div>
             </div>
             <button type="submit" class="btn-primary btn-full" id="submitOrder">
@@ -490,6 +550,113 @@
       </div>
     </section>
 
+    <!-- CONTACT -->
+    <section id="pageContact" class="page">
+      <div class="container legal-page">
+        <button class="back-btn" data-page="home">← Retour</button>
+        <h1 class="page-title">Contact</h1>
+        <div class="contact-layout">
+          <div class="contact-info reveal">
+            <div class="contact-block">
+              <span class="contact-label">WhatsApp</span>
+              <a href="https://wa.me/212600000000" class="contact-main-link" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                +212 6 00 00 00 00
+              </a>
+              <a href="https://wa.me/212600000000" class="btn-primary btn-whatsapp" target="_blank" rel="noopener">
+                <span>Écrire sur WhatsApp</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Téléphone</span>
+              <a href="tel:+212600000000" class="contact-main-link">+212 6 00 00 00 00</a>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Email</span>
+              <a href="mailto:contact@maroua-jewelry.ma" class="contact-main-link">contact@maroua-jewelry.ma</a>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Horaires</span>
+              <p class="contact-text">Lundi — Samedi, 9h — 20h<br>Dimanche : fermé</p>
+            </div>
+            <div class="contact-block">
+              <span class="contact-label">Réponse garantie</span>
+              <p class="contact-text">Nous répondons à toutes vos demandes sous <strong>2h</strong> pendant les heures d'ouverture.</p>
+            </div>
+          </div>
+          <div class="contact-deco reveal">
+            <div class="contact-quote">
+              <span class="contact-quote-sym">✦</span>
+              <p>Chaque question mérite une réponse. Chaque cliente mérite une attention particulière.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATION -->
+    <section id="pageCertification" class="page">
+      <div class="container legal-page">
+        <button class="back-btn" data-page="home">← Retour</button>
+        <h1 class="page-title">Nos matériaux</h1>
+        <p class="legal-updated">Qualité certifiée · Acier inoxydable 316L</p>
+        <div class="cert-layout">
+
+          <div class="cert-hero reveal">
+            <div class="cert-badge">
+              <span class="cert-badge-sym">◈</span>
+              <span class="cert-badge-text">316L</span>
+            </div>
+            <h2>L'acier chirurgical<br><em>au service de votre peau</em></h2>
+            <p>Chez Maroua Jewelry, nous utilisons exclusivement l'acier inoxydable de grade <strong>316L</strong>, le même utilisé en milieu médical et chirurgical — garantie d'une pureté et d'une durabilité sans compromis.</p>
+          </div>
+
+          <div class="cert-grid">
+            <div class="cert-item reveal">
+              <div class="cert-icon">✦</div>
+              <h4>Hypoallergénique</h4>
+              <p>L'acier 316L ne contient pas de nickel libre. Il est spécialement conçu pour les peaux les plus sensibles et les plus réactives.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◈</div>
+              <h4>Anti-oxydation</h4>
+              <p>Résistant à la corrosion, à la sueur et au contact de l'eau. Vos bijoux conservent leur éclat dans le temps, sans ternissement.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◇</div>
+              <h4>Longue durabilité</h4>
+              <p>Un bijou en acier 316L peut être porté quotidiennement pendant des années sans perdre sa brillance ni sa forme — avec un entretien minimal.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">⟡</div>
+              <h4>Finitions premium</h4>
+              <p>Nos bijoux bénéficient d'un placage or 18k ou d'un polissage miroir selon les modèles — réalisés avec soin pour un rendu luxueux.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◆</div>
+              <h4>Emballage signature</h4>
+              <p>Chaque pièce est livrée dans son écrin Maroua Jewelry — boîte rigide, ruban doré, papier de soie. Un cadeau prêt à offrir, sans supplément.</p>
+            </div>
+            <div class="cert-item reveal">
+              <div class="cert-icon">◉</div>
+              <h4>Garantie 3 mois</h4>
+              <p>Tous nos bijoux sont garantis 3 mois contre les défauts de fabrication. En cas de problème, nous assurons le remplacement ou le remboursement.</p>
+            </div>
+          </div>
+
+          <div class="cert-footer reveal">
+            <p>Des questions sur la qualité de nos bijoux ?</p>
+            <button class="btn-primary" data-page="contact">
+              <span>Nous contacter</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- CART DRAWER -->
@@ -557,7 +724,7 @@
             <span class="form-step">03</span>Note (optionnel)
           </h3>
           <div class="form-group">
-            <textarea name="note" placeholder="Ex : gravure souhaitée, message cadeau…" rows="3"></textarea>
+            <input type="text" name="note" placeholder="Message cadeau, instructions de livraison…" />
           </div>
         </div>
         <!-- Consentements -->
@@ -595,6 +762,111 @@
     <div class="lp-body" id="legalPanelBody"></div>
   </div>
 
+  <!-- ACCOUNT DRAWER -->
+  <div id="accountOverlay"></div>
+  <aside id="accountDrawer">
+    <div class="side-drawer-header">
+      <h2 class="side-drawer-title">Mon espace</h2>
+      <button class="drawer-close" id="accountClose">✕</button>
+    </div>
+    <div class="side-drawer-body">
+      <div class="account-avatar">
+        <span class="account-avatar-sym">◉</span>
+      </div>
+      <p class="account-hello">Bienvenue chez <strong>Maroua Jewelry</strong></p>
+      <p class="account-sub">Retrouvez ici l'historique de vos commandes après confirmation par notre équipe.</p>
+      <div class="account-orders" id="accountOrders">
+        <div class="account-empty">
+          <span>Aucune commande enregistrée pour le moment.</span>
+          <p>Passez votre première commande et elle apparaîtra ici.</p>
+          <button class="btn-primary" id="accountShopBtn" style="margin-top:1.4rem">
+            <span>Voir la collection</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTACT DRAWER -->
+  <div id="contactOverlay"></div>
+  <aside id="contactDrawer">
+    <div class="side-drawer-header">
+      <h2 class="side-drawer-title">Nous contacter</h2>
+      <button class="drawer-close" id="contactClose">✕</button>
+    </div>
+    <div class="side-drawer-body">
+      <p class="contact-drawer-sub">Nous répondons sous <strong>2h</strong> pendant les heures d'ouverture.</p>
+      <div class="contact-drawer-links">
+        <a href="https://wa.me/212600000000" class="contact-drawer-item" target="_blank" rel="noopener">
+          <div class="cdi-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="cdi-text">
+            <span class="cdi-label">WhatsApp</span>
+            <span class="cdi-val">+212 6 00 00 00 00</span>
+          </div>
+          <svg class="cdi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="tel:+212600000000" class="contact-drawer-item">
+          <div class="cdi-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.4 2 2 0 0 1 3.62 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.22 6.22l.97-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
+          </div>
+          <div class="cdi-text">
+            <span class="cdi-label">Téléphone</span>
+            <span class="cdi-val">+212 6 00 00 00 00</span>
+          </div>
+        </a>
+        <a href="mailto:contact@maroua-jewelry.ma" class="contact-drawer-item">
+          <div class="cdi-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="cdi-text">
+            <span class="cdi-label">Email</span>
+            <span class="cdi-val">contact@maroua-jewelry.ma</span>
+          </div>
+        </a>
+      </div>
+      <div class="contact-drawer-hours">
+        <span class="contact-label">Horaires</span>
+        <p>Lundi — Samedi · 9h — 20h</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CHAT BUTTON -->
+  <button class="chat-fab" id="chatFab" aria-label="Assistance">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <span class="chat-fab-dot"></span>
+  </button>
+
+  <!-- CHAT WINDOW -->
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-win-header">
+      <div class="chat-win-avatar">✦</div>
+      <div class="chat-win-info">
+        <span class="chat-win-name">Maroua Jewelry</span>
+        <span class="chat-win-status">En ligne</span>
+      </div>
+      <button class="drawer-close" id="chatClose">✕</button>
+    </div>
+    <div class="chat-win-body" id="chatBody">
+      <div class="chat-bubble bot">
+        Bonjour 👋 Bienvenue chez <strong>Maroua Jewelry</strong> !<br>Comment puis-je vous aider ?
+      </div>
+    </div>
+    <div class="chat-quick-replies" id="chatQuickReplies">
+      <button class="chat-qr" data-msg="Je veux voir la collection">Voir la collection</button>
+      <button class="chat-qr" data-msg="Infos sur la livraison">Livraison ?</button>
+      <button class="chat-qr" data-msg="Contact WhatsApp">WhatsApp</button>
+    </div>
+    <div class="chat-win-input">
+      <input type="text" id="chatInput" placeholder="Votre message…" />
+      <button id="chatSend">→</button>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toastContainer"></div>
 
@@ -609,6 +881,10 @@
   <script src="/js/api.js"></script>
   <script src="/js/checkout.js"></script>
   <script src="/js/pages.js"></script>
+  <script src="/js/account.js"></script>
+  <script src="/js/contact-drawer.js"></script>
+  <script src="/js/chat.js"></script>
+  <script src="/js/hero-cards.js"></script>
   <script src="/js/app.js"></script>
 
 </body>
