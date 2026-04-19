@@ -11,7 +11,10 @@
   --h:     72px;
   --ease:  cubic-bezier(.4,0,.2,1);
   --t:     .38s;
-  --r:     2px;
+  --r:     14px;    /* rayon standard (cards, boutons) */
+  --r-sm:  8px;     /* rayon petit (inputs, pills secondaires) */
+  --r-lg:  22px;    /* rayon large (drawers, gros blocs) */
+  --r-pill: 999px;  /* pilules parfaites */
 }
 
 /* DARK — brun chaud profond, pas de noir froid */
@@ -1307,22 +1310,22 @@ img { display: block; max-width: 100%; }
 #header::after {
   content: '';
   position: absolute; left: 0; right: 0; top: 100%;
-  height: 110px; pointer-events: none; z-index: 99;
+  height: 220px; pointer-events: none; z-index: 99;
 }
 /* Dark mode : header CRÈME → fond brun sombre */
 [data-theme="dark"] #header::after {
   background: linear-gradient(to bottom,
-    rgba(238,226,205,.42) 0%,
-    rgba(220,204,178,.18) 35%,
-    rgba(180,155,110,.06) 65%,
+    rgba(238,226,205,.88) 0%,
+    rgba(220,204,178,.50) 25%,
+    rgba(180,155,110,.14) 55%,
     transparent 100%);
 }
 /* Light mode : header BRUN SOMBRE → fond ivoire */
 [data-theme="light"] #header::after {
   background: linear-gradient(to bottom,
-    rgba(20,12,6,.36) 0%,
-    rgba(20,12,6,.16) 35%,
-    rgba(20,12,6,.05) 65%,
+    rgba(20,12,6,.82) 0%,
+    rgba(20,12,6,.44) 28%,
+    rgba(20,12,6,.12) 58%,
     transparent 100%);
 }
 
@@ -1335,7 +1338,7 @@ img { display: block; max-width: 100%; }
 .hero-split {
   flex: 1;
   display: grid; grid-template-columns: 1fr 1fr;
-  align-items: stretch;
+  align-items: center;
   max-width: 1340px; width: 100%; margin: 0 auto;
   padding: 5rem 2rem 4rem;
   gap: 5rem;
@@ -1343,8 +1346,9 @@ img { display: block; max-width: 100%; }
 }
 /* Gauche = cartes, Droite = texte */
 .hero-right {
-  display: flex; flex-direction: row; gap: 1rem;
-  align-items: stretch;
+  display: flex; flex-direction: row; gap: 1.4rem;
+  align-items: stretch; align-self: center;
+  max-height: 480px;
 }
 .hero-left {
   display: flex; flex-direction: column;
@@ -1363,7 +1367,8 @@ img { display: block; max-width: 100%; }
   cursor: pointer;
   transition: transform .5s var(--ease);
   position: relative; overflow: visible;
-  min-height: 260px;
+  min-height: 300px;
+  max-height: 460px;
 }
 .hero-card:hover { transform: translateY(-5px); }
 
@@ -1903,3 +1908,95 @@ img { display: block; max-width: 100%; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; align-items: flex-start; }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   ANGLES ARRONDIS — appliqués sur tous les éléments du site
+═══════════════════════════════════════════════════════════════════ */
+
+/* Pilules (étiquettes, tags, quick-reply, marquee items) */
+.hero-card-label,
+.badge, .tag,
+.marquee-item,
+.quick-reply,
+.filter-chip,
+.cat-tag,
+.product-tag { border-radius: var(--r-pill); }
+
+/* Boutons principaux + CTA */
+.btn, .btn-primary, .btn-secondary, .btn-ghost,
+.cta, .cta-primary, .cta-ghost,
+.hero-cta a, .hero-cta button,
+button[type="submit"],
+.add-to-cart, .checkout-btn,
+.drawer-footer button,
+.form-submit { border-radius: var(--r); }
+
+/* Champs de formulaire */
+input[type="text"], input[type="email"], input[type="tel"],
+input[type="number"], input[type="password"], input[type="search"],
+input[type="url"], textarea, select,
+.form-field input, .form-field textarea, .form-field select,
+.input, .textarea, .select { border-radius: var(--r-sm); }
+
+/* Cartes produits et images produits */
+.product-card,
+.product-details,
+.product-img, .product-image,
+.product-thumb,
+.product-card img { border-radius: var(--r); }
+
+/* Catégories */
+.cat-card { border-radius: var(--r); }
+
+/* Avis clients */
+.review-card { border-radius: var(--r); }
+
+/* Hero cards */
+.hero-card-label { padding: .32rem .9rem; }
+.hero-card-img-wrap img { border-radius: var(--r-lg); }
+
+/* Drawers (panier, compte, contact, menu mobile) — coins arrondis côté intérieur */
+#cartDrawer, #mobileDrawer, #accountDrawer, #contactDrawer {
+  border-top-right-radius: var(--r-lg);
+  border-bottom-right-radius: var(--r-lg);
+}
+#cartDrawer {
+  border-top-left-radius: var(--r-lg);
+  border-bottom-left-radius: var(--r-lg);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.drawer-item, .cart-item, .account-item, .contact-drawer-item { border-radius: var(--r-sm); }
+
+/* Chat */
+.chat-window { border-radius: var(--r-lg); overflow: hidden; }
+.chat-message { border-radius: var(--r); }
+.chat-message.user { border-bottom-right-radius: var(--r-sm); }
+.chat-message.bot  { border-bottom-left-radius: var(--r-sm); }
+.chat-input, .chat-input input { border-radius: var(--r-pill); }
+.chat-send { border-radius: 50%; }
+
+/* Toasts */
+.toast { border-radius: var(--r); }
+
+/* Certifications */
+.cert-item, .cert-card { border-radius: var(--r); }
+
+/* Landing / pages légales blocs */
+.lp-card, .lp-block, .info-block { border-radius: var(--r); }
+
+/* Footer inputs si newsletter */
+.footer input, .footer button { border-radius: var(--r-sm); }
+
+/* Images génériques dans le contenu */
+.content img, .page-content img { border-radius: var(--r-sm); }
+
+/* Overlay modaux */
+.modal, .modal-content, .dialog { border-radius: var(--r-lg); }
+
+/* Pagination / tabs */
+.tab, .tab-btn, .page-btn { border-radius: var(--r-sm); }
+
+/* Avatar (rond ou arrondi selon contexte) */
+.review-author-dot { border-radius: 50%; }
+.avatar { border-radius: 50%; }
