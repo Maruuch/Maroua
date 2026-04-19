@@ -2160,6 +2160,32 @@ input[type="url"], textarea, select,
   color: var(--text);
 }
 
+/* Stats bar — nb_commandes + total_achats */
+.acc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+.acc-stat {
+  display: flex; flex-direction: column; align-items: center;
+  padding: .9rem .8rem;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+}
+.acc-stat-val {
+  font-family: var(--serif);
+  font-size: 1.35rem; font-weight: 500;
+  color: var(--gold);
+  line-height: 1.1;
+}
+.acc-stat-lbl {
+  font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--text3);
+  margin-top: .25rem;
+}
+
 /* Tabs nav */
 .acc-nav {
   display: flex; gap: .4rem;
@@ -2219,6 +2245,7 @@ input[type="url"], textarea, select,
 }
 .acc-order-status.is-delivered { background: rgba(92,158,110,.15); color: var(--success); }
 .acc-order-status.is-pending   { background: rgba(212,170,98,.15);  color: var(--gold); }
+.acc-order-status.is-shipped   { background: rgba(120,160,200,.18); color: #6a95bf; }
 .acc-order-status.is-cancelled { background: rgba(192,80,80,.15);    color: var(--error); }
 .acc-order-foot {
   display: flex; justify-content: space-between; align-items: center;
