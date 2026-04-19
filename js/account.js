@@ -126,9 +126,39 @@ const AccountDrawer = (() => {
         if (el) el.value = u[k] || '';
       });
     }
+
+    // Stats (nb_commandes / total_achats renvoyés par n8n dans user.stats)
+    const statsBox = $('#accStats');
+    const stats = u.stats || {};
+    const count = Number(stats.orders_count || stats.nb_commandes || 0);
+    const spent = Number(stats.total_spent  || stats.total_achats  || 0);
+    if (statsBox) {
+      if (count > 0 || spent > 0) {
+        statsBox.hidden = false;
+        const c = $('#accStatOrders'); if (c) c.textContent = count;
+        const s = $('#accStatSpent');  if (s) s.textContent = `${spent.toLocaleString('fr-FR')} MAD`;
+      } else {
+        statsBox.hidden = true;
+      }
+    }
+
     // Charger les commandes
     fetchOrders();
   }
+
+  // Mapping statut Notion → { label FR, classe CSS }
+  const STATUS_MAP = {
+    'Confirme':   { label: 'Confirmée',  cls: 'is-pending'   },
+    'Expedie':    { label: 'Expédiée',   cls: 'is-shipped'   },
+    'Archive':    { label: 'Archivée',   cls: 'is-delivered' },
+    'Erreur':     { label: 'Erreur',     cls: 'is-cancelled' },
+    // Compat legacy (si n8n renvoie des valeurs anglaises)
+    'delivered':  { label: 'Livrée',        cls: 'is-delivered' },
+    'pending':    { label: 'En attente',    cls: 'is-pending'   },
+    'shipped':    { label: 'Expédiée',      cls: 'is-shipped'   },
+    'cancelled':  { label: 'Annulée',       cls: 'is-cancelled' },
+    'processing': { label: 'En préparation',cls: 'is-pending'   }
+  };
 
   async function fetchOrders() {
     const list = $('#accOrdersList');
@@ -158,14 +188,10 @@ const AccountDrawer = (() => {
       return;
     }
     list.innerHTML = currentOrders.map(o => {
-      const status = (o.status || 'pending').toLowerCase();
-      const statusLabel = ({
-        delivered: 'Livrée', pending: 'En attente', shipped: 'Expédiée',
-        cancelled: 'Annulée', processing: 'En préparation'
-      })[status] || o.status || 'En attente';
-      const statusClass = status === 'delivered' ? 'is-delivered'
-                        : status === 'cancelled' ? 'is-cancelled'
-                        : 'is-pending';
+      const rawStatus = o.status || 'Confirme';
+      const match = STATUS_MAP[rawStatus] || STATUS_MAP[rawStatus.toLowerCase()] || { label: rawStatus, cls: 'is-pending' };
+      const statusLabel = match.label;
+      const statusClass = match.cls;
       const total = typeof o.total === 'number' ? `${o.total.toLocaleString()} MAD` : (o.total || '');
       const date = o.date ? new Date(o.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }) : '';
       return `
