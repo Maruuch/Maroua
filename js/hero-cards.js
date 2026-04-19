@@ -74,10 +74,19 @@ const HeroCards = (() => {
 
       const newProds = _getByTag('Nouveau');
       const favProds = _getByTag('Bestseller');
+      const all = Store.getProducts().filter(p => p.stock > 0);
 
-      // Fallback si tags vides : prendre n'importe quels produits
-      const pNew = newProds.length ? newProds : Store.getProducts().slice(0, 3);
-      const pFav = favProds.length ? favProds : Store.getProducts().slice(1, 4);
+      // Fallback si tags vides : toujours afficher quelque chose
+      const pNew = newProds.length ? newProds : (all.length ? all.slice(0, 3) : []);
+      // Si pas de bestsellers : décale d'1 produit, sinon revient au premier
+      let pFav;
+      if (favProds.length) {
+        pFav = favProds;
+      } else if (all.length > 1) {
+        pFav = all.slice(1).concat(all.slice(0, 1));
+      } else {
+        pFav = all;
+      }
 
       if (newTimer) clearInterval(newTimer);
       if (favTimer) clearInterval(favTimer);
