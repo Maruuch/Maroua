@@ -701,7 +701,7 @@
       </div>
 
       <div class="footer-bottom">
-        <span class="footer-copy">© 2024 Maroua Jewelry — Tous droits réservés</span>
+        <span class="footer-copy">© 2026 Maroua Jewelry — Tous droits réservés</span>
         <nav class="footer-legal" aria-label="Liens légaux">
           <a href="#" data-page="cgv">CGV</a>
           <a href="#" data-page="livraison">Livraison</a>
@@ -818,19 +818,188 @@
   <div id="accountOverlay"></div>
   <aside id="accountDrawer">
     <div class="side-drawer-header">
-      <h2 class="side-drawer-title">Mon espace</h2>
+      <h2 class="side-drawer-title" id="accountTitle">Mon espace</h2>
       <button class="drawer-close" id="accountClose">✕</button>
     </div>
-    <div class="side-drawer-body">
-      <div class="account-orders" id="accountOrders">
-        <div class="account-empty">
-          <div class="account-empty-sym">✦</div>
-          <p>Aucune commande pour le moment.</p>
-          <button class="btn-primary" id="accountShopBtn">
-            <span>Voir la collection</span>
+    <div class="side-drawer-body" id="accountBody">
+
+      <!-- ───── VUE 1 : NON CONNECTÉ — LOGIN ───── -->
+      <section class="acc-view" id="accView-login">
+        <p class="acc-lead">Accédez à votre espace pour suivre vos commandes et gérer votre profil.</p>
+
+        <div class="acc-oauth">
+          <button type="button" class="acc-oauth-btn acc-google" data-oauth="google">
+            <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+              <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+              <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.34A9 9 0 0 0 9 18z"/>
+              <path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.06l3.01-2.34z"/>
+              <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.94l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/>
+            </svg>
+            <span>Continuer avec Google</span>
+          </button>
+          <button type="button" class="acc-oauth-btn acc-apple" data-oauth="apple">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+            </svg>
+            <span>Continuer avec Apple</span>
           </button>
         </div>
-      </div>
+
+        <div class="acc-divider"><span>ou avec votre email</span></div>
+
+        <form class="acc-form" id="accFormLogin">
+          <label class="acc-field">
+            <span class="acc-label">Email</span>
+            <input type="email" name="email" required autocomplete="email" placeholder="vous@exemple.com" />
+          </label>
+          <label class="acc-field">
+            <span class="acc-label">Mot de passe</span>
+            <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+          </label>
+          <div class="acc-error" id="accLoginError" hidden></div>
+          <button type="submit" class="btn-primary acc-submit">
+            <span>Se connecter</span>
+          </button>
+          <button type="button" class="acc-link-btn" data-acc-go="forgot">Mot de passe oublié ?</button>
+        </form>
+
+        <p class="acc-switch">
+          Pas encore de compte ?
+          <button type="button" class="acc-link-btn" data-acc-go="register">Créer un compte</button>
+        </p>
+      </section>
+
+      <!-- ───── VUE 2 : NON CONNECTÉ — REGISTER ───── -->
+      <section class="acc-view" id="accView-register" hidden>
+        <p class="acc-lead">Créez votre compte Maroua Jewelry — vos commandes, vos favoris, en un endroit.</p>
+
+        <div class="acc-oauth">
+          <button type="button" class="acc-oauth-btn acc-google" data-oauth="google">
+            <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+              <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+              <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.34A9 9 0 0 0 9 18z"/>
+              <path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.06l3.01-2.34z"/>
+              <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.94l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/>
+            </svg>
+            <span>Continuer avec Google</span>
+          </button>
+          <button type="button" class="acc-oauth-btn acc-apple" data-oauth="apple">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+            </svg>
+            <span>Continuer avec Apple</span>
+          </button>
+        </div>
+
+        <div class="acc-divider"><span>ou inscrivez-vous</span></div>
+
+        <form class="acc-form" id="accFormRegister">
+          <label class="acc-field">
+            <span class="acc-label">Nom complet</span>
+            <input type="text" name="name" required autocomplete="name" placeholder="Marie Dupont" />
+          </label>
+          <label class="acc-field">
+            <span class="acc-label">Email</span>
+            <input type="email" name="email" required autocomplete="email" placeholder="vous@exemple.com" />
+          </label>
+          <label class="acc-field">
+            <span class="acc-label">Téléphone</span>
+            <input type="tel" name="phone" required autocomplete="tel" placeholder="+212 6 00 00 00 00" />
+          </label>
+          <label class="acc-field">
+            <span class="acc-label">Mot de passe</span>
+            <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="8 caractères minimum" />
+          </label>
+          <div class="acc-error" id="accRegisterError" hidden></div>
+          <button type="submit" class="btn-primary acc-submit">
+            <span>Créer mon compte</span>
+          </button>
+        </form>
+
+        <p class="acc-switch">
+          Déjà un compte ?
+          <button type="button" class="acc-link-btn" data-acc-go="login">Se connecter</button>
+        </p>
+      </section>
+
+      <!-- ───── VUE 3 : NON CONNECTÉ — FORGOT PASSWORD ───── -->
+      <section class="acc-view" id="accView-forgot" hidden>
+        <p class="acc-lead">Saisissez votre email — nous vous enverrons un lien pour réinitialiser votre mot de passe.</p>
+        <form class="acc-form" id="accFormForgot">
+          <label class="acc-field">
+            <span class="acc-label">Email</span>
+            <input type="email" name="email" required placeholder="vous@exemple.com" />
+          </label>
+          <div class="acc-error" id="accForgotMsg" hidden></div>
+          <button type="submit" class="btn-primary acc-submit">
+            <span>Envoyer le lien</span>
+          </button>
+        </form>
+        <p class="acc-switch">
+          <button type="button" class="acc-link-btn" data-acc-go="login">← Retour à la connexion</button>
+        </p>
+      </section>
+
+      <!-- ───── VUE 4 : CONNECTÉ — DASHBOARD ───── -->
+      <section class="acc-view" id="accView-dashboard" hidden>
+        <div class="acc-greeting">
+          <div class="acc-avatar" id="accAvatar">M</div>
+          <div class="acc-greeting-text">
+            <span class="acc-hello">Bonjour</span>
+            <strong class="acc-username" id="accUsername">—</strong>
+          </div>
+        </div>
+
+        <nav class="acc-nav">
+          <button type="button" class="acc-nav-btn is-active" data-acc-tab="orders">
+            <span>Mes commandes</span>
+          </button>
+          <button type="button" class="acc-nav-btn" data-acc-tab="profile">
+            <span>Mes informations</span>
+          </button>
+        </nav>
+
+        <!-- Tab : Commandes -->
+        <div class="acc-tab" id="accTab-orders">
+          <div class="acc-orders-list" id="accOrdersList">
+            <div class="acc-loading">Chargement de vos commandes…</div>
+          </div>
+        </div>
+
+        <!-- Tab : Profil -->
+        <div class="acc-tab" id="accTab-profile" hidden>
+          <form class="acc-form" id="accFormProfile">
+            <label class="acc-field">
+              <span class="acc-label">Nom complet</span>
+              <input type="text" name="name" autocomplete="name" />
+            </label>
+            <label class="acc-field">
+              <span class="acc-label">Email</span>
+              <input type="email" name="email" autocomplete="email" disabled />
+              <small class="acc-hint">Email non modifiable</small>
+            </label>
+            <label class="acc-field">
+              <span class="acc-label">Téléphone</span>
+              <input type="tel" name="phone" autocomplete="tel" />
+            </label>
+            <label class="acc-field">
+              <span class="acc-label">Ville</span>
+              <input type="text" name="city" autocomplete="address-level2" />
+            </label>
+            <label class="acc-field">
+              <span class="acc-label">Adresse complète</span>
+              <textarea name="address" rows="2" autocomplete="street-address"></textarea>
+            </label>
+            <div class="acc-error" id="accProfileMsg" hidden></div>
+            <button type="submit" class="btn-primary acc-submit">
+              <span>Enregistrer</span>
+            </button>
+          </form>
+        </div>
+
+        <button type="button" class="acc-logout" id="accLogout">Se déconnecter</button>
+      </section>
+
     </div>
   </aside>
 
