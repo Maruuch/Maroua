@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "generated_at": "2026-04-19T12:00:47.906Z",
+    "generated_at": "2026-04-19T13:59:22.726Z",
     "generated_by": "n8n W1 — Sync Produits",
-    "count": 1,
+    "count": 2,
     "version": "1.0"
   },
   "products": [
@@ -11,12 +11,12 @@
       "notion_id": "3434c075-4c05-80b8-999b-dc66565c3629",
       "sku": "",
       "slug": "produit-1",
-      "name": "Bague test",
+      "name": "Promesse Dorée",
       "type": "bague",
       "etat": "Neuf",
-      "description_courte": "test produit bague",
-      "description_longue": "longue description pour tester",
-      "price": 100,
+      "description_courte": "Bague raffinée en acier inoxydable premium, sublimée par une pierre centrale lumineuse entourée de délicats éclats. Élégance discrète et brillance durable pour un style intemporel.",
+      "description_longue": "Apportez une touche de finesse et de lumière à votre style avec cette bague en acier inoxydable premium, au design délicat et sophistiqué.\n\nSon élément central, une pierre douce aux reflets laiteux, est élégamment mise en valeur par une couronne de petits cristaux scintillants. L’ensemble crée un jeu de lumière subtil, parfait pour illuminer la main avec élégance sans en faire trop.\n\nSa finition dorée apporte une note chaleureuse et moderne, idéale pour un usage quotidien comme pour des occasions spéciales. Conçue en acier inoxydable de haute qualité, cette bague résiste à l’eau, ne ternit pas et conserve son éclat dans le temps.\n\nLégère et confortable, elle se porte facilement seule pour un look minimaliste ou en accumulation pour un style plus affirmé.\n\nUn bijou pensé pour durer, alliant résistance, élégance et délicatesse.",
+      "price": 99,
       "stock": 5,
       "tag": "Nouveau",
       "sym": "◇",
@@ -34,6 +34,36 @@
         "/images/1-7.webp",
         "/images/1-8.webp",
         "/images/1-9.webp"
+      ]
+    },
+    {
+      "id": 2,
+      "notion_id": "3474c075-4c05-80f5-921b-c8b47eab2b4e",
+      "sku": "",
+      "slug": "produit-2",
+      "name": "Luna Solitaire",
+      "type": "collier",
+      "etat": "Neuf",
+      "description_courte": "Collier fin en acier inoxydable premium, sublimé par un pendentif lumineux type solitaire. Élégance minimaliste et éclat durable pour un style raffiné au quotidien.",
+      "description_longue": "Sublimez votre décolleté avec ce collier délicat en acier inoxydable de qualité premium, conçu pour celles qui recherchent une élégance discrète mais remarquable.\n\nSon pendentif solitaire capte la lumière à chaque mouvement, apportant une touche de brillance subtile et raffinée. Son design minimaliste en fait un bijou intemporel, parfait pour être porté seul ou superposé avec d’autres colliers.\n\nSa finition dorée apporte chaleur et sophistication, tandis que sa conception en acier inoxydable garantit une excellente résistance : il ne ternit pas, résiste à l’eau et conserve son éclat au fil du temps.\n\nLéger et confortable, ce collier est idéal pour un usage quotidien comme pour accompagner vos moments les plus précieux.\n\nUn bijou simple, élégant et durable — le détail parfait qui fait toute la différence.",
+      "price": 199,
+      "stock": 5,
+      "tag": "coup de coeur",
+      "sym": "◇",
+      "actif": true,
+      "variant_group_id": null,
+      "ordre": 99,
+      "images": [
+        "/images/2.webp",
+        "/images/2-1.webp",
+        "/images/2-2.webp",
+        "/images/2-3.webp",
+        "/images/2-4.webp",
+        "/images/2-5.webp",
+        "/images/2-6.webp",
+        "/images/2-7.webp",
+        "/images/2-8.webp",
+        "/images/2-9.webp"
       ]
     }
   ]
