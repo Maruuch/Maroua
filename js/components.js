@@ -150,14 +150,26 @@ const Components = (() => {
       { key: 'quantite',              label: 'Quantité par lot' },
       { key: 'etat',                  label: 'État' }
     ];
+    // Helper : normalise string ou array en "Valeur · Valeur · Valeur"
+    const formatSpecValue = (v) => {
+      if (v === null || v === undefined || v === '') return '';
+      let parts;
+      if (Array.isArray(v))                       parts = v;
+      else if (typeof v === 'string' && v.includes(','))
+                                                  parts = v.split(',');
+      else                                        parts = [String(v)];
+      parts = parts.map(s => String(s).trim()).filter(Boolean);
+      return parts.join('<span class="spec-sep">·</span>');
+    };
+
     const specsHTML = specFields
       .map(f => {
-        const v = p[f.key];
-        if (v === null || v === undefined || v === '') return '';
+        const formatted = formatSpecValue(p[f.key]);
+        if (!formatted) return '';
         return `
           <div class="spec-row">
             <span class="spec-label">${f.label}</span>
-            <span class="spec-value">${v}</span>
+            <span class="spec-value">${formatted}</span>
           </div>`;
       })
       .filter(Boolean)
