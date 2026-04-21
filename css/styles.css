@@ -948,39 +948,40 @@ img { display: block; max-width: 100%; }
   color: var(--text2);
 }
 
-/* Grille Caractéristiques */
+/* Grille Caractéristiques — stack label/value, auto-fit, pas de chevauchement */
 .spec-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
-  background: var(--bg);
+  background: var(--border);   /* les "lignes" du tableau = le gap visible */
 }
 .spec-row {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 1rem; padding: .85rem 1.1rem;
-  border-bottom: 1px solid var(--border);
-  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: .35rem;
+  padding: .95rem 1.1rem;
+  background: var(--bg);       /* cache le fond border => effet grille */
   font-family: var(--sans);
-  font-size: .82rem;
+  font-size: .85rem;
   transition: background .25s var(--ease);
+  min-width: 0;                /* évite les overflow dans les grilles */
 }
 .spec-row:hover { background: var(--gold-dim); }
-.spec-row:nth-child(2n)        { border-right: none; }
-.spec-row:nth-last-child(-n+2) { border-bottom: none; }
-.spec-row:last-child           { border-bottom: none; }
+
 .spec-label {
   color: var(--text3);
-  font-size: .72rem; letter-spacing: .1em; text-transform: uppercase;
-  font-weight: 500;
+  font-size: .66rem; letter-spacing: .16em; text-transform: uppercase;
+  font-weight: 600;
 }
 .spec-value {
   color: var(--text);
   font-weight: 500;
-  text-align: right;
+  line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
+.spec-value .spec-sep { margin: 0 .4em; color: var(--border2); }
 
 /* ── RECENTLY VIEWED ───────────────────────────────────────── */
 .recent-section {
@@ -2108,8 +2109,6 @@ img { display: block; max-width: 100%; }
   .detail-qty { width: 100%; justify-content: center; }
   .detail-add { width: 100%; }
   .spec-grid { grid-template-columns: 1fr; }
-  .spec-row { border-right: none !important; }
-  .spec-row:last-child { border-bottom: none !important; }
   .recent-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-title { font-size: 2.6rem; }
   .hero-right { flex-direction: column; height: auto; }
