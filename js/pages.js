@@ -69,6 +69,18 @@ const Pages = (() => {
     }
     container.appendChild(Components.productDetail(p));
 
+    // Historique : enregistre APRES rendu, pour éviter d'apparaître dans sa propre section
+    try { RecentlyViewed.push(p.id); } catch {}
+
+    // Section "Derniers produits consultés" (exclut le produit actuel)
+    const recentList = RecentlyViewed.products(p.id, 6);
+    const recentSection = Components.recentlyViewedSection(recentList);
+    const recentHost = $('recentlyViewed');
+    if (recentHost) {
+      recentHost.innerHTML = '';
+      if (recentSection) recentHost.appendChild(recentSection);
+    }
+
     $('backBtn').onclick = () => Store.navigate('catalog', { filter: p.type });
   }
 
