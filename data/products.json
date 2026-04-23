@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-04-23T21:00:55.946Z",
+    "generated_at": "2026-04-23T22:00:55.721Z",
     "generated_by": "n8n W1 — Sync Produits",
     "count": 2,
     "version": "1.1"
@@ -17,7 +17,7 @@
       "description_courte": "Bague raffinée en acier inoxydable premium, sublimée par une pierre centrale lumineuse entourée de délicats éclats. Élégance discrète et brillance durable pour un style intemporel.",
       "description_longue": "Apportez une touche de finesse et de lumière à votre style avec cette bague en acier inoxydable premium, au design délicat et sophistiqué.\n\nSon élément central, une pierre douce aux reflets laiteux, est élégamment mise en valeur par une couronne de petits cristaux scintillants. L’ensemble crée un jeu de lumière subtil, parfait pour illuminer la main avec élégance sans en faire trop.\n\nSa finition dorée apporte une note chaleureuse et moderne, idéale pour un usage quotidien comme pour des occasions spéciales. Conçue en acier inoxydable de haute qualité, cette bague résiste à l’eau, ne ternit pas et conserve son éclat dans le temps.\n\nLégère et confortable, elle se porte facilement seule pour un look minimaliste ou en accumulation pour un style plus affirmé.\n\nUn bijou pensé pour durer, alliant résistance, élégance et délicatesse.",
       "price": 99,
-      "stock": 0,
+      "stock": 3,
       "tag": "Nouveau",
       "sym": "◇",
       "actif": true,
