@@ -15,6 +15,7 @@ const AccountDrawer = (() => {
       login:       '/api/account/login',
       register:    '/api/account/register',
       forgot:      '/api/account/forgot',
+      reset:       '/api/account/reset',
       profile:     '/api/account/profile',
       profileUpdate:'/api/account/profile/update',
       orders:      '/api/account/orders',
@@ -98,7 +99,8 @@ const AccountDrawer = (() => {
     if (title) {
       const map = {
         login:'Connexion', register:'Créer un compte',
-        forgot:'Mot de passe oublié', dashboard:'Mon espace',
+        forgot:'Mot de passe oublié', reset:'Nouveau mot de passe',
+        dashboard:'Mon espace',
       };
       title.textContent = map[name] || 'Mon espace';
     }
@@ -305,23 +307,89 @@ const AccountDrawer = (() => {
     window.location.href = `${url}?return_to=${returnTo}`;
   }
 
-  // ── Post-OAuth callback (si URL contient ?token=...&user=...) ──
-  function consumeOAuthCallback() {
+  // ── Nettoyage URL (helper commun) ──
+  function cleanUrl(keysToRemove) {
+    const p = new URLSearchParams(window.location.search);
+    keysToRemove.forEach(k => p.delete(k));
+    const qs = p.toString();
+    const clean = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
+    history.replaceState({}, '', clean);
+  }
+
+  // ── Post-OAuth callback (si URL contient ?mj_token=&mj_email=&mj_name=) ──
+  async function consumeOAuthCallback() {
     const p = new URLSearchParams(window.location.search);
     const token = p.get('mj_token');
-    const userJson = p.get('mj_user');
-    if (token && userJson) {
-      try {
-        const user = JSON.parse(decodeURIComponent(userJson));
-        saveSession({ token, user });
-        // Nettoyer l'URL
-        p.delete('mj_token'); p.delete('mj_user');
-        const clean = window.location.pathname + (p.toString() ? '?' + p.toString() : '');
-        history.replaceState({}, '', clean);
-        open();
-        showView('dashboard');
-        renderDashboard();
-      } catch {}
+    const email = p.get('mj_email');
+    const name  = p.get('mj_name');
+    if (!token) return false;
+
+    // Session initiale minimale
+    const baseUser = {
+      email: email ? decodeURIComponent(email) : '',
+      name:  name  ? decodeURIComponent(name)  : '',
+    };
+    saveSession({ token, user: baseUser });
+    cleanUrl(['mj_token', 'mj_email', 'mj_name']);
+
+    // Récupérer le profil complet (city, address, stats…) en arrière-plan
+    try {
+      const data = await apiCall(CFG.endpoints.profile, 'GET');
+      if (data && data.user) {
+        currentUser = Object.assign({}, baseUser, data.user);
+        saveSession({ token, user: currentUser });
+      }
+    } catch {}
+
+    open();
+    showView('dashboard');
+    renderDashboard();
+    return true;
+  }
+
+  // ── Reset callback (si URL contient ?acc_reset=<token>) ──
+  function consumeResetCallback() {
+    const p = new URLSearchParams(window.location.search);
+    const resetToken = p.get('acc_reset');
+    if (!resetToken) return false;
+
+    cleanUrl(['acc_reset']);
+    open();
+    showView('reset');
+
+    // Pré-remplir le hidden input avec le token
+    const f = $('#accFormReset');
+    if (f) {
+      const h = f.querySelector('[name="reset_token"]');
+      if (h) h.value = resetToken;
+    }
+    return true;
+  }
+
+  async function handleResetSubmit(e) {
+    e.preventDefault();
+    const f = e.target;
+    const msgEl = $('#accResetMsg');
+    hideError(msgEl);
+    const reset_token  = f.reset_token.value;
+    const new_password = f.password.value;
+    const confirm      = f.password2.value;
+    if (new_password.length < 8) {
+      return showError(msgEl, 'Le mot de passe doit faire au moins 8 caractères.');
+    }
+    if (new_password !== confirm) {
+      return showError(msgEl, 'Les deux mots de passe ne correspondent pas.');
+    }
+    try {
+      const data = await apiCall(CFG.endpoints.reset, 'POST', { reset_token, new_password });
+      if (!data.token || !data.user) throw new Error('Réponse invalide du serveur');
+      saveSession(data);
+      showView('dashboard');
+      renderDashboard();
+    } catch (err) {
+      showError(msgEl, err.message === 'invalid_token' || err.message === 'expired_token'
+        ? 'Ce lien de réinitialisation est invalide ou expiré. Demandez-en un nouveau.'
+        : (err.message || 'Impossible de réinitialiser le mot de passe.'));
     }
   }
 
@@ -353,7 +421,10 @@ const AccountDrawer = (() => {
   // ── Init ──
   function init() {
     loadSession();
-    consumeOAuthCallback();
+    // Priorité : reset > oauth > état session normal
+    if (!consumeResetCallback()) {
+      consumeOAuthCallback();
+    }
 
     // Open / close
     const btn = $('#accountBtn');
@@ -367,6 +438,7 @@ const AccountDrawer = (() => {
     const fLogin = $('#accFormLogin');       if (fLogin) fLogin.addEventListener('submit', handleLogin);
     const fRegister = $('#accFormRegister'); if (fRegister) fRegister.addEventListener('submit', handleRegister);
     const fForgot = $('#accFormForgot');     if (fForgot) fForgot.addEventListener('submit', handleForgot);
+    const fReset = $('#accFormReset');       if (fReset) fReset.addEventListener('submit', handleResetSubmit);
     const fProfile = $('#accFormProfile');   if (fProfile) fProfile.addEventListener('submit', handleProfileSave);
 
     // Navigation entre vues (data-acc-go)
