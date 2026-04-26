@@ -1115,6 +1115,21 @@
   <script src="/js/api.js"></script>
   <script src="/js/checkout.js"></script>
   <script src="/js/pages.js"></script>
+  <script>
+    // ⚙️ Endpoints compte client — n8n exposé via tunnel ngrok (domaine statique)
+    window.ACCOUNT_CONFIG = {
+      endpoints: {
+        login:         'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/login',
+        register:      'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/register',
+        forgot:        'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/forgot',
+        reset:         'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/reset',
+        profile:       'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/profile',
+        profileUpdate: 'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/profile/update',
+        orders:        'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/orders',
+        oauthGoogle:   'https://negotiate-zips-durably.ngrok-free.dev/webhook/account/oauth/google'
+      }
+    };
+  </script>
   <script src="/js/account.js"></script>
   <script src="/js/contact-drawer.js"></script>
   <script src="/js/chat.js"></script>
