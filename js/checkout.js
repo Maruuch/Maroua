@@ -2,6 +2,45 @@
 // 💳 CHECKOUT — formulaire + soumission commande
 // ================================================================
 
+// Mapping user (compte) → champs formulaire commande
+// user.name    → nom
+// user.email   → email
+// user.phone   → telephone
+// user.city    → ville
+// user.address → adresse
+function _prefillCheckoutForm(form) {
+  if (!form) return;
+  let user = null;
+  try {
+    if (typeof AccountDrawer !== 'undefined'
+      && AccountDrawer.isLoggedIn && AccountDrawer.isLoggedIn()
+      && AccountDrawer.getUser) {
+      user = AccountDrawer.getUser();
+    }
+  } catch (_) { /* no-op */ }
+  if (!user) return;
+
+  const map = {
+    nom:        user.name    || user.nom        || '',
+    email:      user.email   || '',
+    telephone:  user.phone   || user.telephone  || '',
+    ville:      user.city    || user.ville      || '',
+    adresse:    user.address || user.adresse    || '',
+    code_postal:user.postal_code || user.zip || user.code_postal || '',
+  };
+
+  Object.keys(map).forEach(name => {
+    const el = form.elements[name];
+    if (!el) return;
+    // Ne pas écraser une saisie utilisateur en cours
+    if (el.value && el.value.trim() !== '') return;
+    if (map[name]) {
+      el.value = map[name];
+      el.classList.remove('error');
+    }
+  });
+}
+
 const Checkout = (() => {
 
   function init() {
@@ -20,9 +59,12 @@ const Checkout = (() => {
   function render() {
     const summaryEl = document.getElementById('checkoutSummary');
     Components.checkoutSummary(summaryEl);
+    const form = document.getElementById('checkoutForm');
     // Reset form
-    document.getElementById('checkoutForm').reset();
+    form.reset();
     document.querySelectorAll('.form-group input.error').forEach(el => el.classList.remove('error'));
+    // Pré-remplissage si client connecté
+    _prefillCheckoutForm(form);
   }
 
   function _validate(form) {
@@ -93,9 +135,12 @@ const CheckoutDrawer = (() => {
 
   function open() {
     _renderSummary();
-    document.getElementById('checkoutDrawerForm').reset();
+    const form = document.getElementById('checkoutDrawerForm');
+    form.reset();
     document.querySelectorAll('#checkoutDrawer .form-group input.error')
       .forEach(el => el.classList.remove('error'));
+    // Pré-remplissage si client connecté
+    _prefillCheckoutForm(form);
     document.getElementById('checkoutDrawer').classList.add('open');
     document.getElementById('cdrOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
