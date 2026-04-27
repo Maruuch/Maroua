@@ -195,13 +195,42 @@ img { display: block; max-width: 100%; }
   display: flex; align-items: center; justify-content: space-between;
 }
 
-/* Logo */
-.logo {
-  display: flex; flex-direction: column; align-items: center;
+/* Logo (image avec fallback texte) */
+.logo, .nav-logo {
+  display: inline-flex; flex-direction: column; align-items: center;
   gap: 0; line-height: 1;
   transition: opacity var(--t);
+  position: relative;
 }
-.logo:hover { opacity: .6; }
+.logo:hover { opacity: .75; }
+
+/* Image du logo — swap selon le thème.
+   La logique inversée du header est conservée :
+   - en mode dark, le header a un fond crème → on affiche logo_dark.png
+   - en mode light, le header a un fond foncé/or → on affiche logo_light.png */
+.logo-img {
+  display: block;
+  height: 38px; width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  transition: opacity .35s var(--ease, ease);
+}
+.nav-logo .logo-img { height: 46px; max-width: 200px; }
+
+[data-theme="dark"]  .logo-img--light { display: none; }
+[data-theme="light"] .logo-img--dark  { display: none; }
+
+/* Fallback texte (gardé pour SEO + cas d'erreur de chargement image) */
+.logo-fallback {
+  display: none;
+  flex-direction: column; align-items: center;
+}
+/* Si l'image n'a pas chargé (broken), JS ajoute la classe .logo--no-img sur .logo */
+.logo.logo--no-img .logo-img,
+.nav-logo.logo--no-img .logo-img { display: none; }
+.logo.logo--no-img .logo-fallback,
+.nav-logo.logo--no-img .logo-fallback { display: flex; }
+
 .logo-name {
   font-family: var(--serif);
   font-size: 1.25rem; font-weight: 500;
@@ -488,85 +517,232 @@ img { display: block; max-width: 100%; }
   font-weight: 300; color: var(--text);
 }
 
-/* ── CAT CARDS ──────────────────────────────────────────────── */
-.cats-grid {
-  display: grid; grid-template-columns: repeat(5,1fr); gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
+/* ── CAT CARDS — Editorial v2 ───────────────────────────────── */
+/* Easing premium dédié, plus suave que --ease global */
+:root {
+  --cat-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --cat-dur:  900ms;
+  --cat-dur-fast: 600ms;
 }
+
+.section-head-cats { max-width: 720px; }
+.section-head-cats .section-sub {
+  margin-top: .9rem;
+  font-size: .92rem; line-height: 1.6; color: var(--text2);
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  letter-spacing: .005em;
+}
+
+/* Grille éditoriale : 2 hero (row 1) + 3 standard (row 2) */
+.cats-grid.cats-editorial {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: minmax(380px, auto);
+  gap: 18px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.cats-editorial .cat-card               { grid-column: span 2; }
+.cats-editorial .cat-card--hero         { grid-column: span 3; min-height: 460px; }
+
+/* Tablette : 3 colonnes, hero en pleine largeur */
+@media (max-width: 1100px) {
+  .cats-grid.cats-editorial { grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .cats-editorial .cat-card        { grid-column: span 3; min-height: 360px; }
+  .cats-editorial .cat-card--hero  { grid-column: span 6; min-height: 420px; }
+}
+/* Mobile */
+@media (max-width: 640px) {
+  .cats-grid.cats-editorial { grid-template-columns: 1fr; gap: 12px; }
+  .cats-editorial .cat-card,
+  .cats-editorial .cat-card--hero {
+    grid-column: 1 / -1; min-height: 320px;
+  }
+}
+
+/* Carte */
 .cat-card {
-  background-color: var(--surface);
-  background-size: 75%; background-position: center 30%; background-repeat: no-repeat;
-  padding: 2.2rem 1.6rem;
+  position: relative;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 2.4rem 2rem 2.2rem;
   cursor: pointer;
-  display: flex; flex-direction: column; justify-content: flex-end; gap: .8rem;
-  transition: background-size var(--t) var(--ease), background-color var(--t);
-  position: relative; overflow: hidden;
-  min-height: 300px;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg, var(--r));
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+  transition:
+    transform   var(--cat-dur-fast) var(--cat-ease),
+    box-shadow  var(--cat-dur-fast) var(--cat-ease),
+    border-color var(--cat-dur-fast) var(--cat-ease);
+  /* Stagger reveal — léger délai par carte */
+  --rev-delay: 0ms;
 }
+.cats-editorial .cat-card:nth-child(1) { --rev-delay: 0ms;   }
+.cats-editorial .cat-card:nth-child(2) { --rev-delay: 90ms;  }
+.cats-editorial .cat-card:nth-child(3) { --rev-delay: 180ms; }
+.cats-editorial .cat-card:nth-child(4) { --rev-delay: 260ms; }
+.cats-editorial .cat-card:nth-child(5) { --rev-delay: 340ms; }
+.cat-card.reveal { transition-delay: var(--rev-delay); }
+/* Une fois révélée, restaurer les transitions hover propres à la carte
+   (sinon .reveal écrase via order CSS et casse la transition box-shadow/border) */
+.cat-card.reveal.visible {
+  transition:
+    transform   var(--cat-dur-fast) var(--cat-ease),
+    box-shadow  var(--cat-dur-fast) var(--cat-ease),
+    border-color var(--cat-dur-fast) var(--cat-ease);
+}
+
 .cat-card:hover {
-  background-size: 82%;
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--gold) 38%, var(--border));
+  box-shadow:
+    0 26px 50px -28px rgba(0,0,0,.45),
+    0 8px 18px -10px rgba(0,0,0,.18);
 }
 
-/* Image selon le thème — custom properties injectées en inline */
-[data-theme="dark"]  .cat-card { background-image: var(--img-d, none); }
-[data-theme="light"] .cat-card { background-image: var(--img-l, none); }
-
-/* Vignette + lisibilité : surcharge par thème */
-.cat-card::before {
-  content: ''; position: absolute; inset: 0; z-index: 0;
-  transition: opacity var(--t) var(--ease);
+/* ── Média : 2 couches d'image en crossfade ─────────────────── */
+.cat-media {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
 }
-/* Dark mode : bords brun chaud qui absorbent le rectangle de la photo */
-[data-theme="dark"] .cat-card::before {
+.cat-img {
+  position: absolute; inset: 0;
+  background-position: center 38%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  will-change: opacity, transform;
+  transform: scale(1.02);
+  transition:
+    opacity   var(--cat-dur) var(--cat-ease),
+    transform var(--cat-dur) var(--cat-ease),
+    filter    var(--cat-dur) var(--cat-ease);
+  filter: saturate(1) brightness(1);
+}
+/* Image hero (taille contenue type produit, pas full-bleed) — fallback si sources non full-bleed */
+.cat-img--a { opacity: 1; }
+.cat-img--b { opacity: 0; }
+
+/* Sélection thème → image_1 (défaut) / image_2 (hover) */
+[data-theme="dark"]  .cat-img--a { background-image: var(--img-d-1, none); }
+[data-theme="dark"]  .cat-img--b { background-image: var(--img-d-2, none); }
+[data-theme="light"] .cat-img--a { background-image: var(--img-l-1, none); }
+[data-theme="light"] .cat-img--b { background-image: var(--img-l-2, none); }
+
+/* Crossfade + zoom subtil au hover */
+.cat-card:hover .cat-img--a {
+  opacity: 0;
+  transform: scale(1.06);
+  filter: saturate(1.05) brightness(1.02);
+}
+.cat-card:hover .cat-img--b {
+  opacity: 1;
+  transform: scale(1.05);
+  filter: saturate(1.05) brightness(1.02);
+}
+
+/* Ombrage premium adapté au thème (pour la lisibilité du texte) */
+.cat-shade {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  transition: opacity var(--cat-dur-fast) var(--cat-ease);
+}
+[data-theme="dark"] .cat-shade {
   background:
-    linear-gradient(to right,  #1C1208 0%, transparent 28%, transparent 72%, #1C1208 100%),
-    linear-gradient(to bottom, #1C1208 0%, transparent 22%),
-    linear-gradient(to top,    rgba(0,0,0,.88) 0%, rgba(0,0,0,.42) 45%, rgba(0,0,0,.06) 100%);
+    linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.18) 38%, rgba(0,0,0,.78) 100%),
+    radial-gradient(140% 90% at 50% 110%, rgba(0,0,0,.35) 0%, transparent 60%);
 }
-/* Light mode : bords crème ivoire qui fondent la photo dans la page */
-[data-theme="light"] .cat-card::before {
+[data-theme="light"] .cat-shade {
   background:
-    linear-gradient(to right,  #F5EDE0 0%, transparent 28%, transparent 72%, #F5EDE0 100%),
-    linear-gradient(to bottom, #F5EDE0 0%, transparent 22%),
-    linear-gradient(to top,    rgba(0,0,0,.72) 0%, rgba(0,0,0,.30) 45%, rgba(0,0,0,.04) 100%);
+    linear-gradient(180deg, rgba(245,237,224,0) 0%, rgba(245,237,224,.55) 55%, rgba(245,237,224,.92) 100%),
+    radial-gradient(160% 90% at 50% 110%, rgba(0,0,0,.18) 0%, transparent 65%);
 }
-.cat-card:hover::before { opacity: .88; }
+.cat-card:hover .cat-shade { opacity: .92; }
 
-/* Ligne dorée bas au hover */
+/* Liseré or au hover (apparition tranchée, droite vers gauche) */
 .cat-card::after {
   content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: var(--gold); z-index: 2;
-  transform: scaleX(0); transform-origin: left;
-  transition: transform var(--t) var(--ease);
+  position: absolute; left: 1.4rem; right: 1.4rem; bottom: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  transform: scaleX(0); transform-origin: center;
+  transition: transform var(--cat-dur-fast) var(--cat-ease);
+  z-index: 3;
 }
 .cat-card:hover::after { transform: scaleX(1); }
 
-/* Tout le contenu au-dessus de l'overlay */
-.cat-sym, .cat-body, .cat-arrow { position: relative; z-index: 1; }
+/* ── Body éditorial ─────────────────────────────────────────── */
+.cat-body {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; gap: .55rem;
+  color: var(--text);
+  transform: translateY(0);
+  transition: transform var(--cat-dur-fast) var(--cat-ease);
+}
+.cat-card:hover .cat-body { transform: translateY(-2px); }
 
-.cat-sym {
-  font-size: 2rem; color: var(--gold);
-  transition: transform var(--t) var(--ease);
-  text-shadow: 0 2px 8px rgba(0,0,0,.4);
+.cat-num {
+  font-size: .62rem; letter-spacing: .32em; text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
-.cat-card:hover .cat-sym { transform: scale(1.15) rotate(-5deg); }
 .cat-body h3 {
-  font-family: var(--serif); font-size: 1.2rem; font-weight: 400;
-  margin-bottom: .3rem;
-  text-shadow: 0 1px 6px rgba(0,0,0,.5);
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 2.1vw, 1.85rem);
+  font-weight: 300; line-height: 1.1;
+  letter-spacing: -.01em;
+  text-shadow: 0 1px 8px rgba(0,0,0,.45);
 }
+[data-theme="light"] .cat-body h3 { text-shadow: 0 1px 6px rgba(255,255,255,.4); }
+
 .cat-body p {
-  color: var(--text2); font-size: .78rem; line-height: 1.5;
-  text-shadow: 0 1px 4px rgba(0,0,0,.4);
+  color: var(--text2);
+  font-size: .82rem; line-height: 1.55;
+  max-width: 32ch;
+  text-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
-.cat-arrow {
-  display: block; color: var(--gold); font-size: 1rem;
-  transition: transform var(--t) var(--ease);
-  text-shadow: 0 1px 4px rgba(0,0,0,.4);
+[data-theme="light"] .cat-body p { text-shadow: 0 1px 3px rgba(255,255,255,.45); }
+
+.cat-cta {
+  display: inline-flex; align-items: center; gap: .55rem;
+  margin-top: .85rem;
+  font-size: .72rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--text);
+  font-weight: 500;
+  opacity: .85;
+  transition: opacity var(--cat-dur-fast) var(--cat-ease), letter-spacing var(--cat-dur-fast) var(--cat-ease);
 }
-.cat-card:hover .cat-arrow { transform: translateX(6px); }
+.cat-cta .cat-arrow {
+  display: inline-block;
+  color: var(--gold);
+  transition: transform var(--cat-dur-fast) var(--cat-ease);
+}
+.cat-card:hover .cat-cta {
+  opacity: 1;
+  letter-spacing: .26em;
+}
+.cat-card:hover .cat-cta .cat-arrow {
+  transform: translateX(8px);
+}
+
+/* Cartes hero : typo et padding plus généreux */
+.cat-card--hero { padding: 3rem 2.4rem 2.6rem; }
+.cat-card--hero .cat-body h3 { font-size: clamp(1.7rem, 2.5vw, 2.2rem); }
+.cat-card--hero .cat-body p  { font-size: .9rem; max-width: 36ch; }
+
+/* Prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cat-img, .cat-card, .cat-body, .cat-cta, .cat-shade, .cat-card::after {
+    transition: none !important;
+  }
+  .cat-card:hover { transform: none; }
+  .cat-card:hover .cat-img--a { transform: none; }
+  .cat-card:hover .cat-img--b { transform: none; }
+}
 
 /* ── PRODUCT GRID ───────────────────────────────────────────── */
 .products-grid {
@@ -1035,28 +1211,143 @@ img { display: block; max-width: 100%; }
 [data-theme="light"] .card-fav:hover    { background: rgba(255,248,235,.95); color: var(--gold); }
 [data-theme="light"] .card-fav.is-fav   { color: #B94556; }
 
-/* ── CATALOG PAGE ───────────────────────────────────────────── */
+/* ── CATALOG PAGE — Hero immersif ────────────────────────────── */
 .catalog-hero {
-  padding: 3.5rem 0 2.5rem;
-  border-bottom: 1px solid var(--border);
+  position: relative;
+  padding: 5.5rem 0 3rem;
   margin-bottom: 3rem;
+  overflow: hidden;
+  isolation: isolate;
+  border-bottom: 1px solid var(--border);
+  min-height: 320px;
+  display: flex; flex-direction: column; justify-content: flex-end;
 }
+.catalog-hero-media {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none;
+}
+.catalog-hero-img {
+  position: absolute; inset: 0;
+  background-position: center 40%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 1;
+  transform: scale(1.04);
+  will-change: transform;
+  transition: background-image .55s linear, opacity .55s ease;
+  /* Ken Burns subtil — zoom doux et lent en boucle, sensation cinématique */
+  animation: cat-hero-ken-burns 22s ease-in-out infinite alternate;
+}
+[data-theme="dark"]  .catalog-hero-img { background-image: var(--cat-hero-d, none); }
+[data-theme="light"] .catalog-hero-img { background-image: var(--cat-hero-l, none); }
+
+@keyframes cat-hero-ken-burns {
+  0%   { transform: scale(1.04) translate3d(0, 0, 0); }
+  100% { transform: scale(1.10) translate3d(-1.5%, -1%, 0); }
+}
+
+/* Voile pour la lisibilité — bord bas plein, intégré à la page */
+.catalog-hero-shade {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+[data-theme="dark"] .catalog-hero-shade {
+  background:
+    linear-gradient(180deg,
+      rgba(28,18,8,.05) 0%,
+      rgba(28,18,8,.30) 45%,
+      rgba(28,18,8,.78) 85%,
+      rgba(28,18,8,1)   100%),
+    linear-gradient(90deg,
+      rgba(28,18,8,.65) 0%,
+      rgba(28,18,8,.25) 45%,
+      rgba(28,18,8,0)   85%);
+}
+[data-theme="light"] .catalog-hero-shade {
+  background:
+    linear-gradient(180deg,
+      rgba(245,237,224,.05) 0%,
+      rgba(245,237,224,.42) 45%,
+      rgba(245,237,224,.85) 85%,
+      rgba(245,237,224,1)   100%),
+    linear-gradient(90deg,
+      rgba(245,237,224,.55) 0%,
+      rgba(245,237,224,.25) 45%,
+      rgba(245,237,224,0)   85%);
+}
+
+/* Si aucune image n'est définie → look propre sans média (état initial avant déploiement) */
+.catalog-hero.no-media .catalog-hero-img,
+.catalog-hero.no-media .catalog-hero-shade { opacity: 0; }
+
+.catalog-hero-inner { position: relative; z-index: 2; }
+
+.catalog-hero-eyebrow {
+  display: block;
+  font-size: .65rem; letter-spacing: .32em; text-transform: uppercase;
+  color: var(--gold); font-weight: 500;
+  margin-bottom: .6rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,.35);
+}
+[data-theme="light"] .catalog-hero-eyebrow { text-shadow: 0 1px 4px rgba(255,255,255,.45); }
+
 .page-title {
   font-family: var(--serif); font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 300; margin-bottom: 1.8rem;
+  font-weight: 300; margin-bottom: 1.2rem;
+  line-height: 1.05; letter-spacing: -.01em;
 }
+/* Le text-shadow est limité au hero catalogue (où il y a une image derrière) */
+.catalog-hero .page-title { text-shadow: 0 2px 12px rgba(0,0,0,.4); }
+[data-theme="light"] .catalog-hero .page-title { text-shadow: 0 1px 8px rgba(255,255,255,.45); }
+
+.catalog-hero-sub {
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  font-size: 1rem; line-height: 1.5;
+  color: var(--text2);
+  max-width: 52ch;
+  margin-bottom: 1.6rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,.35);
+}
+[data-theme="light"] .catalog-hero-sub { text-shadow: 0 1px 4px rgba(255,255,255,.45); }
+
 .filters { display: flex; gap: .5rem; flex-wrap: wrap; }
 .filter-btn {
-  padding: .45rem 1.2rem;
+  padding: .5rem 1.25rem;
   border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
   color: var(--text2);
-  transition: border-color var(--t), color var(--t), background var(--t);
+  border-radius: 999px;
+  transition: border-color var(--t), color var(--t), background var(--t), transform var(--t);
 }
-.filter-btn:hover { border-color: var(--border2); color: var(--text); }
+.filter-btn:hover {
+  border-color: var(--gold);
+  color: var(--text);
+  transform: translateY(-1px);
+}
 .filter-btn.active {
   border-color: var(--gold); color: var(--gold);
   background: var(--gold-dim);
+}
+
+/* Mobile — réduire la hauteur du hero */
+@media (max-width: 640px) {
+  .catalog-hero {
+    padding: 3.5rem 0 2rem;
+    min-height: 240px;
+    margin-bottom: 2rem;
+  }
+  .catalog-hero-sub { font-size: .9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-hero-img {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* Empty state */
@@ -1700,29 +1991,9 @@ img { display: block; max-width: 100%; }
   color: var(--text3); white-space: nowrap;
 }
 
-/* ── GRILLE CATÉGORIES 5 cartes ─────────────────────────────── */
-/* Desktop : 3+2 asymétrique pour remplir proprement */
-.cats-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  grid-template-rows: auto auto;
-  gap: 1px;
-  background: var(--border);
-}
-.cats-grid .cat-card:nth-child(4),
-.cats-grid .cat-card:nth-child(5) {
-  /* 2 dernières centrées sur 3 colonnes → chacune prend 1.5 col */
-}
-/* Technique : 4e card débute col 1 sur la 2e ligne,
-   5e commence col 2 → les 2 cartes se retrouvent centrées si on
-   force grid-column span sur un wrapper */
-/* Approche simple : 2+3 sur desktop large */
-@media (min-width: 1025px) {
-  .cats-grid {
-    grid-template-columns: repeat(5,1fr);
-    grid-template-rows: auto;
-  }
-}
+/* ── GRILLE CATÉGORIES — règles legacy supprimées, voir bloc
+   "CAT CARDS — Editorial v2" plus haut pour la nouvelle grille
+   éditoriale (.cats-grid.cats-editorial) ─────────────────────── */
 
 /* ── SECTION AVIS ────────────────────────────────────────────── */
 .section-reviews {
@@ -2088,7 +2359,7 @@ img { display: block; max-width: 100%; }
   .hero-left .hero-cta { justify-content: center; }
 }
 @media (max-width: 1024px) {
-  .cats-grid { grid-template-columns: repeat(3,1fr); }
+  /* .cats-grid : layout géré par le bloc .cats-grid.cats-editorial */
   .reviews-grid { grid-template-columns: repeat(2,1fr); }
   .product-detail { grid-template-columns: 1fr; gap: 2.5rem; padding: 1.5rem 0 2rem; }
   .detail-gallery { position: static; }
@@ -2101,7 +2372,7 @@ img { display: block; max-width: 100%; }
 }
 @media (max-width: 640px) {
   :root { --h: 62px; }
-  .cats-grid { grid-template-columns: repeat(2,1fr); }
+  /* .cats-grid : layout géré par le bloc .cats-grid.cats-editorial */
   .reviews-grid { grid-template-columns: 1fr; }
   .cert-grid { grid-template-columns: 1fr; }
   .detail-card { padding: 1.4rem 1.2rem; border-radius: var(--r); }
@@ -2228,8 +2499,8 @@ input[type="url"], textarea, select,
 .product-thumb,
 .product-card img { border-radius: var(--r); }
 
-/* Catégories */
-.cat-card { border-radius: var(--r); }
+/* Catégories — radius large pour l'effet éditorial */
+.cat-card { border-radius: var(--r-lg); }
 
 /* Avis clients */
 .review-card { border-radius: var(--r); }
