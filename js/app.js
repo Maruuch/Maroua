@@ -8,6 +8,15 @@
   const savedTheme = localStorage.getItem('mj_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
 
+  // ── 1bis. Fallback logo : si une image logo échoue (404),
+  //         on bascule le conteneur sur le texte stylé.
+  document.querySelectorAll('.logo-img, .nav-logo .logo-img').forEach(img => {
+    img.addEventListener('error', () => {
+      const wrap = img.closest('.logo, .nav-logo');
+      if (wrap) wrap.classList.add('logo--no-img');
+    }, { once: true });
+  });
+
   // ── 2. Animations ─────────────────────────────────────────
   Animations.init();
 
