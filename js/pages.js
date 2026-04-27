@@ -33,8 +33,87 @@ const Pages = (() => {
   }
 
   // ── CATALOG ─────────────────────────────────────────────────
+  // Conventions images headers :
+  //   • Cas par catégorie : /images/categories/header_<MODE>_<CAT>.jpg
+  //   • Cas Tout (toutes) : /images/categories/<MODE>_header.jpg
+  // Effet : Ken Burns subtil en boucle (zoom doux 1.04 → 1.10).
+  const CATALOG_HEADERS = {
+    '': {
+      eyebrow: 'Maroua Jewelry',
+      title:   'Collection',
+      sub:     "L'ensemble de nos pièces — pensées pour s'inscrire dans la durée.",
+      dark:    '/images/categories/dark_header.jpg',
+      light:   '/images/categories/light_header.jpg',
+    },
+    'collier':  {
+      eyebrow: '01 / Collection',
+      title:   'Colliers',
+      sub:     "Élégance au fil de l'or — pièces uniques et chaînes signature.",
+      dark:    '/images/categories/header_dark_col.jpg',
+      light:   '/images/categories/header_light_col.jpg',
+    },
+    'bracelet': {
+      eyebrow: '02 / Collection',
+      title:   'Bracelets',
+      sub:     'Grâce au poignet — joncs, gourmettes et fils tressés.',
+      dark:    '/images/categories/header_dark_bra.jpg',
+      light:   '/images/categories/header_light_bra.jpg',
+    },
+    'bague':    {
+      eyebrow: '03 / Collection',
+      title:   'Bagues',
+      sub:     "Symboles d'éternité — solitaires, joncs et signatures.",
+      dark:    '/images/categories/header_dark_bag.jpg',
+      light:   '/images/categories/header_light_bag.jpg',
+    },
+    'boucle':   {
+      eyebrow: '04 / Collection',
+      title:   "Boucles d'oreilles",
+      sub:     'Dormeuses, créoles & piercings — la lumière près du visage.',
+      dark:    '/images/categories/header_dark_bou.jpg',
+      light:   '/images/categories/header_light_bou.jpg',
+    },
+    'pack':     {
+      eyebrow: '05 / Collection',
+      title:   'Packs',
+      sub:     "L'ensemble parfait, pensé d'une seule main.",
+      dark:    '/images/categories/header_dark_pac.jpg',
+      light:   '/images/categories/header_light_pac.jpg',
+    },
+  };
+
+  function _applyCatalogHero(filter) {
+    const hero    = $('catalogHero');
+    if (!hero) return;
+    const conf    = CATALOG_HEADERS[filter] || CATALOG_HEADERS[''];
+    const eyebrow = $('catalogEyebrow');
+    const title   = $('catalogTitle');
+    const sub     = $('catalogSub');
+
+    // Mise à jour textes
+    if (eyebrow) eyebrow.textContent = conf.eyebrow;
+    if (title)   title.textContent   = conf.title;
+    if (sub)     sub.textContent     = conf.sub;
+
+    // Injection des 2 CSS vars (1 image par thème)
+    hero.style.setProperty('--cat-hero-d', `url('${conf.dark}')`);
+    hero.style.setProperty('--cat-hero-l', `url('${conf.light}')`);
+    hero.classList.remove('no-media');
+
+    // Restart du Ken Burns pour repartir de scale(1.04) à chaque changement
+    const layer = hero.querySelector('.catalog-hero-img');
+    if (layer) {
+      layer.style.animation = 'none';
+      void layer.offsetWidth; // force reflow
+      layer.style.animation = '';
+    }
+  }
+
   function renderCatalog(filter = '') {
     showPage('catalog');
+
+    // Hero immersif (image + texte)
+    _applyCatalogHero(filter);
 
     // Sync filtres
     document.querySelectorAll('.filter-btn').forEach(btn => {
