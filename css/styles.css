@@ -1306,15 +1306,16 @@ img { display: block; max-width: 100%; }
   position: absolute;
   border-radius: 50%;
   background: var(--gold);
+  box-shadow: 0 0 4px rgba(212,170,98,.55), 0 0 8px rgba(212,170,98,.25);
   opacity: 0;
   animation: catSparkRise linear infinite;
   will-change: transform, opacity;
 }
 @keyframes catSparkRise {
   0%   { opacity: 0;  transform: translateY(0)     scale(0); }
-  15%  { opacity: .7; }
-  85%  { opacity: .2; }
-  100% { opacity: 0;  transform: translateY(-220px) scale(1.5); }
+  10%  { opacity: 1; }
+  85%  { opacity: .5; }
+  100% { opacity: 0;  transform: translateY(-260px) scale(1.6); }
 }
 [data-theme="dark"] .catalog-hero-shade {
   background:
