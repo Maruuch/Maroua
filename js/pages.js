@@ -34,51 +34,51 @@ const Pages = (() => {
 
   // ── CATALOG ─────────────────────────────────────────────────
   // Conventions images headers :
-  //   • Cas par catégorie : /images/categories/header_<MODE>_<CAT>.jpg
-  //   • Cas Tout (toutes) : /images/categories/<MODE>_header.jpg
+  //   • Cas par catégorie : /images/categories/header_<MODE>_<CAT>.png
+  //   • Cas Tout (toutes) : /images/categories/<MODE>_header.png
   // Effet : Ken Burns subtil en boucle (zoom doux 1.04 → 1.10).
   const CATALOG_HEADERS = {
     '': {
       eyebrow: 'Maroua Jewelry',
       title:   'Collection',
       sub:     "L'ensemble de nos pièces — pensées pour s'inscrire dans la durée.",
-      dark:    '/images/categories/dark_header.jpg',
-      light:   '/images/categories/light_header.jpg',
+      dark:    '/images/categories/dark_header.png',
+      light:   '/images/categories/light_header.png',
     },
     'collier':  {
       eyebrow: '01 / Collection',
       title:   'Colliers',
       sub:     "Élégance au fil de l'or — pièces uniques et chaînes signature.",
-      dark:    '/images/categories/header_dark_col.jpg',
-      light:   '/images/categories/header_light_col.jpg',
+      dark:    '/images/categories/header_dark_col.png',
+      light:   '/images/categories/header_light_col.png',
     },
     'bracelet': {
       eyebrow: '02 / Collection',
       title:   'Bracelets',
       sub:     'Grâce au poignet — joncs, gourmettes et fils tressés.',
-      dark:    '/images/categories/header_dark_bra.jpg',
-      light:   '/images/categories/header_light_bra.jpg',
+      dark:    '/images/categories/header_dark_bra.png',
+      light:   '/images/categories/header_light_bra.png',
     },
     'bague':    {
       eyebrow: '03 / Collection',
       title:   'Bagues',
       sub:     "Symboles d'éternité — solitaires, joncs et signatures.",
-      dark:    '/images/categories/header_dark_bag.jpg',
-      light:   '/images/categories/header_light_bag.jpg',
+      dark:    '/images/categories/header_dark_bag.png',
+      light:   '/images/categories/header_light_bag.png',
     },
     'boucle':   {
       eyebrow: '04 / Collection',
       title:   "Boucles d'oreilles",
       sub:     'Dormeuses, créoles & piercings — la lumière près du visage.',
-      dark:    '/images/categories/header_dark_bou.jpg',
-      light:   '/images/categories/header_light_bou.jpg',
+      dark:    '/images/categories/header_dark_bou.png',
+      light:   '/images/categories/header_light_bou.png',
     },
     'pack':     {
       eyebrow: '05 / Collection',
       title:   'Packs',
       sub:     "L'ensemble parfait, pensé d'une seule main.",
-      dark:    '/images/categories/header_dark_pac.jpg',
-      light:   '/images/categories/header_light_pac.jpg',
+      dark:    '/images/categories/header_dark_pac.png',
+      light:   '/images/categories/header_light_pac.png',
     },
   };
 
