@@ -734,6 +734,18 @@ img { display: block; max-width: 100%; }
 .cat-card--hero .cat-body h3 { font-size: clamp(1.7rem, 2.5vw, 2.2rem); }
 .cat-card--hero .cat-body p  { font-size: .9rem; max-width: 36ch; }
 
+/* Cartes hero (collier + bracelet) : image _1 dézoomée pour voir l'objet en entier
+   On bascule sur background-size: contain (au lieu de cover) et on retire le scale.
+   Le shade overlay reste en place pour la lisibilité du texte. */
+.cat-card--hero .cat-img--a {
+  background-size: contain;
+  background-position: center 45%;
+  transform: scale(1);
+}
+.cat-card--hero:hover .cat-img--a {
+  transform: scale(1.03);
+}
+
 /* Prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .cat-img, .cat-card, .cat-body, .cat-cta, .cat-shade, .cat-card::after {
