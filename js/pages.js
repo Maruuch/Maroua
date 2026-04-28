@@ -116,19 +116,19 @@ const Pages = (() => {
     const wrap = $('catalogSparks');
     if (!wrap) return;
     wrap.innerHTML = '';
-    const count = window.innerWidth < 640 ? 14 : 26;
+    const count = window.innerWidth < 640 ? 22 : 42;
     for (let i = 0; i < count; i++) {
       const s = document.createElement('span');
       s.className = 'cat-spark';
-      const size  = 1.5 + Math.random() * 2.5;            // 1.5-4px (vraiment petites)
-      const rise  = 8   + Math.random() * 14;             // 8-22s
-      const blink = 2.5 + Math.random() * 3.5;            // 2.5-6s
+      const size = 2 + Math.random() * 3;                 // 2-5px (vraiment petites)
+      const dur  = 3 + Math.random() * 4;                 // 3-7s la vie d'une paillette
+      // Position : partout dans le bandeau (top 0-95%, left 0-100%)
       s.style.cssText = `
         left: ${Math.random() * 100}%;
-        top: ${100 + Math.random() * 20}%;
+        top: ${Math.random() * 95}%;
         width: ${size}px; height: ${size}px;
-        animation-duration: ${rise}s, ${blink}s;
-        animation-delay: ${-Math.random() * rise}s, ${-Math.random() * blink}s;
+        animation-duration: ${dur}s;
+        animation-delay: ${-Math.random() * dur}s;
       `;
       wrap.appendChild(s);
     }
