@@ -1940,11 +1940,11 @@ img { display: block; max-width: 100%; }
 }
 [data-theme="dark"]  .hero-left::before {
   background-image: url('/images/categories/dark_pac_2.png');
-  opacity: .14;
+  opacity: .32;
 }
 [data-theme="light"] .hero-left::before {
   background-image: url('/images/categories/light_pac_2.png');
-  opacity: .18;
+  opacity: .38;
 }
 
 /* ── HERO CARDS — cartes qui fondent dans le fond ───────────── */
