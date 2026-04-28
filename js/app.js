@@ -21,51 +21,59 @@
   //   Pipette un pixel du PNG visible et propage la couleur
   //   en CSS var (--header-bg / --header-solid) sur :root,
   //   pour que toutes les règles existantes l'utilisent.
-  function _syncHeaderToLogo() {
-    const theme = document.documentElement.getAttribute('data-theme');
-    const visibleLogo = document.querySelector(
-      `.logo .logo-img--${theme === 'dark' ? 'dark' : 'light'}`
-    );
-    console.log('[header-sync] theme=', theme, 'logo=', visibleLogo?.currentSrc || visibleLogo?.src);
-    if (!visibleLogo) return;
-
-    const apply = () => {
-      if (!visibleLogo.naturalWidth) {
-        console.warn('[header-sync] image pas encore chargée');
-        return;
-      }
+  // Helper : échantillonne un pixel coin d'une image et renvoie "rgb(r,g,b)"
+  function _sampleLogoColor(img, cb) {
+    if (!img) return;
+    const run = () => {
+      if (!img.naturalWidth) return;
       try {
-        // On force CORS clean pour autoriser la lecture canvas
-        if (!visibleLogo.crossOrigin) {
-          visibleLogo.crossOrigin = 'anonymous';
-          // Recharger l'image en mode CORS si elle a déjà été chargée sans
-          const src = visibleLogo.src;
-          visibleLogo.src = '';
-          visibleLogo.src = src;
-          visibleLogo.addEventListener('load', apply, { once: true });
+        if (!img.crossOrigin) {
+          img.crossOrigin = 'anonymous';
+          const src = img.src;
+          img.src = '';
+          img.src = src;
+          img.addEventListener('load', run, { once: true });
           return;
         }
-        const canvas = document.createElement('canvas');
-        canvas.width  = visibleLogo.naturalWidth;
-        canvas.height = visibleLogo.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(visibleLogo, 0, 0);
-        // On échantillonne un peu en retrait du bord (anti-artefact compression)
-        const p = ctx.getImageData(3, 3, 1, 1).data;
-        const color = `rgb(${p[0]}, ${p[1]}, ${p[2]})`;
-        // Propage via CSS vars — toutes les règles existantes l'utilisent
-        document.documentElement.style.setProperty('--header-bg',    color);
-        document.documentElement.style.setProperty('--header-solid', color);
-        console.log('[header-sync] couleur appliquée:', color);
+        const c = document.createElement('canvas');
+        c.width  = img.naturalWidth;
+        c.height = img.naturalHeight;
+        c.getContext('2d').drawImage(img, 0, 0);
+        const p = c.getContext('2d').getImageData(3, 3, 1, 1).data;
+        cb(`rgb(${p[0]}, ${p[1]}, ${p[2]})`);
       } catch (e) {
-        console.warn('[header-sync] échec lecture canvas:', e.message);
+        console.warn('[logo-sync] sample fail:', e.message);
       }
     };
-
-    if (visibleLogo.complete && visibleLogo.naturalWidth) apply();
-    else visibleLogo.addEventListener('load', apply, { once: true });
+    if (img.complete && img.naturalWidth) run();
+    else img.addEventListener('load', run, { once: true });
   }
+
+  function _syncHeaderToLogo() {
+    const theme = document.documentElement.getAttribute('data-theme');
+    // Header : logo qui matche le thème (cf. règle CSS data-theme)
+    const headerLogo = document.querySelector(
+      `.logo .logo-img--${theme === 'dark' ? 'dark' : 'light'}`
+    );
+    console.log('[header-sync] theme=', theme, 'logo=', headerLogo?.currentSrc || headerLogo?.src);
+    _sampleLogoColor(headerLogo, color => {
+      document.documentElement.style.setProperty('--header-bg',    color);
+      document.documentElement.style.setProperty('--header-solid', color);
+      console.log('[header-sync] header bg =', color);
+    });
+  }
+
+  function _syncSidePanelToLogo() {
+    // Side panel : on force light_logo (toujours fond espresso, peu importe le thème)
+    const sideLogo = document.querySelector('.nav-logo .logo-img--light');
+    _sampleLogoColor(sideLogo, color => {
+      document.documentElement.style.setProperty('--nav-logo-bg', color);
+      console.log('[side-sync] nav-logo bg =', color);
+    });
+  }
+
   _syncHeaderToLogo();
+  _syncSidePanelToLogo();
   new MutationObserver(_syncHeaderToLogo).observe(
     document.documentElement,
     { attributes: true, attributeFilter: ['data-theme'] }
