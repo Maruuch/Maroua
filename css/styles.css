@@ -211,7 +211,7 @@ img { display: block; max-width: 100%; }
   object-fit: contain;
   transition: opacity .35s var(--ease, ease);
 }
-.nav-logo .logo-img { height: 55px; max-width: 240px; } /* +20% */
+.nav-logo .logo-img { height: 77px; max-width: 336px; } /* +40% côté panel */
 
 [data-theme="dark"]  .logo-img--light { display: none; }
 [data-theme="light"] .logo-img--dark  { display: none; }
@@ -318,11 +318,16 @@ img { display: block; max-width: 100%; }
   display: flex; flex-direction: column;
 }
 #mobileNav.open { transform: translateX(0); }
+/* Side panel : zone du logo centrée, full-width, fond espresso (= fond du PNG)
+   La couleur --nav-logo-bg est mise à jour dynamiquement par JS pour matcher
+   pixel-perfect le fond du light_logo.png (fallback en dur sinon). */
 .nav-logo {
-  display: flex; flex-direction: column; align-items: flex-start;
-  padding: calc(var(--h) - 1rem) 0 2rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2rem;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  margin: -2rem -2rem 1.4rem;          /* annule le padding 2rem du #mobileNav, full-width */
+  padding: calc(var(--h) + .8rem) 1.4rem 1.6rem;
+  background: var(--nav-logo-bg, #2A1F14);
+  border-bottom: none;
 }
 .nav-logo .logo-name { font-size: 1.6rem; letter-spacing: .3em; }
 .nav-logo .logo-jewelry { font-size: .9rem; letter-spacing: .2em; }
