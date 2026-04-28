@@ -176,17 +176,13 @@ img { display: block; max-width: 100%; }
 /* Mode sombre → header crème ivoire chaud, mat, raffiné */
 [data-theme="dark"] #header {
   background: var(--header-bg);
-  backdrop-filter: blur(18px) saturate(115%);
-  border-bottom: 1px solid rgba(120,80,40,.18);
-  box-shadow: 0 2px 20px rgba(0,0,0,.08);
+  border-bottom: none;
 }
 
 /* Mode clair → header espresso raffiné */
 [data-theme="light"] #header {
   background: var(--header-bg);
-  backdrop-filter: blur(18px) saturate(115%);
-  border-bottom: 1px solid rgba(210,170,98,.16);
-  box-shadow: 0 2px 14px rgba(0,0,0,.12);
+  border-bottom: none;
 }
 
 .header-inner {
@@ -210,12 +206,12 @@ img { display: block; max-width: 100%; }
    - en mode light, le header a un fond foncé/or → on affiche logo_light.png */
 .logo-img {
   display: block;
-  height: 38px; width: auto;
-  max-width: 180px;
+  height: 46px; width: auto;          /* +20% (38 → 46) */
+  max-width: 216px;                    /* +20% (180 → 216) */
   object-fit: contain;
   transition: opacity .35s var(--ease, ease);
 }
-.nav-logo .logo-img { height: 46px; max-width: 200px; }
+.nav-logo .logo-img { height: 55px; max-width: 240px; } /* +20% */
 
 [data-theme="dark"]  .logo-img--light { display: none; }
 [data-theme="light"] .logo-img--dark  { display: none; }
@@ -1875,26 +1871,16 @@ img { display: block; max-width: 100%; }
 [data-theme="light"] .header-icon-btn:hover svg { stroke: #D4AA62; }
 .header-icon-btn:hover { transform: scale(1.08); }
 
-/* ── HEADER gradient transition — fondu subtil, court ──────── */
-#header::after {
-  content: '';
-  position: absolute; left: 0; right: 0; top: 100%;
-  height: 60px; pointer-events: none; z-index: 99;
-}
-/* Dark mode : voile crème très léger qui se dissout vite */
-[data-theme="dark"] #header::after {
-  background: linear-gradient(to bottom,
-    rgba(228,214,186,.55) 0%,
-    rgba(228,214,186,.18) 50%,
-    transparent 100%);
-}
-/* Light mode : voile espresso très léger qui se dissout vite */
-[data-theme="light"] #header::after {
-  background: linear-gradient(to bottom,
-    rgba(38,24,14,.50) 0%,
-    rgba(38,24,14,.16) 50%,
-    transparent 100%);
-}
+/* ── HEADER — ombre premium au lieu d'un voile coloré ────────
+   On retire complètement le pseudo ::after qui créait un halo
+   crème/espresso visible sur le body. Place à une drop-shadow
+   diffuse dirigée vers le bas, qui suggère la profondeur sans
+   trahir la couleur du body. */
+#header::after { content: none; }
+
+/* Ombre adaptée au thème, projetée sous le bandeau */
+[data-theme="dark"]  #header { box-shadow: 0 14px 28px -18px rgba(0,0,0,.55), 0 1px 0 rgba(0,0,0,.18); }
+[data-theme="light"] #header { box-shadow: 0 14px 28px -18px rgba(0,0,0,.42), 0 1px 0 rgba(0,0,0,.12); }
 
 /* ── HERO SPLIT ─────────────────────────────────────────────── */
 .hero {
