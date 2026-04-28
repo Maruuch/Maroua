@@ -1304,38 +1304,33 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
-/* Micro-paillettes dorées pour les headers de catégorie — discrètes */
+/* Micro-paillettes dorées pour les headers de catégorie — scintillent partout */
 .catalog-hero-sparks {
   position: absolute; inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 1;
+  z-index: 2;
 }
 .cat-spark {
   position: absolute;
-  width: 3px; height: 3px;
+  width: 4px; height: 4px;
   border-radius: 50%;
   background: radial-gradient(circle,
-    rgba(255,236,190,.95) 0%,
+    rgba(255,242,200,1) 0%,
     var(--gold) 45%,
-    rgba(212,170,98,.3) 75%,
+    rgba(212,170,98,.4) 75%,
     transparent 100%);
-  box-shadow: 0 0 4px rgba(212,170,98,.55), 0 0 8px rgba(212,170,98,.25);
+  box-shadow: 0 0 6px rgba(212,170,98,.7), 0 0 14px rgba(212,170,98,.35);
   opacity: 0;
-  animation:
-    catSparkRise linear infinite,
-    catSparkBlink ease-in-out infinite;
-  will-change: transform, opacity;
+  animation: catSparkLife ease-in-out infinite;
+  will-change: opacity, transform;
 }
-@keyframes catSparkRise {
-  0%   { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(0, -100%, 0); }
-}
-@keyframes catSparkBlink {
-  0%, 100% { opacity: 0; }
-  20%      { opacity: .35; }
-  50%      { opacity: .85; }
-  80%      { opacity: .35; }
+/* Vie d'une paillette : apparaît, scintille, disparaît */
+@keyframes catSparkLife {
+  0%, 100% { opacity: 0;   transform: scale(.4); }
+  15%      { opacity: .55; }
+  50%      { opacity: 1;   transform: scale(1.4); }
+  85%      { opacity: .45; }
 }
 [data-theme="dark"] .catalog-hero-shade {
   background:
