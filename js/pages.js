@@ -108,19 +108,19 @@ const Pages = (() => {
     const wrap = $('catalogSparks');
     if (!wrap) return;
     wrap.innerHTML = '';
-    const count = window.innerWidth < 640 ? 12 : 24;
+    const count = window.innerWidth < 640 ? 32 : 60;
     for (let i = 0; i < count; i++) {
       const s = document.createElement('span');
       s.className = 'cat-spark';
-      const dur = 4 + Math.random() * 8;
+      const dur  = 4 + Math.random() * 7;
+      const size = 1.5 + Math.random() * 2.5;             // 1.5-4px
       s.style.cssText = `
         left: ${Math.random() * 100}%;
         top: ${Math.random() * 100}%;
         animation-duration: ${dur}s;
         animation-delay: ${-Math.random() * dur}s;
-        width: ${1 + Math.random() * 2}px;
-        height: ${1 + Math.random() * 2}px;
-        opacity: ${0.3 + Math.random() * 0.5};
+        width: ${size}px;
+        height: ${size}px;
       `;
       wrap.appendChild(s);
     }
