@@ -1303,6 +1303,40 @@ img { display: block; max-width: 100%; }
   position: absolute; inset: 0;
   pointer-events: none;
 }
+
+/* Micro-paillettes dorées pour les headers de catégorie — discrètes */
+.catalog-hero-sparks {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.cat-spark {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255,236,190,.95) 0%,
+    var(--gold) 45%,
+    rgba(212,170,98,.3) 75%,
+    transparent 100%);
+  box-shadow: 0 0 4px rgba(212,170,98,.55), 0 0 8px rgba(212,170,98,.25);
+  opacity: 0;
+  animation:
+    catSparkRise linear infinite,
+    catSparkBlink ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes catSparkRise {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(0, -100%, 0); }
+}
+@keyframes catSparkBlink {
+  0%, 100% { opacity: 0; }
+  20%      { opacity: .35; }
+  50%      { opacity: .85; }
+  80%      { opacity: .35; }
+}
 [data-theme="dark"] .catalog-hero-shade {
   background:
     linear-gradient(180deg,
