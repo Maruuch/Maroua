@@ -100,15 +100,7 @@ const Pages = (() => {
     hero.style.setProperty('--cat-hero-l', `url('${conf.light}')`);
     hero.classList.remove('no-media');
 
-    // Restart du Ken Burns pour repartir de scale(1.04) à chaque changement
-    const layer = hero.querySelector('.catalog-hero-img');
-    if (layer) {
-      layer.style.animation = 'none';
-      void layer.offsetWidth; // force reflow
-      layer.style.animation = '';
-    }
-
-    // Micro-paillettes dorées — petites, lentes, discrètes
+    // Mini-particules dorées — petites, lentes, discrètes
     _spawnCatalogSparks();
   }
 
@@ -116,19 +108,18 @@ const Pages = (() => {
     const wrap = $('catalogSparks');
     if (!wrap) return;
     wrap.innerHTML = '';
-    const count = window.innerWidth < 640 ? 22 : 42;
+    const count = window.innerWidth < 640 ? 12 : 24;
     for (let i = 0; i < count; i++) {
       const s = document.createElement('span');
       s.className = 'cat-spark';
-      const size = 2 + Math.random() * 3;                 // 2-5px (vraiment petites)
-      const dur  = 3 + Math.random() * 4;                 // 3-7s la vie d'une paillette
-      // Position : partout dans le bandeau (top 0-95%, left 0-100%)
       s.style.cssText = `
         left: ${Math.random() * 100}%;
-        top: ${Math.random() * 95}%;
-        width: ${size}px; height: ${size}px;
-        animation-duration: ${dur}s;
-        animation-delay: ${-Math.random() * dur}s;
+        top: ${Math.random() * 100}%;
+        animation-duration: ${4 + Math.random() * 8}s;
+        animation-delay: ${Math.random() * 6}s;
+        width: ${1 + Math.random() * 2}px;
+        height: ${1 + Math.random() * 2}px;
+        opacity: ${0.3 + Math.random() * 0.5};
       `;
       wrap.appendChild(s);
     }
