@@ -35,9 +35,9 @@
   --accent2:   #9B7040;
   --success:   #5C9E6E;
   --error:     #C05050;
-  /* Couleur header — match exact du fond logo (#E8D8C3) — header light en mode dark */
-  --header-bg: rgba(232,216,195,.96);
-  --header-solid: #E8D8C3;
+  /* Couleur header — match EXACT du fond logo cream (= --bg du thème light) */
+  --header-bg: #ECE1C8;
+  --header-solid: #ECE1C8;
 }
 
 /* LIGHT — crème ivoire chaud, pas blanc flashé */
@@ -58,9 +58,9 @@
   --accent2:   #6A3A10;
   --success:   #3A7A52;
   --error:     #A03030;
-  /* Couleur header — match exact du fond logo (#3A2A20) — header dark en mode light */
-  --header-bg: rgba(58,42,32,.96);
-  --header-solid: #3A2A20;
+  /* Couleur header — match EXACT du fond logo espresso (= --bg du thème dark) */
+  --header-bg: #2A1F14;
+  --header-solid: #2A1F14;
 }
 
 /* ── RESET ───────────────────────────────────────────────────── */
