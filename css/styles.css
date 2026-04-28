@@ -216,6 +216,11 @@ img { display: block; max-width: 100%; }
 [data-theme="dark"]  .logo-img--light { display: none; }
 [data-theme="light"] .logo-img--dark  { display: none; }
 
+/* Side panel mobile : fond toujours espresso → on force le light_logo
+   (peu importe le thème actif), pour éviter le décalage chromatique. */
+.nav-logo .logo-img--dark  { display: none !important; }
+.nav-logo .logo-img--light { display: block !important; }
+
 /* Fallback texte (gardé pour SEO + cas d'erreur de chargement image) */
 .logo-fallback {
   display: none;
@@ -1890,7 +1895,9 @@ img { display: block; max-width: 100%; }
 }
 .hero-split {
   flex: 1;
-  display: grid; grid-template-columns: 1fr 1fr;
+  display: grid;
+  /* Cartes (gauche) +20% de largeur par rapport au texte (droite) */
+  grid-template-columns: 1.2fr 1fr;
   align-items: center;
   max-width: 1340px; width: 100%; margin: 0 auto;
   padding: 5rem 2rem 4rem;
@@ -1901,16 +1908,44 @@ img { display: block; max-width: 100%; }
 .hero-right {
   display: flex; flex-direction: row; gap: 1.6rem;
   align-items: stretch; align-self: center;
-  min-height: 680px;
-  max-height: 760px;
+  /* -30% sur les hauteurs */
+  min-height: 480px;
+  max-height: 530px;
 }
 .hero-left {
   display: flex; flex-direction: column;
   align-items: flex-start; justify-content: center; text-align: left;
+  position: relative;
+  isolation: isolate; /* nouveau contexte de pile pour le ::before */
 }
 .hero-left .hero-line { margin: 0 0 1.8rem; }
 .hero-left .hero-desc { margin: 0 0 2.5rem; max-width: 440px; }
 .hero-left .hero-cta { justify-content: flex-start; }
+
+/* ── Fond éditorial discret derrière le texte hero ────────────
+   Photo Pac selon le thème, opacité faible, masque radial qui
+   fond les bords dans le body. Lisibilité du texte préservée. */
+.hero-left::before {
+  content: '';
+  position: absolute;
+  inset: -3rem -2rem;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: -1;
+  -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, black 25%, transparent 95%);
+          mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, black 25%, transparent 95%);
+  filter: saturate(.9);
+}
+[data-theme="dark"]  .hero-left::before {
+  background-image: url('/images/categories/dark_pac_2.png');
+  opacity: .14;
+}
+[data-theme="light"] .hero-left::before {
+  background-image: url('/images/categories/light_pac_2.png');
+  opacity: .18;
+}
 
 /* ── HERO CARDS — cartes qui fondent dans le fond ───────────── */
 .hero-card {
@@ -1921,8 +1956,9 @@ img { display: block; max-width: 100%; }
   cursor: pointer;
   transition: transform .5s var(--ease);
   position: relative; overflow: visible;
-  min-height: 640px;
-  max-height: 760px;
+  /* -30% sur les hauteurs (640→450, 760→530) */
+  min-height: 450px;
+  max-height: 530px;
 }
 /* Masque l'info e-commerce : les cartes sont purement éditoriales */
 .hero-card-info { display: none !important; }
@@ -1940,7 +1976,8 @@ img { display: block; max-width: 100%; }
 .hero-card-img-wrap {
   flex: 1; position: relative; overflow: hidden;
   background: transparent;
-  min-height: 600px;
+  /* -30% (600→420) */
+  min-height: 420px;
   -webkit-mask-image: radial-gradient(ellipse 88% 86% at 50% 50%, black 30%, transparent 100%);
   mask-image: radial-gradient(ellipse 88% 86% at 50% 50%, black 30%, transparent 100%);
 }
