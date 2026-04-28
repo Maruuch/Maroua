@@ -35,9 +35,9 @@
   --accent2:   #9B7040;
   --success:   #5C9E6E;
   --error:     #C05050;
-  /* Couleur header pour ce thème (crème chaude mate, pas blanche) */
-  --header-bg: rgba(228,214,186,.92);
-  --header-solid: #E4D6BA;
+  /* Couleur header — match exact du fond logo (#E8D8C3) — header light en mode dark */
+  --header-bg: rgba(232,216,195,.96);
+  --header-solid: #E8D8C3;
 }
 
 /* LIGHT — crème ivoire chaud, pas blanc flashé */
@@ -58,9 +58,9 @@
   --accent2:   #6A3A10;
   --success:   #3A7A52;
   --error:     #A03030;
-  /* Couleur header pour ce thème (espresso raffiné) */
-  --header-bg: rgba(38,24,14,.94);
-  --header-solid: #261810;
+  /* Couleur header — match exact du fond logo (#3A2A20) — header dark en mode light */
+  --header-bg: rgba(58,42,32,.96);
+  --header-solid: #3A2A20;
 }
 
 /* ── RESET ───────────────────────────────────────────────────── */
