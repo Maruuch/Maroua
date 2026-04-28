@@ -107,6 +107,31 @@ const Pages = (() => {
       void layer.offsetWidth; // force reflow
       layer.style.animation = '';
     }
+
+    // Micro-paillettes dorées — petites, lentes, discrètes
+    _spawnCatalogSparks();
+  }
+
+  function _spawnCatalogSparks() {
+    const wrap = $('catalogSparks');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const count = window.innerWidth < 640 ? 14 : 26;
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement('span');
+      s.className = 'cat-spark';
+      const size  = 1.5 + Math.random() * 2.5;            // 1.5-4px (vraiment petites)
+      const rise  = 8   + Math.random() * 14;             // 8-22s
+      const blink = 2.5 + Math.random() * 3.5;            // 2.5-6s
+      s.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: ${100 + Math.random() * 20}%;
+        width: ${size}px; height: ${size}px;
+        animation-duration: ${rise}s, ${blink}s;
+        animation-delay: ${-Math.random() * rise}s, ${-Math.random() * blink}s;
+      `;
+      wrap.appendChild(s);
+    }
   }
 
   function renderCatalog(filter = '') {
