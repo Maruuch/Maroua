@@ -112,11 +112,12 @@ const Pages = (() => {
     for (let i = 0; i < count; i++) {
       const s = document.createElement('span');
       s.className = 'cat-spark';
+      const dur = 4 + Math.random() * 8;
       s.style.cssText = `
         left: ${Math.random() * 100}%;
         top: ${Math.random() * 100}%;
-        animation-duration: ${4 + Math.random() * 8}s;
-        animation-delay: ${Math.random() * 6}s;
+        animation-duration: ${dur}s;
+        animation-delay: ${-Math.random() * dur}s;
         width: ${1 + Math.random() * 2}px;
         height: ${1 + Math.random() * 2}px;
         opacity: ${0.3 + Math.random() * 0.5};
