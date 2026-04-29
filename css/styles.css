@@ -397,8 +397,7 @@ img { display: block; max-width: 100%; }
 }
 .hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 
-/* Bulles dorées — gradient or chaud, halo lumineux,
-   tailles variées (5-36px), drift vertical + ondulation horizontale. */
+/* Bulles dorées avec 3 strates de profondeur (parallaxe atmosphérique) */
 .particle {
   position: absolute;
   border-radius: 50%;
@@ -412,12 +411,42 @@ img { display: block; max-width: 100%; }
     0 0 14px rgba(212,170,98,.22);
   opacity: 0;
   animation:
-    bubbleRise  linear infinite,
-    bubbleSway  ease-in-out infinite;
-  will-change: transform, opacity;
+    bubbleRise  linear        infinite,
+    bubbleSway  ease-in-out   infinite,
+    bubblePulse ease-in-out   infinite;
+  will-change: transform, opacity, filter;
 }
 
-/* Paillettes — encore plus brillantes (cœur quasi blanc, halo or) */
+/* Strate FOND — grosses, floues, lentes, sombres → profondeur atmosphérique */
+.particle--bg {
+  filter: blur(2px) saturate(.8);
+  background: radial-gradient(circle at 35% 30%,
+    rgba(255,232,180,.55) 0%,
+    rgba(212,170,98,.45)   45%,
+    rgba(155,112,64,0)     100%);
+  box-shadow: 0 0 22px rgba(212,170,98,.18);
+}
+
+/* Strate MOYENNE — tailles standard, rendu net, vie principale */
+.particle--mid {
+  /* hérite du style de base, rien à changer */
+}
+
+/* Strate AVANT — petites, vives, brillantes → focus visuel */
+.particle--fg {
+  background: radial-gradient(circle at 35% 30%,
+    #FFF6DD                 0%,
+    rgba(255,232,180,.95)   25%,
+    var(--gold)             50%,
+    rgba(212,170,98,.45)    80%,
+    transparent             100%);
+  box-shadow:
+    0 0  4px rgba(255,232,180,.85),
+    0 0 12px rgba(212,170,98,.55),
+    0 0 22px rgba(212,170,98,.25);
+}
+
+/* Paillettes (sparks JS) — étoile vive, plus brillante */
 .particle--spark {
   background: radial-gradient(circle,
     #FFF6DD 0%,
@@ -425,6 +454,19 @@ img { display: block; max-width: 100%; }
     rgba(212,170,98,.4) 70%,
     transparent 100%);
   box-shadow: 0 0 8px rgba(255,232,180,.7), 0 0 16px rgba(212,170,98,.45);
+}
+
+/* Pulsation lumineuse subtile — donne de la "vie" à chaque bulle */
+@keyframes bubblePulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.35); }
+}
+/* La strate fond garde son blur pendant la pulsation */
+.particle--bg.particle {
+  animation:
+    bubbleRise  linear        infinite,
+    bubbleSway  ease-in-out   infinite;
+  /* pas de pulse sur le fond pour ne pas fatiguer */
 }
 
 @keyframes bubbleRise {
