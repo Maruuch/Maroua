@@ -74,7 +74,15 @@
 
   _syncHeaderToLogo();
   _syncSidePanelToLogo();
-  new MutationObserver(_syncHeaderToLogo).observe(
+  // Re-tente après load complet (au cas où l'image n'était pas dispo)
+  window.addEventListener('load', () => {
+    _syncHeaderToLogo();
+    _syncSidePanelToLogo();
+  });
+  new MutationObserver(() => {
+    _syncHeaderToLogo();
+    _syncSidePanelToLogo();
+  }).observe(
     document.documentElement,
     { attributes: true, attributeFilter: ['data-theme'] }
   );
