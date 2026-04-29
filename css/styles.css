@@ -2079,44 +2079,70 @@ img { display: block; max-width: 100%; }
    (et non un noir générique), ce qui fait fondre le bord inférieur
    du bandeau dans la page au lieu d'avoir un trait net. */
 
-/* Voile sous le bandeau — couleur body, étendu à 80px pour
-   un fondu vraiment perceptible et un raccord doux. */
+/* ─── DOUBLE EFFET : intégration bandeau ↔ page ───
+   1. Voile INTÉRIEUR au bandeau (bas) : la couleur du body remonte
+      sur les ~22px inférieurs → le bandeau se fond dans la page.
+   2. Voile EXTÉRIEUR (sous le bandeau, sur la page) : ombre noire
+      qui darken le haut de la page → vraie ombre portée visible. */
+
+/* INTÉRIEUR : couleur body qui mange le bord bas du bandeau */
+#header::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 22px;
+  pointer-events: none;
+  z-index: 1;          /* au-dessus du bg du header */
+}
+[data-theme="dark"]  #header::before {
+  background: linear-gradient(to top,
+    rgba(42,31,20,.85) 0%,
+    rgba(42,31,20,.50) 35%,
+    rgba(42,31,20,.18) 70%,
+    transparent 100%);
+}
+[data-theme="light"] #header::before {
+  background: linear-gradient(to top,
+    rgba(40,24,12,.30) 0%,
+    rgba(40,24,12,.15) 50%,
+    transparent 100%);
+}
+
+/* EXTÉRIEUR : ombre noire qui darken la page sur ~70px sous le bandeau */
 #header::after {
   content: '';
   position: absolute;
   left: 0; right: 0;
   top: 100%;
-  height: 80px;
+  height: 70px;
   pointer-events: none;
-  z-index: 99;        /* au-dessus du body, sous le contenu fixed */
+  z-index: 99;
 }
 [data-theme="dark"]  #header::after {
   background: linear-gradient(to bottom,
-    rgba(42,31,20,.95) 0%,
-    rgba(42,31,20,.65) 30%,
-    rgba(42,31,20,.30) 60%,
-    rgba(42,31,20,0)   100%);
+    rgba(0,0,0,.55) 0%,
+    rgba(0,0,0,.28) 40%,
+    rgba(0,0,0,.10) 70%,
+    transparent     100%);
 }
 [data-theme="light"] #header::after {
   background: linear-gradient(to bottom,
-    rgba(236,225,200,.95) 0%,
-    rgba(236,225,200,.65) 30%,
-    rgba(236,225,200,.30) 60%,
-    rgba(236,225,200,0)   100%);
+    rgba(0,0,0,.22) 0%,
+    rgba(0,0,0,.10) 40%,
+    rgba(0,0,0,.04) 70%,
+    transparent     100%);
 }
 
-/* Ombres puissantes — couleur du body, multi-couches pour dégradé naturel */
+/* Ombre portée du bandeau — noire pour vraie profondeur */
 [data-theme="dark"]  #header {
   box-shadow:
-    0 20px 40px -8px rgba(42,31,20,1),
-    0 8px 18px  -2px rgba(42,31,20,.9),
-    0 2px 4px        rgba(42,31,20,.6);
+    0 18px 36px -6px rgba(0,0,0,.65),
+    0 6px 16px  -2px rgba(0,0,0,.50);
 }
 [data-theme="light"] #header {
   box-shadow:
-    0 20px 40px -8px rgba(236,225,200,1),
-    0 8px 18px  -2px rgba(236,225,200,.9),
-    0 2px 4px        rgba(236,225,200,.6);
+    0 18px 36px -6px rgba(40,24,12,.30),
+    0 6px 16px  -2px rgba(40,24,12,.20);
 }
 
 /* ── HERO SPLIT ─────────────────────────────────────────────── */
