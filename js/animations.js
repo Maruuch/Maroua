@@ -29,59 +29,91 @@ const Animations = (() => {
     });
   }
 
-  // ── Particles — bulles de savon + paillettes dorées ─────
+  // ── Particles — 3 strates de bulles + paillettes (parallaxe) ─
   function initParticles() {
     const container = document.getElementById('particles');
     if (!container) return;
     container.innerHTML = '';
 
-    // Densité plus généreuse (féerie enfantine)
     const isMobile = window.innerWidth < 640;
-    const bubbleCount = isMobile ? 28 : 60;
-    const sparkCount  = isMobile ?  8 : 16;
 
-    // Bulles de savon — tailles très variées
-    for (let i = 0; i < bubbleCount; i++) {
+    // Distribution :
+    //  - BG  (fond, lent, gros, flou)   : 30%
+    //  - MID (intermédiaire, net)        : 45%
+    //  - FG  (avant, petit, vif)         : 25%
+    const total       = isMobile ? 36 : 72;
+    const bgCount     = Math.round(total * .30);
+    const midCount    = Math.round(total * .45);
+    const fgCount     = total - bgCount - midCount;
+    const sparkCount  = isMobile ?  8 : 18;
+
+    const spawn = (variant, opts) => {
       const p = document.createElement('div');
-      p.className = 'particle';
+      p.className = `particle particle--${variant}`;
+      const size     = opts.size();
+      const riseDur  = opts.riseDur();
+      const swayDur  = opts.swayDur();
+      const pulseDur = 3.5 + Math.random() * 3;
+      const delay    = -Math.random() * riseDur;
 
-      // Distribution log-normale : beaucoup de petites, peu de grandes (réaliste)
-      const r = Math.random();
-      const size = r < .55
-        ? 5  + Math.random() * 8     // 55%  : 5-13px (petites)
-        : r < .85
-          ? 14 + Math.random() * 10  // 30%  : 14-24px (moyennes)
-          : 25 + Math.random() * 14; // 15%  : 25-39px (grandes, "wow")
-
-      const riseDur  = 12 + Math.random() * 18;            // 12-30s — montée lente, contemplative
-      const swayDur  = 4  + Math.random() * 5;             // 4-9s   — ondulation latérale
-      const delay    = -Math.random() * riseDur;           // négatif → démarrage déjà engagé
-      const startTop = 100 + Math.random() * 60;           // démarre sous le hero pour défilement continu
+      // Montage du cssText (le BG n'a pas l'animation pulse → 2 anims, sinon 3)
+      const animDur   = variant === 'bg'
+        ? `${riseDur}s, ${swayDur}s`
+        : `${riseDur}s, ${swayDur}s, ${pulseDur}s`;
+      const animDelay = variant === 'bg'
+        ? `${delay}s, ${delay}s`
+        : `${delay}s, ${delay}s, ${-Math.random() * pulseDur}s`;
 
       p.style.cssText = `
         left: ${Math.random() * 100}%;
-        top: ${startTop}%;
+        top: ${100 + Math.random() * 60}%;
         width: ${size}px;
         height: ${size}px;
-        animation-duration: ${riseDur}s, ${swayDur}s;
-        animation-delay: ${delay}s, ${delay}s;
+        animation-duration: ${animDur};
+        animation-delay: ${animDelay};
       `;
       container.appendChild(p);
+    };
+
+    // STRATE BG : grosses, floues, montée très lente (parallaxe lointain)
+    for (let i = 0; i < bgCount; i++) {
+      spawn('bg', {
+        size:    () => 22 + Math.random() * 22,           // 22-44px
+        riseDur: () => 26 + Math.random() * 18,           // 26-44s (très lent)
+        swayDur: () => 8  + Math.random() * 6,
+      });
+    }
+    // STRATE MID : standard
+    for (let i = 0; i < midCount; i++) {
+      spawn('mid', {
+        size:    () => 8  + Math.random() * 12,           // 8-20px
+        riseDur: () => 14 + Math.random() * 12,           // 14-26s
+        swayDur: () => 5  + Math.random() * 4,
+      });
+    }
+    // STRATE FG : petites, brillantes, montée rapide (parallaxe proche)
+    for (let i = 0; i < fgCount; i++) {
+      spawn('fg', {
+        size:    () => 4 + Math.random() * 6,             // 4-10px
+        riseDur: () => 9 + Math.random() * 7,             // 9-16s (rapide)
+        swayDur: () => 3 + Math.random() * 3,
+      });
     }
 
-    // Paillettes dorées — petits points scintillants
+    // Paillettes étoile (sparkle) — points très brillants
     for (let i = 0; i < sparkCount; i++) {
       const s = document.createElement('div');
       s.className = 'particle particle--spark';
-      const size  = 2 + Math.random() * 3;        // 2-5px
-      const dur   = 6 + Math.random() * 8;
+      const size = 2 + Math.random() * 3;
+      const dur  = 7 + Math.random() * 8;
+      const pulseDur = 2.5 + Math.random() * 2;
       s.style.cssText = `
         left: ${Math.random() * 100}%;
         top: ${100 + Math.random() * 50}%;
         width: ${size}px;
         height: ${size}px;
-        animation-duration: ${dur}s, ${3 + Math.random() * 3}s;
-        animation-delay: ${-Math.random() * dur}s, ${-Math.random() * 3}s;
+        animation-duration: ${dur}s, ${3 + Math.random() * 3}s, ${pulseDur}s;
+        animation-delay: ${-Math.random() * dur}s, ${-Math.random() * 3}s, ${-Math.random() * pulseDur}s;
       `;
       container.appendChild(s);
     }
