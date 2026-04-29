@@ -66,7 +66,35 @@ const HeroCards = (() => {
     return timer;
   }
 
+  // ── Tilt 3D au mouvement souris (parallaxe interactive) ──
+  function _initTilt() {
+    document.querySelectorAll('.hero-card').forEach(card => {
+      let raf = null;
+      const reset = () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          card.style.setProperty('--tilt-x', '0deg');
+          card.style.setProperty('--tilt-y', '0deg');
+        });
+      };
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;   // 0 → 1
+        const y = (e.clientY - r.top)  / r.height;  // 0 → 1
+        const tiltY = (x - .5) *  10;               // -5° → +5° (rotation Y, axe vertical)
+        const tiltX = (y - .5) * -8;                // +4° → -4° (rotation X, axe horizontal)
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          card.style.setProperty('--tilt-x', `${tiltX}deg`);
+          card.style.setProperty('--tilt-y', `${tiltY}deg`);
+        });
+      });
+      card.addEventListener('mouseleave', reset);
+    });
+  }
+
   function init() {
+    _initTilt();
     // Attendre que les produits soient chargés
     Store.on('productsLoaded', () => {
       const cardNew = document.getElementById('heroCardNew');
