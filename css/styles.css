@@ -364,7 +364,61 @@ img { display: block; max-width: 100%; }
   align-items: center; justify-content: center;
   overflow: hidden;
   text-align: center;
+  /* Variables thème pour les couches atmosphériques */
+  --vignette-color:   rgba(0, 0, 0, .55);
+  --spot-color:       rgba(212, 170, 98, .12);
+  --hairline-gold:    linear-gradient(90deg,
+                        transparent 0%,
+                        rgba(212,170,98,.6) 35%,
+                        rgba(255,232,180,.95) 50%,
+                        rgba(212,170,98,.6) 65%,
+                        transparent 100%);
 }
+[data-theme="light"] .hero {
+  --vignette-color: rgba(40, 24, 12, .35);
+  --spot-color:     rgba(138, 88, 40, .14);
+}
+
+/* Couche 1 — Cascade de lumière descendant du bandeau */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 110%;
+  height: 60%;
+  background: radial-gradient(ellipse 70% 100% at 50% 0%,
+                var(--spot-color) 0%,
+                transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Couche 2 — Vignette cinématique (coins assombris) */
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 95% 90% at 50% 50%,
+                transparent 55%,
+                var(--vignette-color) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Couche 3 — Hairline doré juste sous le bandeau (signature éditoriale) */
+.hero > .hero-hairline {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--hairline-gold);
+  opacity: .65;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* On remonte le contenu hero au-dessus des couches atmosphériques */
+.hero-bg, .hero-split, .hero-marquee { position: relative; z-index: 3; }
+.hero-bg { z-index: 1; }   /* le bg reste derrière la vignette */
 .hero-bg {
   position: absolute; inset: 0; pointer-events: none;
 }
@@ -2058,11 +2112,20 @@ img { display: block; max-width: 100%; }
   border: none;
   display: flex; flex-direction: column;
   cursor: pointer;
-  transition: transform .5s var(--ease);
+  transition: transform .5s var(--ease), filter .5s var(--ease);
   position: relative; overflow: visible;
   /* -30% sur les hauteurs (640→450, 760→530) */
   min-height: 450px;
   max-height: 530px;
+  /* Profondeur premium : ombre portée + halo doré subtil + lueur intérieure */
+  filter:
+    drop-shadow(0 18px 40px rgba(0,0,0,.45))
+    drop-shadow(0 6px 14px  rgba(0,0,0,.32));
+}
+.hero-card:hover {
+  filter:
+    drop-shadow(0 26px 50px rgba(0,0,0,.55))
+    drop-shadow(0 8px 18px  rgba(212,170,98,.25));
 }
 /* Masque l'info e-commerce : les cartes sont purement éditoriales */
 .hero-card-info { display: none !important; }
