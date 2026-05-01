@@ -9,6 +9,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/styles.css" />
+  <!-- Fallback no-JS : si JS désactivé, le hero reste visible -->
+  <noscript><style>
+    .hero-hairline { opacity:.65 !important; transform:scaleX(1) !important; }
+    .hero-right .hero-card,
+    .hero-left > .hero-line,
+    .hero-left > .hero-eyebrow,
+    .hero-left > .hero-title,
+    .hero-left > .hero-desc,
+    .hero-left > .hero-cta { opacity:1 !important; }
+  </style></noscript>
 </head>
 <body>
 
@@ -1188,6 +1198,9 @@
   <script src="/js/chat.js"></script>
   <script src="/js/hero-cards.js"></script>
   <script src="/js/app.js"></script>
+  <!-- GSAP-powered animations (bundlé par Vite, depuis node_modules) -->
+  <!-- Build: GSAP migration ready -->
+  <script type="module" src="/src/main.js"></script>
 
 </body>
 </html>
