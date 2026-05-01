@@ -415,55 +415,36 @@ img { display: block; max-width: 100%; }
 }
 
 /* Couche 3 — Hairline doré juste sous le bandeau (signature éditoriale)
-   + reveal cinématique : se trace du centre vers les côtés au chargement */
+   Le reveal est désormais piloté par GSAP (src/main.js) — l'élément
+   est masqué par défaut, GSAP le révèle. */
 .hero > .hero-hairline {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
   background: var(--hairline-gold);
-  opacity: 0;
+  opacity: 0;                          /* GSAP prend le relais */
   transform: scaleX(0);
   transform-origin: center;
   pointer-events: none;
   z-index: 2;
-  animation: hairlineReveal 1.6s cubic-bezier(.22, 1, .36, 1) .2s forwards;
-}
-@keyframes hairlineReveal {
-  0%   { opacity: 0;   transform: scaleX(0); }
-  60%  { opacity: 1;   transform: scaleX(1); }
-  100% { opacity: .65; transform: scaleX(1); }
+  will-change: transform, opacity;
 }
 
-/* Reveal chorégraphié des cartes hero (montent en stagger) */
+/* Cartes hero — état initial caché, GSAP révèle */
 .hero-right .hero-card {
   opacity: 0;
-  transform: perspective(1100px) translateY(40px) rotateX(var(--tilt-x, 0)) rotateY(var(--tilt-y, 0));
-  animation: heroCardEntrance 1s cubic-bezier(.22, 1, .36, 1) forwards;
-}
-.hero-right .hero-card:nth-child(1) { animation-delay: .55s; }
-.hero-right .hero-card:nth-child(2) { animation-delay: .75s; }
-@keyframes heroCardEntrance {
-  to {
-    opacity: 1;
-    transform: perspective(1100px) translateY(0) rotateX(var(--tilt-x, 0)) rotateY(var(--tilt-y, 0));
-  }
+  will-change: transform, opacity;
 }
 
-/* Reveal du texte hero (ligne, eyebrow, titre, desc, CTA — en cascade) */
-.hero-left > * {
+/* Texte hero — état initial caché, GSAP révèle en cascade */
+.hero-left > .hero-line,
+.hero-left > .hero-eyebrow,
+.hero-left > .hero-title,
+.hero-left > .hero-desc,
+.hero-left > .hero-cta {
   opacity: 0;
-  transform: translateY(20px);
-  animation: heroTextEntrance .85s cubic-bezier(.22, 1, .36, 1) forwards;
+  will-change: transform, opacity;
 }
-.hero-left > .hero-line   { animation-delay: .35s; }
-.hero-left > .hero-eyebrow { animation-delay: .55s; }
-.hero-left > .hero-title  { animation-delay: .75s; }
-.hero-left > .hero-desc   { animation-delay: 1.05s; }
-.hero-left > .hero-cta    { animation-delay: 1.25s; }
-@keyframes heroTextEntrance {
-  to { opacity: 1; transform: translateY(0); }
-}
-.hero-left > #particles { animation: none; opacity: 1; transform: none; } /* pas d'effet sur le conteneur de bulles */
 
 /* On remonte le contenu hero au-dessus des couches atmosphériques */
 .hero-bg, .hero-split, .hero-marquee { position: relative; z-index: 3; }
@@ -3168,4 +3149,60 @@ input[type="url"], textarea, select,
   color: var(--error);
   border-color: var(--error);
   background: rgba(192,80,80,.06);
+}
+
+/* ================================================================
+   GSAP — styles support pour les 3 effets premium
+   ================================================================ */
+
+/* ── 1️⃣  SplitText : préserver les sauts de ligne et le rythme typo ── */
+.split-line  { display: block; overflow: hidden; line-height: 1.05; }
+.split-word  { display: inline-block; }
+.split-char  {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+/* SplitText génère un wrapper "mask" autour des lignes (option mask: 'lines') */
+.hero-title .split-line { padding-bottom: .04em; } /* évite le crop des descenders */
+
+/* ── 3️⃣  Cursor halo doré avec lag premium ── */
+.cursor-halo {
+  position: fixed;
+  top: 0; left: 0;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255,232,180,.55) 0%,
+    rgba(212,170,98,.32)  35%,
+    rgba(212,170,98,.10)  60%,
+    transparent           85%);
+  box-shadow:
+    0 0 22px rgba(212,170,98,.30),
+    0 0 48px rgba(212,170,98,.18);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%) scale(1);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+[data-theme="light"] .cursor-halo {
+  background: radial-gradient(circle,
+    rgba(138,88,40,.30)  0%,
+    rgba(138,88,40,.18) 40%,
+    rgba(138,88,40,.06) 65%,
+    transparent          85%);
+  mix-blend-mode: multiply;
+}
+@media (hover: none) {
+  .cursor-halo { display: none !important; }
+}
+
+/* ── 5️⃣  Image reveal : préparer le clip-path pour transition propre ── */
+.product-card .product-image,
+.product-card img,
+.hero-card-img,
+.recent-card img,
+.detail-thumb,
+.detail-main img {
+  will-change: clip-path, transform;
 }
