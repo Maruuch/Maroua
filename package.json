@@ -1,0 +1,17 @@
+{
+  "name": "maroua-jewelry",
+  "version": "1.0.0",
+  "description": "Maroua Jewelry — site e-commerce premium",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  }
+}
