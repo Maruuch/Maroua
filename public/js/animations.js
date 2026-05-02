@@ -41,11 +41,11 @@ const Animations = (() => {
     //  - BG  (fond, lent, gros, flou)   : 30%
     //  - MID (intermédiaire, net)        : 45%
     //  - FG  (avant, petit, vif)         : 25%
-    const total       = isMobile ? 36 : 72;
+    const total       = isMobile ? 18 : 72;
     const bgCount     = Math.round(total * .30);
     const midCount    = Math.round(total * .45);
     const fgCount     = total - bgCount - midCount;
-    const sparkCount  = isMobile ?  8 : 18;
+    const sparkCount  = isMobile ?  4 : 18;
 
     const spawn = (variant, opts) => {
       const p = document.createElement('div');
