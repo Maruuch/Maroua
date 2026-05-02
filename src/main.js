@@ -85,9 +85,10 @@ function initAll(isDesktop) {
   if (isDesktop) initCursorHalo();   // halo souris : desktop uniquement
   initImageReveals();
   initScrollReveal();
+  initCategoriesScroll();             // reveal + stagger + parallaxe sur la section catégories
   initParallaxHeroBg();
   initHeaderScrollState();
-  console.log('[GSAP] animations initialisées (skill: gsap-core)');
+  console.log('[GSAP] animations initialisées (skill: gsap-scrolltrigger)');
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -294,9 +295,10 @@ function initImageReveals() {
 
 // ────────────────────────────────────────────────────────────────
 // SCROLL REVEAL — sections qui montent en cascade au scroll
+// (exclut hero-card ET cat-card, gérés séparément avec leur propre trigger)
 // ────────────────────────────────────────────────────────────────
 function initScrollReveal() {
-  ScrollTrigger.batch('.reveal:not(.hero-card)', {
+  ScrollTrigger.batch('.reveal:not(.hero-card):not(.cat-card)', {
     start: 'top 85%',
     onEnter: (els) => {
       gsap.fromTo(els,
@@ -310,6 +312,87 @@ function initScrollReveal() {
         }
       );
     },
+  });
+}
+
+// ────────────────────────────────────────────────────────────────
+// CATEGORIES — chorégraphie premium au scroll (3 effets coordonnés)
+// ────────────────────────────────────────────────────────────────
+function initCategoriesScroll() {
+  const section = document.querySelector('.section-cats');
+  if (!section) return;
+
+  // ─── 1. Section header (eyebrow + title + sub) ───
+  // Reveal en cascade quand la section entre en vue (top 80%)
+  const headParts = document.querySelectorAll(
+    '.section-head-cats .section-label, .section-head-cats .section-title, .section-head-cats .section-sub'
+  );
+  if (headParts.length) {
+    gsap.set(headParts, { autoAlpha: 0, y: 30 });
+    gsap.to(headParts, {
+      autoAlpha: 1,
+      y: 0,
+      duration: 1.0,
+      ease: 'expo.out',
+      stagger: { each: 0.12, from: 'start' },
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 80%',
+        once: true,
+      },
+    });
+  }
+
+  // ─── 2. Cartes catégories — entrée en stagger 3D ───
+  // Chaque carte arrive de bas avec rotation X subtile, en cascade éditoriale
+  const cards = document.querySelectorAll('.cats-editorial .cat-card');
+  if (cards.length) {
+    gsap.set(cards, {
+      autoAlpha: 0,
+      y: 80,
+      rotationX: -6,
+      transformPerspective: 1000,
+      transformOrigin: '50% 100%',
+    });
+
+    ScrollTrigger.batch(cards, {
+      start: 'top 88%',
+      once: true,                    // une fois suffit, pas de replay
+      interval: 0.05,                 // collecte les cards entrées dans 50ms
+      batchMax: 5,                    // toutes les cartes du grid d'un coup
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          autoAlpha: 1,
+          y: 0,
+          rotationX: 0,
+          duration: 1.1,
+          ease: 'power4.out',
+          stagger: { each: 0.12, from: 'start' },
+          overwrite: 'auto',
+        });
+      },
+    });
+  }
+
+  // ─── 3. Parallaxe sur les images des cartes ───
+  // Quand l'utilisateur scrolle au travers de la section, l'image de
+  // fond de chaque carte glisse légèrement plus lentement → effet de
+  // profondeur cinématographique. Scrub continu.
+  const catImages = document.querySelectorAll('.cats-editorial .cat-img--a');
+  catImages.forEach(img => {
+    gsap.fromTo(img,
+      { yPercent: -6 },
+      {
+        yPercent: 6,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: img.closest('.cat-card'),
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      }
+    );
   });
 }
 
