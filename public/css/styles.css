@@ -3299,33 +3299,80 @@ input[type="url"], textarea, select,
   }
 }
 
-/* Mobile (≤640px) — refonte de la densité */
+/* Mobile (≤640px) — REFONTE EN MODE "SCÈNES"
+   Chaque section devient une scène indépendante :
+   - hauteur minimale = 100svh (small viewport height, exclut le chrome mobile)
+   - contenu centré verticalement (display:flex + align-items)
+   - scroll-snap doux : on s'aligne sur les scènes mais sans piéger l'utilisateur
+   - paddings généreux pour aérer
+============================================================================== */
 @media (max-width: 640px) {
 
-  /* HERO — trim padding et bulles plus discrètes */
-  .hero-split { padding: 2.5rem 1.2rem 2rem; gap: 2rem; }
-  .hero-right { height: 220px; gap: .9rem; }
-  .hero-card-label { font-size: .55rem; padding: .25rem .65rem; }
-  .hero-left { padding: 0 .2rem; }
-  .hero-title { font-size: 2.2rem; line-height: 1.05; margin-bottom: 1.2rem; }
-  .hero-eyebrow { font-size: .65rem; margin-bottom: 1rem; }
-  .hero-desc { font-size: .85rem; max-width: 100%; margin-bottom: 1.6rem; }
-  .hero-cta { gap: .9rem; }
-  .btn-primary { padding: .8rem 1.6rem; font-size: .68rem; }
-  .hero-marquee { padding: .6rem 0; }
+  /* SCROLL SNAP global mobile — proximity = doux, pas mandatory */
+  html {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: var(--h);
+  }
 
-  /* CATÉGORIES — 2 colonnes (cards standard), 1 seul hero pleine largeur */
+  /* ─── SCÈNES — chaque section centrée, full hauteur ─── */
+  .hero,
+  .section-cats,
+  .section-featured,
+  .section-promise,
+  .section-reviews {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-height: calc(100svh - var(--h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3.5rem 0;
+  }
+  .section-cats > .container,
+  .section-featured > .container,
+  .section-promise > .container,
+  .section-reviews > .container {
+    width: 100%;
+  }
+
+  /* ─── HERO — proportions équilibrées sur mobile ─── */
+  .hero-split {
+    padding: 1.5rem 1.2rem;
+    gap: 1.6rem;
+    flex: 1;
+    align-content: center;
+  }
+  .hero-right { height: 200px; gap: .9rem; flex-shrink: 0; }
+  .hero-card-label { font-size: .55rem; padding: .25rem .65rem; }
+  .hero-left { padding: 0; align-items: center; text-align: center; }
+  .hero-line { margin: 0 auto 1.2rem !important; }
+  .hero-title { font-size: 2.2rem; line-height: 1.05; margin-bottom: 1rem; }
+  .hero-eyebrow { font-size: .62rem; margin-bottom: .9rem; letter-spacing: .25em; }
+  .hero-desc {
+    font-size: .85rem; line-height: 1.7;
+    max-width: 100%;
+    margin: 0 auto 1.4rem !important;
+  }
+  .hero-cta { gap: .8rem; justify-content: center !important; flex-wrap: wrap; }
+  .btn-primary { padding: .8rem 1.4rem; font-size: .68rem; }
+  .hero-marquee { padding: .55rem 0; position: static; flex-shrink: 0; }
+
+  /* Désactive vignette + spotlight forts qui peuvent causer du chevauchement visuel */
+  .hero::before,
+  .hero::after { opacity: .55; }
+
+  /* ─── CATÉGORIES — 2 colonnes propres ─── */
   .cats-grid.cats-editorial {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 10px;
   }
   .cats-editorial .cat-card {
     grid-column: span 1;
-    min-height: 240px;
+    min-height: 220px;
   }
   .cats-editorial .cat-card--hero {
-    grid-column: 1 / -1;   /* hero cards full width */
-    min-height: 280px;
+    grid-column: 1 / -1;
+    min-height: 260px;
   }
   .cat-card { padding: 1.4rem 1rem 1.2rem; }
   .cat-card--hero { padding: 1.8rem 1.4rem 1.6rem; }
@@ -3334,28 +3381,30 @@ input[type="url"], textarea, select,
   .cat-body p { font-size: .72rem; line-height: 1.5; }
   .cat-cta { font-size: .62rem; margin-top: .55rem; }
 
-  /* SECTION HEADERS — paddings réduits */
-  .section-cats, .section-featured, .section-reviews {
-    padding: 4rem 0;
-  }
-  .section-promise { padding: 3rem 0; }
-  .section-head { margin-bottom: 2rem; }
-  .section-title { font-size: 1.7rem; }
+  /* ─── SECTION HEADERS ─── */
+  .section-head { margin-bottom: 2rem; text-align: center; }
+  .section-head .section-sub { margin-left: auto; margin-right: auto; }
+  .section-title { font-size: 1.8rem; }
+  .section-label { letter-spacing: .25em; }
 
-  /* AVIS — 1 colonne mais cartes plus compactes (au lieu de 4 longues) */
-  .reviews-grid { gap: .8rem; }
-  .review-card { padding: 1.6rem 1.4rem; gap: 1.1rem; }
+  /* ─── AVIS — 1 colonne, padding équilibré ─── */
+  .reviews-grid { gap: 1rem; grid-template-columns: 1fr; }
+  .review-card { padding: 1.6rem 1.4rem; gap: 1rem; }
   .review-text { font-size: .98rem; line-height: 1.7; }
 
-  /* PROMISES — 2 cols compactes sur mobile */
+  /* ─── PROMESSES — 2 cols compactes ─── */
   .promise-grid { grid-template-columns: repeat(2, 1fr); }
   .promise-item { padding: 1.6rem 1rem; }
-  .promise-item h4 { font-size: .95rem; }
-  .promise-item p { font-size: .72rem; }
-  .promise-icon { font-size: 1.2rem; margin-bottom: .6rem; }
+  .promise-item h4 { font-size: .95rem; margin-bottom: .35rem; }
+  .promise-item p { font-size: .72rem; line-height: 1.55; }
+  .promise-icon { font-size: 1.2rem; margin-bottom: .55rem; }
 
-  /* FEATURED grid — déjà géré par .products-grid auto-fill */
+  /* ─── FEATURED produits — 2 cols compactes ─── */
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1px; }
+  .section-cta-row { margin-top: 2rem; }
+
+  /* ─── BULLES réduites pour ne pas alourdir mobile ─── */
+  .hero-particles { opacity: .55; }
 }
 
 /* Très petit mobile (≤380px) — 1 colonne sur les catégories */
