@@ -118,19 +118,31 @@ function initHero(isDesktop) {
     scaleX: 0, autoAlpha: 0, transformOrigin: 'center',
   });
 
-  // Timeline maître
-  const tl = gsap.timeline();
+  // ── Timeline maître avec labels nommés (officiel GSAP timeline) ──
+  // Phases : intro → text → title → outro
+  // Chaque label sert de point d'ancrage pour les tweens qui suivent.
+  const tl = gsap.timeline({
+    defaults: { duration: 0.85 },   // override local pour le hero
+  });
 
-  tl.to('.hero-hairline', {
-    scaleX: 1,
-    autoAlpha: 0.7,
-    duration: 1.4,
-    ease: 'expo.out',
-  })
-  .to('.hero-left > .hero-line',    { autoAlpha: 1, y: 0 }, '-=1.0')
-  .to('.hero-left > .hero-eyebrow', { autoAlpha: 1, y: 0 }, '-=0.65');
+  tl
+    // ── Phase 1 : INTRO — hairline qui se trace (signature éditoriale) ──
+    .addLabel('intro')
+    .to('.hero-hairline', {
+      scaleX: 1,
+      autoAlpha: 0.7,
+      duration: 1.4,
+      ease: 'expo.out',
+    }, 'intro')
 
-  // SplitText reveal — stagger object syntax (officiel GSAP)
+    // ── Phase 2 : TEXT — ligne + eyebrow démarrent dès le 1er tiers de l'intro ──
+    .addLabel('text', 'intro+=0.45')
+    .to('.hero-left > .hero-line',    { autoAlpha: 1, y: 0 }, 'text')
+    .to('.hero-left > .hero-eyebrow', { autoAlpha: 1, y: 0 }, 'text+=0.25')
+
+    // ── Phase 3 : TITLE — SplitText calligraphique caractère par caractère ──
+    .addLabel('title', 'text+=0.55');
+
   if (titleSplit) {
     tl.to(titleSplit.chars, {
       yPercent: 0,
@@ -139,17 +151,24 @@ function initHero(isDesktop) {
       duration: 1.0,
       ease: 'expo.out',
       stagger: { each: 0.022, from: 'start' },
-    }, '-=0.5');
+    }, 'title');
   }
 
-  tl.to('.hero-left > .hero-desc', { autoAlpha: 1, y: 0 }, '-=0.4')
-    .to('.hero-left > .hero-cta',  { autoAlpha: 1, y: 0 }, '-=0.55')
+  // ── Phase 4 : OUTRO — desc + CTA + cartes en parallèle ──
+  tl
+    .addLabel('outro', 'title+=0.55')
+    .to('.hero-left > .hero-desc', { autoAlpha: 1, y: 0 }, 'outro')
+    .to('.hero-left > .hero-cta',  { autoAlpha: 1, y: 0 }, 'outro+=0.2')
+    // Cartes démarrent un peu avant pour ne pas attendre la fin du texte
     .to('.hero-right .hero-card', {
       autoAlpha: 1, y: 0, rotationX: 0,
       duration: 1.1,
       ease: 'power4.out',
       stagger: { each: 0.18, from: 'start' },
-    }, '-=1.6');
+    }, 'outro-=0.4');
+
+  // Stocker la référence pour pouvoir restart/reverse plus tard si besoin
+  window._heroTl = tl;
 
   // ── Tilt 3D souris : DESKTOP uniquement ──
   if (isDesktop) {
