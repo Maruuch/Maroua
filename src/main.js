@@ -43,21 +43,31 @@ mm.add(
     }
 
     // ─── Démarre quand le splash loader disparaît ───
-    const start = () => requestAnimationFrame(() => initAll(isDesktop));
-    const loader = document.getElementById('loader');
+    // Flag pour garantir UN SEUL démarrage, peu importe la voie de déclenchement
+    // (observer, garde-fou 5s, ou état déjà hidden).
+    let started = false;
+    let safetyCall = null;
+    let obs = null;
 
+    const start = () => {
+      if (started) return;
+      started = true;
+      // Annule tout ce qui pourrait re-déclencher start()
+      if (obs) { obs.disconnect(); obs = null; }
+      if (safetyCall) { safetyCall.kill(); safetyCall = null; }
+      requestAnimationFrame(() => initAll(isDesktop));
+    };
+
+    const loader = document.getElementById('loader');
     if (!loader || loader.classList.contains('hidden')) {
       start();
     } else {
-      const obs = new MutationObserver(() => {
-        if (loader.classList.contains('hidden')) {
-          obs.disconnect();
-          start();
-        }
+      obs = new MutationObserver(() => {
+        if (loader.classList.contains('hidden')) start();
       });
       obs.observe(loader, { attributes: true, attributeFilter: ['class'] });
-      // Garde-fou : 5s max
-      gsap.delayedCall(5, () => { obs.disconnect(); start(); });
+      // Garde-fou : 5s max si le loader ne disparaît jamais (cas pathologique)
+      safetyCall = gsap.delayedCall(5, start);
     }
 
     // Cleanup quand les conditions changent (resize, toggle reduced-motion)
