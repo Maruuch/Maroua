@@ -3348,21 +3348,66 @@ input[type="url"], textarea, select,
   .hero-left  { order: 1; align-items: center; text-align: center; padding: 0; }
   .hero-right { order: 2; flex-direction: row; height: 200px; gap: .8rem; flex-shrink: 0; }
 
-  /* CARTES compactes — override du min-height: 450px du desktop */
-  .hero-card {
+  /* ─── CARTES — refonte robuste mobile ─── */
+  /* Container row, 200px de haut, 2 cartes côte-à-côte */
+  .hero-right {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100%;
+    height: 200px !important;
     min-height: 200px !important;
-    max-height: 220px !important;
+    max-height: 200px !important;
   }
-  .hero-card-img-wrap { min-height: 180px !important; }
-  .hero-card-label { font-size: .55rem; padding: .25rem .65rem; top: .6rem; left: .6rem; }
-  /* Réduit drop-shadow dramatique (sinon les cartes "fuient" sur fond) */
+  /* Cartes : 50/50, hauteur fixe, overflow hidden, pas de tilt 3D */
   .hero-card {
+    flex: 1 1 0 !important;
+    min-height: 200px !important;
+    max-height: 200px !important;
+    width: auto !important;
+    overflow: hidden !important;
+    border-radius: var(--r) !important;
+    /* Drop-shadow réduite pour cohérence */
     filter:
-      drop-shadow(0 8px 16px rgba(0,0,0,.45))
-      drop-shadow(0 2px 6px rgba(0,0,0,.30)) !important;
+      drop-shadow(0 6px 14px rgba(0,0,0,.5))
+      drop-shadow(0 2px 6px  rgba(0,0,0,.35)) !important;
+    /* Annule le tilt 3D du desktop */
+    transform: none !important;
   }
-  /* Reflets diagonaux désactivés sur mobile (perfomance + visuel chargé) */
-  .hero-card-img-wrap::after { display: none; }
+  /* Image-wrap : fills the card, NO MASK (le mask radial coupait l'image
+     en petit cercle central → cartes qui paraissaient vides) */
+  .hero-card-img-wrap {
+    width: 100%;
+    height: 100%;
+    min-height: 0 !important;
+    -webkit-mask-image: none !important;
+            mask-image: none !important;
+    border-radius: var(--r) !important;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  /* L'image remplit toute la carte */
+  .hero-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--r);
+  }
+  .hero-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Étiquette flottante — taille mobile */
+  .hero-card-label {
+    font-size: .55rem;
+    padding: .28rem .7rem;
+    top: .6rem;
+    left: .6rem;
+  }
+  /* Reflets sheen désactivés sur mobile (perfomance + visuel chargé) */
+  .hero-card-img-wrap::after { display: none !important; }
 
   /* TEXTE — proportions resserrées */
   .hero-line { margin: 0 auto 1.2rem !important; }
