@@ -87,21 +87,33 @@ function initHero(isDesktop) {
   const heroLeft = document.querySelector('.hero-left');
   if (!heroLeft) return;
 
-  // ── Préparation du titre via SplitText ──
+  // ── Préparation du titre — IMPORTANT : on ne split PAS le <em> ──
+  // Le <em> "L'élégance" a un dégradé doré (background-clip: text) qui
+  // se casse si on découpe ses caractères en spans individuels.
+  // Solution : on l'anime comme un bloc, et on split uniquement le
+  // <span> "à portée de main" pour l'effet calligraphique.
   const titleEl = document.querySelector('.hero-title');
-  let titleSplit = null;
-  if (titleEl) {
-    titleSplit = new SplitText(titleEl, {
-      type: 'lines,words,chars',
-      linesClass: 'split-line',
+  const titleEm   = titleEl ? titleEl.querySelector('em')   : null;
+  const titleSpan = titleEl ? titleEl.querySelector('span') : null;
+
+  let spanSplit = null;
+  if (titleSpan) {
+    spanSplit = new SplitText(titleSpan, {
+      type: 'words,chars',
       wordsClass: 'split-word',
       charsClass: 'split-char',
-      mask: 'lines',
     });
-    gsap.set(titleSplit.chars, {
+    gsap.set(spanSplit.chars, {
       yPercent: 110,
       autoAlpha: 0,
       rotationZ: 4,
+      transformOrigin: '50% 100%',
+    });
+  }
+  if (titleEm) {
+    gsap.set(titleEm, {
+      autoAlpha: 0,
+      y: 40,
       transformOrigin: '50% 100%',
     });
   }
@@ -140,23 +152,33 @@ function initHero(isDesktop) {
     .to('.hero-left > .hero-line',    { autoAlpha: 1, y: 0 }, 'text')
     .to('.hero-left > .hero-eyebrow', { autoAlpha: 1, y: 0 }, 'text+=0.25')
 
-    // ── Phase 3 : TITLE — SplitText calligraphique caractère par caractère ──
+    // ── Phase 3a : TITLE EM — "L'élégance" en bloc (préserve le dégradé or) ──
     .addLabel('title', 'text+=0.55');
 
-  if (titleSplit) {
-    tl.to(titleSplit.chars, {
+  if (titleEm) {
+    tl.to(titleEm, {
+      autoAlpha: 1,
+      y: 0,
+      duration: 1.0,
+      ease: 'expo.out',
+    }, 'title');
+  }
+
+  // ── Phase 3b : TITLE SPAN — "à portée de main" en stagger calligraphique ──
+  if (spanSplit) {
+    tl.to(spanSplit.chars, {
       yPercent: 0,
       autoAlpha: 1,
       rotationZ: 0,
       duration: 1.0,
       ease: 'expo.out',
       stagger: { each: 0.022, from: 'start' },
-    }, 'title');
+    }, 'title+=0.35');
   }
 
   // ── Phase 4 : OUTRO — desc + CTA + cartes en parallèle ──
   tl
-    .addLabel('outro', 'title+=0.55')
+    .addLabel('outro', 'title+=1.1')
     .to('.hero-left > .hero-desc', { autoAlpha: 1, y: 0 }, 'outro')
     .to('.hero-left > .hero-cta',  { autoAlpha: 1, y: 0 }, 'outro+=0.2')
     // Cartes démarrent un peu avant pour ne pas attendre la fin du texte
