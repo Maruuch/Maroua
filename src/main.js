@@ -452,64 +452,111 @@ function initCategoriesScroll() {
 
   if (!track || !cards.length) return;
 
-  const progressDots = section.querySelectorAll('.cats-progress span');
+  const viewport = section.querySelector('.cats-track-viewport');
 
-  // ─── DESKTOP : SHOWCASE pinned avec crossfade frame-by-frame ───
-  if (isDesktop) {
+  // ─── DESKTOP : carousel horizontal piloté par la position de la souris ───
+  if (isDesktop && viewport) {
 
-    // État initial : toutes les cartes invisibles, légèrement zoomées,
-    // SAUF la première qui est visible plein cadre.
-    gsap.set(cards, { autoAlpha: 0, scale: 1.06 });
-    gsap.set(cards[0], { autoAlpha: 1, scale: 1 });
-
-    // ─── Timeline maître scrub'd au scroll ───
-    // Chaque transition prend 1 unit de timeline (= 1 segment de scroll).
-    // Total = (cards.length - 1) transitions.
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        pin: true,
-        start: 'top top',
-        // Distance de scroll : 700px par transition pour un rythme contemplatif
-        end: () => '+=' + ((cards.length - 1) * 700),
-        scrub: 0.6,        // smooth catch-up
-        invalidateOnRefresh: true,
-        anticipatePin: 1,
-        onUpdate: (self) => {
-          // Met à jour les progress dots — quelle carte est "active"
-          const idx = Math.min(
-            cards.length - 1,
-            Math.round(self.progress * (cards.length - 1))
-          );
-          progressDots.forEach((d, i) => d.classList.toggle('active', i === idx));
-        },
-      },
+    // ─── Position du track via gsap.quickTo (smooth GPU) ───
+    const xTo = gsap.quickTo(track, 'x', {
+      duration: 0.5,
+      ease: 'power3.out',
+      overwrite: 'auto',
     });
 
-    // Pour chaque transition (de carte i-1 à i) : crossfade + zoom doux
-    for (let i = 1; i < cards.length; i++) {
-      const prev = cards[i - 1];
-      const curr = cards[i];
-      // Sur le segment [i-1 ; i] de la timeline :
-      tl
-        // Carte précédente : fade out + zoom in (s'éloigne)
-        .to(prev, {
-          autoAlpha: 0,
-          scale: 0.94,
-          duration: 1,
-          ease: 'power2.inOut',
-        }, i - 1)
-        // Carte courante : fade in + zoom out (entre depuis le fond)
-        .fromTo(curr, {
-          autoAlpha: 0,
-          scale: 1.10,
-        }, {
-          autoAlpha: 1,
-          scale: 1,
-          duration: 1,
-          ease: 'power2.inOut',
-        }, i - 1);
+    let targetX = 0;
+    let velocity = 0;             // pixels par frame, signé (-: scroll → vers la droite, le contenu va à gauche)
+    let isHovering = false;
+
+    // Bornes — recalculées au refresh (resize)
+    const getMaxNegativeX = () => {
+      const trackW = track.scrollWidth;
+      const vpW = viewport.offsetWidth;
+      // Track est centré via padding-left/right, donc la translation va de
+      // 0 (1ère carte au centre) à -(trackWidth - viewportWidth) (dernière au centre)
+      return -(trackW - vpW);
+    };
+
+    // ─── Mouse position → vélocité ───
+    viewport.addEventListener('mouseenter', () => { isHovering = true; });
+    viewport.addEventListener('mouseleave', () => {
+      isHovering = false;
+      velocity = 0;
+      viewport.classList.remove('scroll-left', 'scroll-right');
+    });
+
+    viewport.addEventListener('mousemove', (e) => {
+      const rect = viewport.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const w = rect.width;
+      const center = w / 2;
+      // distance signée -1 (gauche) à +1 (droite)
+      const signed = (x - center) / center;
+      const deadZone = 0.12;       // zone morte au centre
+      const absDist = Math.abs(signed);
+
+      if (absDist < deadZone) {
+        velocity = 0;
+        viewport.classList.remove('scroll-left', 'scroll-right');
+        return;
+      }
+
+      const sign = Math.sign(signed);
+      const intensity = (absDist - deadZone) / (1 - deadZone);   // 0 → 1
+      // Vitesse max ~14px/frame (~840px/s à 60fps)
+      velocity = sign * intensity * intensity * 14;              // courbe quadratique pour finesse au centre
+      viewport.classList.toggle('scroll-left',  sign < 0);
+      viewport.classList.toggle('scroll-right', sign > 0);
+    });
+
+    // ─── Boucle d'update via gsap.ticker ───
+    gsap.ticker.add(() => {
+      if (!isHovering || velocity === 0) return;
+      // Le user veut : curseur à gauche → scroll à gauche (le contenu glisse vers la droite)
+      // Donc velocity < 0 (gauche) → targetX augmente (track va à droite, on découvre les premières cartes)
+      targetX -= velocity;
+      targetX = gsap.utils.clamp(getMaxNegativeX(), 0, targetX);
+      xTo(targetX);
+      updateActiveCard();
+    });
+
+    // ─── Détecte la carte la plus proche du centre du viewport ───
+    function updateActiveCard() {
+      const vpRect = viewport.getBoundingClientRect();
+      const vpCenter = vpRect.left + vpRect.width / 2;
+      let closest = null;
+      let minDist = Infinity;
+      cards.forEach(c => {
+        const r = c.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - vpCenter);
+        if (d < minDist) { minDist = d; closest = c; }
+      });
+      cards.forEach(c => c.classList.toggle('is-active', c === closest));
     }
+    // Initial : marque la 1re carte comme active (elle est au centre par défaut)
+    updateActiveCard();
+
+    // ─── Click sur une carte latérale : scroll vers elle ───
+    cards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (card.classList.contains('is-active')) return; // déjà au centre, laisse l'event navigate
+        e.preventDefault();
+        e.stopPropagation();
+        const cardRect = card.getBoundingClientRect();
+        const vpRect = viewport.getBoundingClientRect();
+        const offset = (cardRect.left + cardRect.width / 2) - (vpRect.left + vpRect.width / 2);
+        targetX = gsap.utils.clamp(getMaxNegativeX(), 0, targetX - offset);
+        gsap.to(track, {
+          x: targetX,
+          duration: 0.7,
+          ease: 'power3.out',
+          onUpdate: updateActiveCard,
+        });
+      });
+    });
+
+    // Recalcul au resize (gsap.matchMedia revert le tout au changement de breakpoint)
+    ScrollTrigger.addEventListener('refreshInit', updateActiveCard);
 
   }
   // ─── MOBILE : reveal d'entrée + carousel CSS natif ───
