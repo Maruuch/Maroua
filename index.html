@@ -196,14 +196,16 @@
       </div>
 
       <!-- Categories — Editorial layout (2 hero + 3 standard) -->
-      <section class="section-cats">
-        <div class="container">
+      <section class="section-cats" id="catsSection">
+        <div class="cats-head-wrap container">
           <div class="section-head section-head-cats reveal">
             <span class="section-label">Explorer</span>
             <h2 class="section-title">Par catégorie</h2>
             <p class="section-sub">Cinq univers, une même exigence — du dessin à la dernière finition.</p>
           </div>
-          <div class="cats-grid cats-editorial">
+        </div>
+        <div class="cats-track-viewport">
+          <div class="cats-track">
 
             <div class="cat-card cat-card--hero reveal" data-page="catalog" data-filter="collier"
                  style="--img-d-1:url('/images/categories/dark_col_1.png'); --img-d-2:url('/images/categories/dark_col_2.png'); --img-l-1:url('/images/categories/light_col_1.png'); --img-l-2:url('/images/categories/light_col_2.png')">
@@ -285,6 +287,7 @@
       </section>
 
       <!-- Coups de cœur — grille produits featured -->
+      <!-- (la section-cats ci-dessus se ferme avec </section> avant cette ligne) -->
       <section class="section-featured">
         <div class="container">
           <div class="section-head reveal">
