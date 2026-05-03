@@ -454,30 +454,64 @@ function initCategoriesScroll() {
 
   const viewport = section.querySelector('.cats-track-viewport');
 
-  // ─── DESKTOP : carousel horizontal piloté par la position de la souris ───
+  // ─── DESKTOP : CAROUSEL INFINI — 3 slots, wrap modulo, mouse-driven ───
   if (isDesktop && viewport) {
 
-    // ─── Position du track via gsap.quickTo (smooth GPU) ───
-    const xTo = gsap.quickTo(track, 'x', {
-      duration: 0.5,
-      ease: 'power3.out',
-      overwrite: 'auto',
-    });
+    const N = cards.length;                                    // nombre de catégories (5)
+    const cardWidthVw  = 26;                                    // doit matcher le CSS (--card-width)
+    const slotGapVw    = 4;                                     // espace entre slots (cards rapprochées)
+    const getCardSpanPx = () => ((cardWidthVw + slotGapVw) / 100) * window.innerWidth;
 
-    let targetX = 0;
-    let velocity = 0;             // pixels par frame, signé (-: scroll → vers la droite, le contenu va à gauche)
+    let phase    = 0;        // continu (peut être fractionnaire), wrap modulo N
+    let velocity = 0;         // raw velocity from cursor (per-frame target)
+    let smoothV  = 0;         // smoothed velocity (sharper or smoother)
     let isHovering = false;
 
-    // Bornes — recalculées au refresh (resize)
-    const getMaxNegativeX = () => {
-      const trackW = track.scrollWidth;
-      const vpW = viewport.offsetWidth;
-      // Track est centré via padding-left/right, donc la translation va de
-      // 0 (1ère carte au centre) à -(trackWidth - viewportWidth) (dernière au centre)
-      return -(trackW - vpW);
-    };
+    // ─── Update visuel — recalcule x/opacity/scale/filter de chaque carte ───
+    function updateCards() {
+      const span = getCardSpanPx();
+      const half = N / 2;
+      let activeIdx = 0;
+      let minAbsRel = Infinity;
+      const motionBlur = Math.min(4, Math.abs(smoothV) * 80);   // blur dynamique selon vitesse
 
-    // ─── Mouse position → vélocité ───
+      cards.forEach((card, i) => {
+        // Position relative à la "phase" courante, wrap dans [-N/2 ; N/2]
+        let rel = i - phase;
+        while (rel >  half) rel -= N;
+        while (rel < -half) rel += N;
+
+        const absRel = Math.abs(rel);
+
+        // X position (slots à -1, 0, +1 cardSpan ; ±2 = hors viewport)
+        const x = rel * span;
+
+        // Opacity, scale, filter par profondeur
+        const opacity = absRel < 1.5 ? gsap.utils.mapRange(1.5, 0.4, 0, 1, Math.min(absRel, 1.5)) : 0;
+        const scale   = gsap.utils.mapRange(0, 1.5, 1.05, 0.78, Math.min(absRel, 1.5));
+        const sat     = gsap.utils.mapRange(0, 1, 1.05, 0.35, Math.min(absRel, 1));
+        const bright  = gsap.utils.mapRange(0, 1, 1, 0.55, Math.min(absRel, 1));
+
+        gsap.set(card, {
+          x,
+          xPercent: -50,
+          yPercent: -50,
+          opacity,
+          scale,
+          zIndex: Math.round(20 - absRel * 6),
+          filter: `saturate(${sat.toFixed(2)}) brightness(${bright.toFixed(2)}) blur(${motionBlur.toFixed(2)}px)`,
+        });
+
+        if (absRel < minAbsRel) { minAbsRel = absRel; activeIdx = i; }
+      });
+
+      // Active = celle la plus proche du centre
+      cards.forEach((c, i) => c.classList.toggle('is-active', i === activeIdx));
+    }
+
+    updateCards();   // initial render
+
+    // ─── Mouse → vélocité (réactivité maximale, courbe quadratique) ───
     viewport.addEventListener('mouseenter', () => { isHovering = true; });
     viewport.addEventListener('mouseleave', () => {
       isHovering = false;
@@ -490,10 +524,9 @@ function initCategoriesScroll() {
       const x = e.clientX - rect.left;
       const w = rect.width;
       const center = w / 2;
-      // distance signée -1 (gauche) à +1 (droite)
-      const signed = (x - center) / center;
-      const deadZone = 0.12;       // zone morte au centre
+      const signed = (x - center) / center;          // -1..+1
       const absDist = Math.abs(signed);
+      const deadZone = 0.08;                          // zone morte réduite (plus réactif)
 
       if (absDist < deadZone) {
         velocity = 0;
@@ -502,61 +535,56 @@ function initCategoriesScroll() {
       }
 
       const sign = Math.sign(signed);
-      const intensity = (absDist - deadZone) / (1 - deadZone);   // 0 → 1
-      // Vitesse max ~14px/frame (~840px/s à 60fps)
-      velocity = sign * intensity * intensity * 14;              // courbe quadratique pour finesse au centre
+      const intensity = (absDist - deadZone) / (1 - deadZone);
+      // Vitesse en card-units / frame. Max 0.06 = 3.6 cards/sec à 60fps (réactif mais lisible)
+      velocity = sign * intensity * intensity * 0.06;
       viewport.classList.toggle('scroll-left',  sign < 0);
       viewport.classList.toggle('scroll-right', sign > 0);
     });
 
-    // ─── Boucle d'update via gsap.ticker ───
-    gsap.ticker.add(() => {
-      if (!isHovering || velocity === 0) return;
-      // Le user veut : curseur à gauche → scroll à gauche (le contenu glisse vers la droite)
-      // Donc velocity < 0 (gauche) → targetX augmente (track va à droite, on découvre les premières cartes)
-      targetX -= velocity;
-      targetX = gsap.utils.clamp(getMaxNegativeX(), 0, targetX);
-      xTo(targetX);
-      updateActiveCard();
-    });
+    // ─── Ticker GSAP — boucle d'animation ───
+    const tickerHandler = () => {
+      // Smoothing rapide pour réactivité (interpolation 25%)
+      const target = isHovering ? velocity : 0;
+      smoothV = smoothV + (target - smoothV) * 0.25;
 
-    // ─── Détecte la carte la plus proche du centre du viewport ───
-    function updateActiveCard() {
-      const vpRect = viewport.getBoundingClientRect();
-      const vpCenter = vpRect.left + vpRect.width / 2;
-      let closest = null;
-      let minDist = Infinity;
-      cards.forEach(c => {
-        const r = c.getBoundingClientRect();
-        const d = Math.abs(r.left + r.width / 2 - vpCenter);
-        if (d < minDist) { minDist = d; closest = c; }
-      });
-      cards.forEach(c => c.classList.toggle('is-active', c === closest));
-    }
-    // Initial : marque la 1re carte comme active (elle est au centre par défaut)
-    updateActiveCard();
+      if (Math.abs(smoothV) < 0.0002 && !isHovering) return;
 
-    // ─── Click sur une carte latérale : scroll vers elle ───
-    cards.forEach(card => {
+      // Avance phase et wrap dans [0, N)
+      phase += smoothV;
+      phase = ((phase % N) + N) % N;
+
+      updateCards();
+    };
+    gsap.ticker.add(tickerHandler);
+
+    // ─── Click sur carte : navigue vers elle (chemin le plus court via wrap) ───
+    cards.forEach((card, idx) => {
       card.addEventListener('click', (e) => {
-        if (card.classList.contains('is-active')) return; // déjà au centre, laisse l'event navigate
+        if (card.classList.contains('is-active')) return;
         e.preventDefault();
         e.stopPropagation();
-        const cardRect = card.getBoundingClientRect();
-        const vpRect = viewport.getBoundingClientRect();
-        const offset = (cardRect.left + cardRect.width / 2) - (vpRect.left + vpRect.width / 2);
-        targetX = gsap.utils.clamp(getMaxNegativeX(), 0, targetX - offset);
-        gsap.to(track, {
-          x: targetX,
+
+        // Trouve le chemin le plus court (forward ou backward via wrap)
+        let target = idx;
+        const diff = target - phase;
+        if (diff >  N / 2) target -= N;
+        if (diff < -N / 2) target += N;
+
+        gsap.to({ p: phase }, {
+          p: target,
           duration: 0.7,
           ease: 'power3.out',
-          onUpdate: updateActiveCard,
+          onUpdate() {
+            phase = ((this.targets()[0].p % N) + N) % N;
+            updateCards();
+          },
         });
       });
     });
 
-    // Recalcul au resize (gsap.matchMedia revert le tout au changement de breakpoint)
-    ScrollTrigger.addEventListener('refreshInit', updateActiveCard);
+    // Recalcule en cas de resize (la matchMedia revert mais on garde aussi un listener léger)
+    window.addEventListener('resize', updateCards);
 
   }
   // ─── MOBILE : reveal d'entrée + carousel CSS natif ───
