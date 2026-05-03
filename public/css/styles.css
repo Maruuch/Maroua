@@ -3379,7 +3379,7 @@ input[type="url"], textarea, select,
 .cats-track-viewport.scroll-left  .cats-arrow-left  { opacity: 1; transform: translateY(-50%) translateX(0); }
 .cats-track-viewport.scroll-right .cats-arrow-right { opacity: 1; transform: translateY(-50%) translateX(0); }
 
-/* ─── DESKTOP (≥1024px) : carousel horizontal mouse-driven ─── */
+/* ─── DESKTOP (≥1024px) : carousel INFINI 3-slots, mouse-driven ─── */
 @media (min-width: 1024px) {
 
   .cats-head-wrap { padding: 5rem 2rem 1.5rem; }
@@ -3390,42 +3390,42 @@ input[type="url"], textarea, select,
     max-height: 720px;
   }
 
+  /* TRACK = scène fixe, les cards sont positionnées en absolute par GSAP */
   .cats-track {
-    --card-width: clamp(280px, 28vw, 420px);
-    --gap: 2rem;
-    display: flex !important;
-    align-items: center;
-    height: 100%;
-    width: max-content;
-    padding-left:  calc(50vw - var(--card-width) / 2) !important;
-    padding-right: calc(50vw - var(--card-width) / 2) !important;
-    gap: var(--gap);
-    will-change: transform;
+    --card-width: clamp(280px, 26vw, 380px);
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    padding: 0 !important;
+    overflow: visible;
   }
 
+  /* CARDS : positionnées absolument, GSAP gère x/scale/opacity/filter */
   .cats-track .cat-card {
-    flex: 0 0 var(--card-width) !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
     width: var(--card-width) !important;
-    height: 86% !important;
+    height: 82% !important;
     min-height: 0 !important;
     max-height: none !important;
     margin: 0 !important;
+    flex: none !important;
     grid-column: auto !important;
-    transition: transform .55s var(--ease), filter .55s var(--ease), box-shadow .55s var(--ease);
-    transform: scale(0.88);
-    filter: saturate(.4) brightness(.55);
+    /* Pas de transition sur transform/opacity (GSAP gère) — uniquement filter */
+    transition: filter .25s ease, box-shadow .35s ease;
     cursor: pointer;
+    will-change: transform, opacity, filter;
   }
 
-  /* Carte centrée : couleur pleine, scale up, _2 visible */
+  /* Carte centrée : pleine couleur + halo doré */
   .cats-track .cat-card.is-active {
-    transform: scale(1.05);
-    filter: saturate(1.05) brightness(1);
-    z-index: 3;
     box-shadow:
       0 30px 60px -20px rgba(0,0,0,.55),
       0 12px 28px -8px rgba(0,0,0,.40),
-      0 0 0 1px var(--gold-dim);
+      0 0 0 1px var(--gold-dim),
+      0 0 30px -8px var(--rose-glow);
   }
 
   /* Image _2 visible sur la carte centrée (override hover existant) */
