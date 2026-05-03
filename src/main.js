@@ -452,49 +452,65 @@ function initCategoriesScroll() {
 
   if (!track || !cards.length) return;
 
-  // ─── DESKTOP : pinned horizontal scroll avec scale au centre ───
+  const progressDots = section.querySelectorAll('.cats-progress span');
+
+  // ─── DESKTOP : SHOWCASE pinned avec crossfade frame-by-frame ───
   if (isDesktop) {
-    // État initial : cartes légèrement réduites
-    gsap.set(cards, { scale: 0.92, opacity: 0.65 });
 
-    // Distance horizontale = largeur du track - viewport
-    const getDistance = () => {
-      return Math.max(0, track.scrollWidth - window.innerWidth);
-    };
+    // État initial : toutes les cartes invisibles, légèrement zoomées,
+    // SAUF la première qui est visible plein cadre.
+    gsap.set(cards, { autoAlpha: 0, scale: 1.06 });
+    gsap.set(cards[0], { autoAlpha: 1, scale: 1 });
 
-    // ─── Scroll horizontal pinned (containerAnimation pour les triggers enfants) ───
-    const scrollTween = gsap.to(track, {
-      x: () => -getDistance(),
-      ease: 'none',  // CRITIQUE pour containerAnimation
+    // ─── Timeline maître scrub'd au scroll ───
+    // Chaque transition prend 1 unit de timeline (= 1 segment de scroll).
+    // Total = (cards.length - 1) transitions.
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         pin: true,
         start: 'top top',
-        end: () => '+=' + getDistance(),
-        scrub: 1,
+        // Distance de scroll : 700px par transition pour un rythme contemplatif
+        end: () => '+=' + ((cards.length - 1) * 700),
+        scrub: 0.6,        // smooth catch-up
         invalidateOnRefresh: true,
         anticipatePin: 1,
+        onUpdate: (self) => {
+          // Met à jour les progress dots — quelle carte est "active"
+          const idx = Math.min(
+            cards.length - 1,
+            Math.round(self.progress * (cards.length - 1))
+          );
+          progressDots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        },
       },
     });
 
-    // ─── Scale + opacité de chaque carte selon sa position dans le viewport ───
-    cards.forEach(card => {
-      ScrollTrigger.create({
-        trigger: card,
-        containerAnimation: scrollTween,
-        start: 'left right',     // quand bord gauche atteint le bord droit du viewport
-        end:   'right left',      // jusqu'à ce que bord droit sorte par la gauche
-        onUpdate: (self) => {
-          // Bell curve : max scale au centre (progress 0.5)
-          const distFromCenter = Math.abs(self.progress - 0.5);
-          const scale = gsap.utils.mapRange(0, 0.5, 1.06, 0.92, distFromCenter);
-          const opacity = gsap.utils.mapRange(0, 0.5, 1, 0.55, distFromCenter);
-          gsap.set(card, { scale, opacity });
-          // Marqueur "centered" pour effets CSS (rose sur cat-num)
-          card.classList.toggle('is-centered', distFromCenter < 0.15);
-        },
-      });
-    });
+    // Pour chaque transition (de carte i-1 à i) : crossfade + zoom doux
+    for (let i = 1; i < cards.length; i++) {
+      const prev = cards[i - 1];
+      const curr = cards[i];
+      // Sur le segment [i-1 ; i] de la timeline :
+      tl
+        // Carte précédente : fade out + zoom in (s'éloigne)
+        .to(prev, {
+          autoAlpha: 0,
+          scale: 0.94,
+          duration: 1,
+          ease: 'power2.inOut',
+        }, i - 1)
+        // Carte courante : fade in + zoom out (entre depuis le fond)
+        .fromTo(curr, {
+          autoAlpha: 0,
+          scale: 1.10,
+        }, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 1,
+          ease: 'power2.inOut',
+        }, i - 1);
+    }
+
   }
   // ─── MOBILE : reveal d'entrée + carousel CSS natif ───
   else {
