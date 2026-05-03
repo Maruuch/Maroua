@@ -83,12 +83,113 @@ mm.add(
 function initAll(isDesktop) {
   initHero(isDesktop);
   if (isDesktop) initCursorHalo();   // halo souris : desktop uniquement
+  initHeroBubbles(isDesktop);         // bulles GSAP cinématiques sur hero-left
   initImageReveals();
   initScrollReveal();
   initCategoriesScroll();             // reveal + stagger + parallaxe sur la section catégories
   initParallaxHeroBg();
   initHeaderScrollState();
-  console.log('[GSAP] animations initialisées (skill: gsap-scrolltrigger)');
+  console.log('[GSAP] animations initialisées (skill: gsap-scrolltrigger + bulles cinématiques)');
+}
+
+// ────────────────────────────────────────────────────────────────
+// BULLES CINÉMATIQUES GSAP — verre translucide flottant
+// Remplace le système .particle legacy. Bulles fines (4-22px),
+// dérive vertical lente + sine wave horizontale + pulse opacité.
+// Chaque bulle est autonome avec sa propre boucle (recursive rise).
+// ────────────────────────────────────────────────────────────────
+function initHeroBubbles(isDesktop) {
+  const container = document.getElementById('particles');
+  if (!container) return;
+
+  // Vide le container (supprime les .particle legacy)
+  container.innerHTML = '';
+
+  const count = isDesktop ? 18 : 10;
+  const rand = gsap.utils.random;
+
+  function spawnBubble(startProgress = 0) {
+    const bubble = document.createElement('div');
+    bubble.className = 'gsap-bubble';
+    if (Math.random() < 0.2) bubble.classList.add('gsap-bubble--bright');
+
+    // Taille : 4-22px, biais vers le petit (distribution puissance)
+    const size = Math.pow(rand(0, 1), 1.6) * 18 + 4;
+    const targetAlpha = bubble.classList.contains('gsap-bubble--bright')
+      ? rand(0.55, 0.85)
+      : rand(0.25, 0.55);
+
+    Object.assign(bubble.style, {
+      width:  `${size}px`,
+      height: `${size}px`,
+      left:   `${rand(0, 100)}%`,
+      top:    '110%',           // démarre en bas (hors écran)
+      opacity: 0,
+    });
+    container.appendChild(bubble);
+
+    // ─── Sine wave horizontale (dérive organique) ───
+    gsap.to(bubble, {
+      x: rand(15, 50) * (Math.random() < 0.5 ? -1 : 1),
+      duration: rand(3, 6),
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+      delay: rand(0, 2),
+    });
+
+    // ─── Micro-rotation pour vie organique ───
+    gsap.to(bubble, {
+      rotation: rand(-25, 25),
+      duration: rand(8, 14),
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // ─── Apparition douce ───
+    gsap.to(bubble, { opacity: targetAlpha, duration: 1.5, ease: 'power2.out', delay: 0.2 });
+
+    // ─── Pulse de luminosité ───
+    gsap.to(bubble, {
+      opacity: targetAlpha * 0.55,
+      duration: rand(2.5, 4.5),
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+      delay: 2 + rand(0, 2),
+    });
+
+    // ─── Montée principale avec auto-restart (boucle infinie autonome) ───
+    const baseRiseDur = rand(14, 26);
+    function rise(initialTop, dur) {
+      gsap.fromTo(bubble,
+        { top: initialTop },
+        {
+          top: '-20%',           // sort par le haut
+          duration: dur,
+          ease: 'none',
+          onComplete: () => {
+            // Reset position : repart du bas avec un nouveau x aléatoire
+            gsap.set(bubble, { left: rand(0, 100) + '%' });
+            // Boucle suivante : démarre du 110% pour un cycle complet
+            rise('110%', baseRiseDur);
+          },
+        }
+      );
+    }
+
+    // Premier cycle : démarre à un point aléatoire pour disperser dans le temps
+    // (sinon toutes les bulles partiraient du bas en même temps)
+    const initialTop = 110 - (startProgress * 130);   // 110% → -20%
+    const remainingDur = baseRiseDur * (1 - startProgress);
+    rise(initialTop + '%', remainingDur);
+  }
+
+  // Spawn toutes les bulles avec progress aléatoires (étalement temporel)
+  for (let i = 0; i < count; i++) {
+    spawnBubble(rand(0, 1));
+  }
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -316,15 +417,21 @@ function initScrollReveal() {
 }
 
 // ────────────────────────────────────────────────────────────────
-// CATEGORIES — chorégraphie premium au scroll (3 effets coordonnés)
+// CATEGORIES — showcase horizontal pinned + scale au centre
+// Desktop : section pinned, cards défilent horizontalement, celle au
+//           centre du viewport grandit (1.05) et s'opacifie pleinement.
+// Mobile  : carousel natif (scroll-snap CSS) + reveal d'entrée.
 // ────────────────────────────────────────────────────────────────
 function initCategoriesScroll() {
-  const section = document.querySelector('.section-cats');
+  const section = document.getElementById('catsSection');
   if (!section) return;
 
-  // ─── 1. Section header (eyebrow + title + sub) ───
-  // Reveal en cascade quand la section entre en vue (top 80%)
-  const headParts = document.querySelectorAll(
+  const track   = section.querySelector('.cats-track');
+  const cards   = section.querySelectorAll('.cats-track .cat-card');
+  const isDesktop = window.innerWidth >= 1024;
+
+  // ─── 1. Reveal du header au passage ───
+  const headParts = section.querySelectorAll(
     '.section-head-cats .section-label, .section-head-cats .section-title, .section-head-cats .section-sub'
   );
   if (headParts.length) {
@@ -343,57 +450,80 @@ function initCategoriesScroll() {
     });
   }
 
-  // ─── 2. Cartes catégories — entrée en stagger 3D ───
-  // Chaque carte arrive de bas avec rotation X subtile, en cascade éditoriale
-  const cards = document.querySelectorAll('.cats-editorial .cat-card');
-  if (cards.length) {
+  if (!track || !cards.length) return;
+
+  // ─── DESKTOP : pinned horizontal scroll avec scale au centre ───
+  if (isDesktop) {
+    // État initial : cartes légèrement réduites
+    gsap.set(cards, { scale: 0.92, opacity: 0.65 });
+
+    // Distance horizontale = largeur du track - viewport
+    const getDistance = () => {
+      return Math.max(0, track.scrollWidth - window.innerWidth);
+    };
+
+    // ─── Scroll horizontal pinned (containerAnimation pour les triggers enfants) ───
+    const scrollTween = gsap.to(track, {
+      x: () => -getDistance(),
+      ease: 'none',  // CRITIQUE pour containerAnimation
+      scrollTrigger: {
+        trigger: section,
+        pin: true,
+        start: 'top top',
+        end: () => '+=' + getDistance(),
+        scrub: 1,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+      },
+    });
+
+    // ─── Scale + opacité de chaque carte selon sa position dans le viewport ───
+    cards.forEach(card => {
+      ScrollTrigger.create({
+        trigger: card,
+        containerAnimation: scrollTween,
+        start: 'left right',     // quand bord gauche atteint le bord droit du viewport
+        end:   'right left',      // jusqu'à ce que bord droit sorte par la gauche
+        onUpdate: (self) => {
+          // Bell curve : max scale au centre (progress 0.5)
+          const distFromCenter = Math.abs(self.progress - 0.5);
+          const scale = gsap.utils.mapRange(0, 0.5, 1.06, 0.92, distFromCenter);
+          const opacity = gsap.utils.mapRange(0, 0.5, 1, 0.55, distFromCenter);
+          gsap.set(card, { scale, opacity });
+          // Marqueur "centered" pour effets CSS (rose sur cat-num)
+          card.classList.toggle('is-centered', distFromCenter < 0.15);
+        },
+      });
+    });
+  }
+  // ─── MOBILE : reveal d'entrée + carousel CSS natif ───
+  else {
     gsap.set(cards, {
       autoAlpha: 0,
-      y: 80,
-      rotationX: -6,
+      y: 60,
+      rotationX: -4,
       transformPerspective: 1000,
       transformOrigin: '50% 100%',
     });
 
     ScrollTrigger.batch(cards, {
       start: 'top 88%',
-      once: true,                    // une fois suffit, pas de replay
-      interval: 0.05,                 // collecte les cards entrées dans 50ms
-      batchMax: 5,                    // toutes les cartes du grid d'un coup
+      once: true,
+      interval: 0.05,
+      batchMax: 5,
       onEnter: (batch) => {
         gsap.to(batch, {
           autoAlpha: 1,
           y: 0,
           rotationX: 0,
-          duration: 1.1,
+          duration: 1.0,
           ease: 'power4.out',
-          stagger: { each: 0.12, from: 'start' },
+          stagger: { each: 0.10, from: 'start' },
           overwrite: 'auto',
         });
       },
     });
   }
-
-  // ─── 3. Parallaxe sur les images des cartes ───
-  // Quand l'utilisateur scrolle au travers de la section, l'image de
-  // fond de chaque carte glisse légèrement plus lentement → effet de
-  // profondeur cinématographique. Scrub continu.
-  const catImages = document.querySelectorAll('.cats-editorial .cat-img--a');
-  catImages.forEach(img => {
-    gsap.fromTo(img,
-      { yPercent: -6 },
-      {
-        yPercent: 6,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: img.closest('.cat-card'),
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 1,
-        },
-      }
-    );
-  });
 }
 
 // ────────────────────────────────────────────────────────────────
