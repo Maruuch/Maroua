@@ -35,11 +35,13 @@
   --accent2:   #9B7040;
   --success:   #5C9E6E;
   --error:     #C05050;
-  /* ── ROSE FÉMININ — accent secondaire (mode dark = rose sombre) ── */
-  --rose:        #B86A78;
-  --rose-deep:   #7A4A55;
-  --rose-soft:   rgba(184,106,120,.22);
-  --rose-glow:   rgba(184,106,120,.10);
+  /* ── ROSE FÉMININ — palette riche, visible sur fond moka ── */
+  --rose:        #D88AA0;          /* rose plus lumineux pour pop sur dark */
+  --rose-deep:   #A56676;
+  --rose-light:  #E9A8B8;
+  --rose-soft:   rgba(216,138,160,.24);
+  --rose-glow:   rgba(216,138,160,.16);
+  --border-rose: rgba(216,138,160,.32);
   /* Couleur header — match EXACT du fond logo cream (= --bg du thème light) */
   --header-bg: #ECE1C8;
   --header-solid: #ECE1C8;
@@ -63,11 +65,13 @@
   --accent2:   #6A3A10;
   --success:   #3A7A52;
   --error:     #A03030;
-  /* ── ROSE FÉMININ — accent secondaire (mode light = rose tendre) ── */
-  --rose:        #C77E89;
-  --rose-deep:   #A35A66;
-  --rose-soft:   rgba(199,126,137,.22);
-  --rose-glow:   rgba(199,126,137,.12);
+  /* ── ROSE FÉMININ — palette dense et visible sur fond crème ── */
+  --rose:        #C06B7B;          /* rose plus dense pour pop sur cream */
+  --rose-deep:   #92485A;
+  --rose-light:  #DA8A98;
+  --rose-soft:   rgba(192,107,123,.22);
+  --rose-glow:   rgba(192,107,123,.14);
+  --border-rose: rgba(192,107,123,.36);
   /* Couleur header — match EXACT du fond logo espresso (= --bg du thème dark) */
   --header-bg: #2A1F14;
   --header-solid: #2A1F14;
@@ -3515,15 +3519,19 @@ input[type="url"], textarea, select,
    PALETTE ROSE — application discrète, féminine, élégante
    ================================================================ */
 
-/* Hero gradient "L'élégance" — mix or + rose */
+/* Hero gradient "L'élégance" — mix or + rose
+   On utilise `background-image` (pas le shorthand `background`) pour
+   ne PAS écraser `background-clip: text` qui clipe le dégradé sur le texte. */
 .hero-title em {
-  background: linear-gradient(135deg,
+  background-image: linear-gradient(135deg,
     var(--gold-lt) 0%,
-    var(--gold) 30%,
-    var(--rose) 70%,
-    var(--accent) 100%) !important;
+    var(--gold) 28%,
+    var(--rose) 65%,
+    var(--accent) 100%);
   -webkit-background-clip: text;
           background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 /* Section labels : sous-trait rose à gauche */
@@ -3886,4 +3894,282 @@ input[type="url"], textarea, select,
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
+}
+
+
+/* ================================================================
+   🌹 ROSE EXTENSION — touches rose distribuées dans tout le site
+   Visible et harmonieux dans les 2 modes (dark + light).
+   ================================================================ */
+
+/* ─── Séparateurs de sections en gradient or → rose → or ─── */
+.section-promise,
+.section-featured,
+.section-reviews,
+.recent-section {
+  border-top: none !important;
+  position: relative;
+}
+.section-promise::before,
+.section-featured::before,
+.section-reviews::before,
+.recent-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--gold-dim) 15%,
+    var(--rose) 50%,
+    var(--gold-dim) 85%,
+    transparent 100%);
+  opacity: .8;
+}
+
+/* ─── Hero hairline gradient renforcé en rose au centre ─── */
+.hero {
+  --hairline-gold: linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,170,98,.4) 22%,
+    var(--rose) 45%,
+    var(--rose-light) 50%,
+    var(--rose) 55%,
+    rgba(212,170,98,.4) 78%,
+    transparent 100%);
+}
+
+/* ─── Section labels — point rose qui anime ─── */
+.section-label::before {
+  background: linear-gradient(90deg, var(--rose), var(--gold)) !important;
+}
+
+/* ─── Cat numbers (01/05) — toujours teinté rose-or ─── */
+.cat-num {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--rose) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ─── Hero gradient L'élégance — déjà mis à jour, on renforce le rose ─── */
+.hero-title em {
+  background-image: linear-gradient(135deg,
+    var(--gold-lt) 0%,
+    var(--gold) 25%,
+    var(--rose-light) 55%,
+    var(--rose) 75%,
+    var(--accent) 100%);
+}
+
+/* ─── Boutons primaires — flash rose sur l'underline + glow rose ─── */
+.btn-primary {
+  position: relative;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: var(--rose);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .45s var(--ease);
+  opacity: 0;
+}
+.btn-primary:hover::after {
+  transform: scaleX(1);
+  opacity: .9;
+}
+.btn-primary:hover {
+  border-color: var(--rose) !important;
+  box-shadow: 0 8px 28px var(--rose-glow), 0 0 16px var(--rose-soft) !important;
+}
+
+/* ─── Filter buttons (catalog) — état actif touche rose ─── */
+.filter-btn.active {
+  border-color: var(--rose) !important;
+  color: var(--rose) !important;
+  background: var(--rose-soft) !important;
+  box-shadow: 0 4px 14px var(--rose-glow);
+}
+.filter-btn:hover {
+  color: var(--rose);
+}
+
+/* ─── Marquee items — soulignement rose au hover ─── */
+.marquee-item {
+  position: relative;
+  transition: color var(--t);
+}
+.marquee-item:hover {
+  color: var(--rose) !important;
+  background: transparent !important;
+}
+.marquee-item::after {
+  content: '';
+  position: absolute;
+  left: 50%; right: 50%; bottom: 4px;
+  height: 1px;
+  background: var(--rose);
+  transition: left .35s var(--ease), right .35s var(--ease);
+}
+.marquee-item:hover::after {
+  left: 20%; right: 20%;
+}
+
+/* ─── Inputs focus — ring rose au lieu d'or pur ─── */
+.form-group input:focus,
+.form-group textarea:focus,
+.acc-field input:focus,
+.acc-field textarea:focus {
+  border-color: var(--rose) !important;
+  box-shadow: 0 0 0 3px var(--rose-soft);
+}
+
+/* ─── Drawer titles — soulignement rose ─── */
+.drawer-header h2,
+.side-drawer-title,
+.cdr-title {
+  position: relative;
+}
+.drawer-header h2::after,
+.side-drawer-title::after,
+.cdr-title::after {
+  content: '';
+  position: absolute;
+  left: 50%; bottom: -.4rem;
+  transform: translateX(-50%);
+  width: 32px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rose), transparent);
+}
+.drawer-header h2::after,
+.cdr-title::after {
+  left: 0;
+  transform: none;
+}
+
+/* ─── Cart total / drawer prices — rose plus chaleureux ─── */
+.drawer-total-row.main span:last-child,
+.summary-row.total span:last-child {
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ─── Detail page : prix en gradient or-rose ─── */
+.detail-price {
+  background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--rose));
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ─── Footer brand name — gradient or-rose ─── */
+.footer-brand-name {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--rose) 60%, var(--gold-lt) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ─── Footer links — hover rose ─── */
+.footer-col ul li a:hover,
+.footer-legal a:hover {
+  color: var(--rose) !important;
+}
+
+/* ─── Header icons — hover rose subtle ─── */
+.header-icon-btn:hover svg {
+  stroke: var(--rose) !important;
+  filter: drop-shadow(0 0 4px var(--rose-glow));
+}
+
+/* ─── Theme toggle — accent rose ─── */
+.theme-toggle:hover {
+  border-color: var(--rose) !important;
+  color: var(--rose) !important;
+}
+
+/* ─── Account avatar — fond gradient or-rose ─── */
+.acc-avatar {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--rose) 100%) !important;
+}
+
+/* ─── Order status pending — légère teinte rose ─── */
+.acc-order-status.is-pending {
+  background: linear-gradient(90deg, var(--gold-dim), var(--rose-soft)) !important;
+  color: var(--rose) !important;
+}
+
+/* ─── Cat-card hover (mode mobile/tablet quand pas en showcase) — bordure rose ─── */
+@media (max-width: 1023px) {
+  .cat-card:hover {
+    border-color: var(--rose) !important;
+    box-shadow:
+      0 26px 50px -28px rgba(0,0,0,.45),
+      0 8px 18px -10px rgba(0,0,0,.18),
+      0 0 24px -6px var(--rose-glow) !important;
+  }
+}
+
+/* ─── Promise icons : alterne or / rose / or / rose / or-clair ─── */
+.promise-item:nth-child(2) .promise-icon { color: var(--rose); }
+.promise-item:nth-child(4) .promise-icon { color: var(--rose); }
+
+/* ─── Hero CTA glow rose au hover ─── */
+.hero-cta .btn-primary:hover {
+  box-shadow:
+    0 12px 36px var(--rose-glow),
+    0 0 28px var(--rose-soft),
+    0 4px 14px var(--gold-dim) !important;
+}
+
+/* ─── Loader (splash) — sub-text en rose ─── */
+.loader-sub {
+  background: linear-gradient(90deg, var(--gold), var(--rose), var(--gold));
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  background-size: 200% 100%;
+  animation: roseShine 4s linear infinite;
+}
+@keyframes roseShine {
+  0%   { background-position:   0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ─── Cat showcase — la carte active a un halo rose subtil ─── */
+.cats-track .cat-card.is-active {
+  box-shadow:
+    0 30px 60px -20px rgba(0,0,0,.55),
+    0 12px 28px -8px rgba(0,0,0,.40),
+    0 0 0 1px var(--rose-soft),
+    0 0 40px -10px var(--rose-glow) !important;
+}
+
+/* ─── Cards (general) — état "is-fav" plus chaleureux ─── */
+.card-fav.is-fav,
+.detail-fav.is-fav {
+  color: var(--rose) !important;
+  filter: drop-shadow(0 0 6px var(--rose-glow));
+}
+.card-fav.is-fav svg,
+.detail-fav.is-fav svg {
+  fill: var(--rose);
+}
+
+/* ─── Reviews stars en gradient or → rose subtle ─── */
+.review-stars {
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
