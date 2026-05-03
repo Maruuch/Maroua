@@ -35,6 +35,11 @@
   --accent2:   #9B7040;
   --success:   #5C9E6E;
   --error:     #C05050;
+  /* ── ROSE FÉMININ — accent secondaire (mode dark = rose sombre) ── */
+  --rose:        #B86A78;
+  --rose-deep:   #7A4A55;
+  --rose-soft:   rgba(184,106,120,.22);
+  --rose-glow:   rgba(184,106,120,.10);
   /* Couleur header — match EXACT du fond logo cream (= --bg du thème light) */
   --header-bg: #ECE1C8;
   --header-solid: #ECE1C8;
@@ -58,6 +63,11 @@
   --accent2:   #6A3A10;
   --success:   #3A7A52;
   --error:     #A03030;
+  /* ── ROSE FÉMININ — accent secondaire (mode light = rose tendre) ── */
+  --rose:        #C77E89;
+  --rose-deep:   #A35A66;
+  --rose-soft:   rgba(199,126,137,.22);
+  --rose-glow:   rgba(199,126,137,.12);
   /* Couleur header — match EXACT du fond logo espresso (= --bg du thème dark) */
   --header-bg: #2A1F14;
   --header-solid: #2A1F14;
@@ -3205,6 +3215,263 @@ input[type="url"], textarea, select,
 .detail-thumb,
 .detail-main img {
   will-change: clip-path, transform;
+}
+
+/* ================================================================
+   BULLES GSAP — verre translucide cinématique (remplace .particle)
+   Animées par src/main.js — initHeroBubbles()
+   ================================================================ */
+
+.gsap-bubble {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  /* Verre translucide : 2 gradients superposés + bord doré subtil + reflet */
+  background:
+    /* Reflet supérieur-gauche (highlight) */
+    radial-gradient(circle at 30% 25%,
+      rgba(255, 250, 230, 0.20) 0%,
+      rgba(255, 250, 230, 0.05) 18%,
+      rgba(255, 250, 230, 0)    35%),
+    /* Corps de la bulle (très transparent, teinte chaude) */
+    radial-gradient(circle at 50% 50%,
+      rgba(255, 232, 180, 0.04) 30%,
+      rgba(212, 170, 98, 0.06)  60%,
+      rgba(212, 170, 98, 0.10)  85%,
+      rgba(212, 170, 98, 0)     100%);
+  /* Bord doré très fin pour la définition */
+  border: 1px solid rgba(212, 170, 98, 0.18);
+  /* Ombre interne pour la profondeur (effet verre) */
+  box-shadow:
+    inset 0 0 6px rgba(255, 250, 230, 0.08),
+    inset 1px 2px 4px rgba(255, 255, 255, 0.06),
+    0 0 4px rgba(212, 170, 98, 0.06);
+  filter: blur(0.3px);
+  will-change: transform, opacity;
+  /* Reset transform-origin pour que le scale se fasse depuis le centre */
+  transform-origin: center center;
+}
+
+/* Variante "brillante" — pour 20% des bulles, plus présentes */
+.gsap-bubble--bright {
+  background:
+    radial-gradient(circle at 30% 25%,
+      rgba(255, 250, 230, 0.35) 0%,
+      rgba(255, 250, 230, 0.10) 22%,
+      rgba(255, 250, 230, 0)    40%),
+    radial-gradient(circle at 50% 50%,
+      rgba(255, 232, 180, 0.08) 30%,
+      rgba(212, 170, 98, 0.14)  65%,
+      rgba(212, 170, 98, 0.18)  85%,
+      rgba(212, 170, 98, 0)     100%);
+  border-color: rgba(212, 170, 98, 0.32);
+  box-shadow:
+    inset 0 0 8px rgba(255, 250, 230, 0.14),
+    inset 1px 2px 5px rgba(255, 255, 255, 0.10),
+    0 0 6px rgba(212, 170, 98, 0.18),
+    0 0 14px rgba(212, 170, 98, 0.08);
+  filter: blur(0.2px);
+}
+
+/* Désactive l'ancien système .particle (animations.js legacy)
+   sur le hero quand GSAP a pris le relais */
+.hero-particles .particle { display: none; }
+
+/* Mobile : moins de bulles, plus discrètes — déjà géré par opacity dans le bloc mobile */
+
+
+/* ================================================================
+   CATEGORIES SHOWCASE — scroll horizontal avec scale au centre
+   Desktop : section pinned, cards défilent horizontalement (GSAP scrub)
+   Mobile  : carousel horizontal natif avec scroll-snap
+   ================================================================ */
+
+.section-cats {
+  /* Override de l'éventuelle padding-mobile, on gère ici */
+  position: relative;
+}
+
+.cats-head-wrap {
+  text-align: center;
+  padding: 5rem 2rem 2.5rem;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.cats-head-wrap .section-head { margin-bottom: 0; text-align: center; }
+.cats-head-wrap .section-sub { margin-left: auto; margin-right: auto; }
+
+.cats-track-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.cats-track {
+  display: flex;
+  gap: 2.5rem;
+  padding: 2rem 5vw;
+  width: max-content;
+  align-items: center;
+}
+
+.cats-track .cat-card {
+  flex: 0 0 auto;
+  width: 32vw;
+  min-width: 320px;
+  max-width: 420px;
+  height: 64vh;
+  min-height: 460px;
+  max-height: 580px;
+  /* Reset des règles cats-editorial qui ne s'appliquent plus */
+  grid-column: auto !important;
+  margin: 0;
+}
+
+/* ── DESKTOP (≥1024px) : section pinned, cards animent au scroll ── */
+@media (min-width: 1024px) {
+  .section-cats {
+    /* Pas de hauteur 100vh ici — GSAP gère le pin et la durée */
+  }
+  .cats-head-wrap {
+    padding: 6rem 2rem 3rem;
+  }
+  .cats-track {
+    padding: 2rem 8vw;
+    gap: 3rem;
+  }
+}
+
+/* ── TABLET / MOBILE (<1024px) : carousel natif avec scroll-snap ── */
+@media (max-width: 1023px) {
+  .cats-head-wrap { padding: 3.5rem 1.2rem 2rem; }
+  .cats-track-viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Indicateur visuel : ombre sur les bords pour suggérer le swipe */
+    mask-image: linear-gradient(90deg,
+      transparent 0%, black 4%, black 96%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg,
+      transparent 0%, black 4%, black 96%, transparent 100%);
+  }
+  .cats-track-viewport::-webkit-scrollbar { display: none; }
+  .cats-track {
+    padding: 1rem 1.2rem;
+    gap: 1rem;
+  }
+  .cats-track .cat-card {
+    flex: 0 0 75vw;
+    width: 75vw;
+    height: 70vh;
+    min-height: 380px;
+    max-height: 540px;
+    scroll-snap-align: center;
+  }
+}
+@media (max-width: 640px) {
+  .cats-track .cat-card {
+    flex: 0 0 82vw;
+    width: 82vw;
+    height: 60vh;
+    min-height: 360px;
+    max-height: 480px;
+  }
+  /* Override de l'ancienne règle mobile cats-grid */
+  .cats-grid.cats-editorial,
+  .cats-grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+  }
+}
+
+
+/* ================================================================
+   PALETTE ROSE — application discrète, féminine, élégante
+   ================================================================ */
+
+/* Hero gradient "L'élégance" — mix or + rose */
+.hero-title em {
+  background: linear-gradient(135deg,
+    var(--gold-lt) 0%,
+    var(--gold) 30%,
+    var(--rose) 70%,
+    var(--accent) 100%) !important;
+  -webkit-background-clip: text;
+          background-clip: text;
+}
+
+/* Section labels : sous-trait rose à gauche */
+.section-label {
+  position: relative;
+  padding-left: 1.4em;
+}
+.section-label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1em;
+  height: 1px;
+  background: linear-gradient(90deg, var(--rose), var(--gold));
+  transform: translateY(-50%);
+}
+
+/* Boutons primaires : hover gold → rose en transition */
+.btn-primary:hover {
+  border-color: var(--rose) !important;
+  box-shadow: 0 8px 28px var(--rose-glow) !important;
+}
+.btn-primary::before {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--rose) 100%);
+}
+
+/* Hairline du hero : intégration rose */
+.hero {
+  --hairline-gold: linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,170,98,.5) 25%,
+    var(--rose) 50%,
+    rgba(212,170,98,.5) 75%,
+    transparent 100%);
+}
+
+/* Coeur favoris : rose plus harmonieux */
+.card-fav.is-fav,
+.detail-fav.is-fav {
+  color: var(--rose) !important;
+}
+.card-fav.is-fav svg,
+.detail-fav.is-fav svg {
+  filter: drop-shadow(0 0 6px var(--rose-glow));
+}
+
+/* Cat number badge : touche de rose subtile sur les cartes pinnées */
+.cat-card.is-centered .cat-num {
+  color: var(--rose) !important;
+  text-shadow: 0 0 12px var(--rose-glow);
+}
+
+/* Promesses : icônes alternent or / rose */
+.promise-item:nth-child(2n) .promise-icon {
+  color: var(--rose);
+}
+
+/* Reviews — barre verticale rose subtile à gauche */
+.review-card {
+  position: relative;
+}
+.review-card::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 1.4rem; bottom: 1.4rem;
+  width: 2px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    var(--rose) 30%,
+    var(--gold) 70%,
+    transparent 100%);
+  opacity: .35;
 }
 
 /* ================================================================
