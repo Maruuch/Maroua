@@ -467,45 +467,66 @@ function initCategoriesScroll() {
     let smoothV  = 0;         // smoothed velocity (sharper or smoother)
     let isHovering = false;
 
-    // ─── Update visuel — recalcule x/opacity/scale/filter de chaque carte ───
+    // ─── Update visuel — SNAP à 3 slots fixes avec crossfade pure ───
+    // Les cartes ne bougent PAS visuellement : x est snappé à un slot
+    // discret (-1, 0, +1) ; la transition se fait par opacity uniquement.
+    // Au moment du basculement (rel = 0.5), opacity ≈ 0 → invisible → pas
+    // de saut visible quand le slot change.
     function updateCards() {
       const span = getCardSpanPx();
       const half = N / 2;
       let activeIdx = 0;
-      let minAbsRel = Infinity;
-      const motionBlur = Math.min(4, Math.abs(smoothV) * 80);   // blur dynamique selon vitesse
+      let bestOpacity = -1;
+      const motionBlur = Math.min(3, Math.abs(smoothV) * 60);
 
       cards.forEach((card, i) => {
-        // Position relative à la "phase" courante, wrap dans [-N/2 ; N/2]
         let rel = i - phase;
         while (rel >  half) rel -= N;
         while (rel < -half) rel += N;
 
-        const absRel = Math.abs(rel);
+        // SNAP : la carte est attachée au slot le plus proche
+        const slot = Math.round(rel);
+        const distFromSnap = Math.abs(rel - slot);    // 0 à 0.5
+        const x = slot * span;                          // position discrète
 
-        // X position (slots à -1, 0, +1 cardSpan ; ±2 = hors viewport)
-        const x = rel * span;
+        // Opacity = 1 quand bien snappée, 0 à mi-chemin
+        // → quand le slot change (rel franchit 0.5), opacity ≈ 0 → pas de jump visible
+        const opacityBase = 1 - distFromSnap * 2;
 
-        // Opacity, scale, filter par profondeur
-        const opacity = absRel < 1.5 ? gsap.utils.mapRange(1.5, 0.4, 0, 1, Math.min(absRel, 1.5)) : 0;
-        const scale   = gsap.utils.mapRange(0, 1.5, 1.05, 0.78, Math.min(absRel, 1.5));
-        const sat     = gsap.utils.mapRange(0, 1, 1.05, 0.35, Math.min(absRel, 1));
-        const bright  = gsap.utils.mapRange(0, 1, 1, 0.55, Math.min(absRel, 1));
+        // Visibilité par slot : center et adjacents visibles, autres cachés
+        const visible = Math.abs(slot) <= 1;
+        const opacity = visible ? Math.max(0, opacityBase) : 0;
+
+        // Scale : centre = 1.05, latéraux = 0.88, hors champ = 0.7
+        const targetScale = slot === 0 ? 1.05 : (Math.abs(slot) === 1 ? 0.88 : 0.7);
+
+        // FILTRE OR-ROSE au lieu de b&w :
+        // - sepia donne une teinte chaude (jaune-or)
+        // - hue-rotate(335deg) la décale vers le rose
+        // - saturate booste l'intensité
+        // - active card : pas de filtre (couleur pleine)
+        const isActiveSlot = slot === 0;
+        const filter = isActiveSlot
+          ? `saturate(1.06) brightness(1) blur(${motionBlur.toFixed(2)}px)`
+          : `sepia(.55) hue-rotate(330deg) saturate(1.35) brightness(.78) blur(${motionBlur.toFixed(2)}px)`;
 
         gsap.set(card, {
           x,
           xPercent: -50,
           yPercent: -50,
           opacity,
-          scale,
-          zIndex: Math.round(20 - absRel * 6),
-          filter: `saturate(${sat.toFixed(2)}) brightness(${bright.toFixed(2)}) blur(${motionBlur.toFixed(2)}px)`,
+          scale: targetScale,
+          zIndex: isActiveSlot ? 10 : (visible ? 5 : 0),
+          filter,
         });
 
-        if (absRel < minAbsRel) { minAbsRel = absRel; activeIdx = i; }
+        // Active = carte au slot 0 avec la meilleure opacity
+        if (isActiveSlot && opacity > bestOpacity) {
+          bestOpacity = opacity;
+          activeIdx = i;
+        }
       });
 
-      // Active = celle la plus proche du centre
       cards.forEach((c, i) => c.classList.toggle('is-active', i === activeIdx));
     }
 
