@@ -4173,3 +4173,271 @@ input[type="url"], textarea, select,
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+
+
+/* ================================================================
+   🎨 TITRES EN GRADIENT OR → ROSE (style "L'élégance" partout)
+   ================================================================ */
+
+.section-title,
+.cat-body h3,
+.cats-track .cat-card .cat-body h3,
+.cert-hero h2,
+.success-wrap h1,
+.detail-name {
+  background-image: linear-gradient(135deg,
+    var(--gold-lt) 0%,
+    var(--gold) 28%,
+    var(--rose-light) 58%,
+    var(--rose) 78%,
+    var(--accent) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ================================================================
+   🌹 OMBRES ROSE-SOMBRE sur les cartes catégories
+   ================================================================ */
+
+.cat-card {
+  box-shadow:
+    0 8px 24px -10px var(--rose-soft),
+    0 1px 0 rgba(0,0,0,.04);
+}
+.cat-card:hover {
+  box-shadow:
+    0 26px 50px -22px var(--rose-deep),
+    0 12px 24px -10px var(--rose-soft),
+    0 0 0 1px var(--rose-soft);
+  border-color: var(--rose) !important;
+}
+
+/* Showcase desktop : la carte active a une grosse ombre rose-deep */
+@media (min-width: 1024px) {
+  .cats-track .cat-card.is-active {
+    box-shadow:
+      0 40px 80px -20px var(--rose-deep),
+      0 18px 36px -10px var(--rose-soft),
+      0 0 0 1px var(--rose-soft),
+      0 0 60px -10px var(--rose-glow) !important;
+  }
+}
+
+/* ================================================================
+   🎬 MENU MOBILE — hover effect type btn-primary (remplissage gold-rose)
+   ================================================================ */
+
+.nav-links a {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: color .4s var(--ease), padding-left .4s var(--ease), letter-spacing .4s var(--ease);
+  z-index: 1;
+}
+.nav-links a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    var(--gold) 0%,
+    var(--rose-light) 55%,
+    var(--rose) 100%);
+  transform: translateX(-101%);
+  transition: transform .55s var(--ease);
+  z-index: -1;
+}
+.nav-links a:hover::before {
+  transform: translateX(0);
+}
+.nav-links a:hover {
+  color: #1E1208 !important;
+  padding-left: 1.2rem !important;
+  letter-spacing: .08em;
+}
+.nav-links a {
+  border-radius: var(--r-sm);
+  padding: .9rem 1rem !important;
+  margin: .15rem 0;
+  border-bottom: none !important;
+}
+/* Sous-trait or-rose entre items */
+.nav-links a:not(:last-child) {
+  border-bottom: 1px solid var(--border-rose) !important;
+  border-radius: 0;
+}
+
+/* ================================================================
+   ✨ ANIMATIONS MODERNES — micro-interactions partout
+   ================================================================ */
+
+/* Theme toggle — rotate + glow rose au hover */
+.theme-toggle {
+  transition: transform .55s cubic-bezier(.34, 1.56, .64, 1), border-color var(--t), color var(--t);
+}
+.theme-toggle:hover {
+  transform: rotate(180deg) scale(1.08);
+  box-shadow: 0 0 18px var(--rose-glow);
+}
+
+/* Header icons — pulse halo rose au hover */
+.header-icon-btn {
+  position: relative;
+}
+.header-icon-btn::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--rose-glow) 0%, transparent 70%);
+  opacity: 0;
+  transform: scale(.7);
+  transition: opacity .35s, transform .35s;
+  pointer-events: none;
+  z-index: -1;
+}
+.header-icon-btn:hover::after {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* Cart count — pulse rose */
+.cart-count.visible {
+  animation: cartCountPulse 2.4s ease-in-out infinite;
+}
+@keyframes cartCountPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--rose-glow); }
+  50%      { box-shadow: 0 0 0 8px transparent; }
+}
+
+/* Filter buttons — glow rose au hover/active */
+.filter-btn {
+  transition: all .4s cubic-bezier(.4, 0, .2, 1);
+}
+.filter-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 18px -8px var(--rose-glow);
+}
+.filter-btn.active {
+  animation: filterActivePop .55s cubic-bezier(.34, 1.56, .64, 1);
+}
+@keyframes filterActivePop {
+  0%   { transform: scale(.92); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Product cards — lift + rose halo on hover */
+.product-card {
+  transition: background var(--t) var(--ease), transform .45s var(--ease), box-shadow .45s var(--ease);
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 40px -18px var(--rose-soft),
+    0 8px 18px -10px rgba(0,0,0,.25);
+}
+
+/* Section labels — fade-in + glow rose */
+.section-label {
+  display: inline-block;
+  position: relative;
+}
+.section-label::after {
+  content: '';
+  position: absolute;
+  left: 1.4em; right: 0; bottom: -.4em;
+  height: 1px;
+  background: linear-gradient(90deg, var(--rose), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .6s var(--ease);
+}
+.section-label:hover::after,
+.section-head:hover .section-label::after {
+  transform: scaleX(.9);
+}
+
+/* Détail page badge — gradient rose-or au lieu de juste or */
+.detail-badge {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--rose) 100%) !important;
+  box-shadow: 0 6px 18px -6px var(--rose-glow) !important;
+}
+
+/* Footer — gradient mince or-rose au-dessus */
+#siteFooter {
+  border-top: none !important;
+  position: relative;
+}
+#siteFooter::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent, var(--gold-dim), var(--rose), var(--gold-dim), transparent);
+  opacity: .6;
+}
+
+/* Marquee — fade gradient on edges with rose tint */
+.hero-marquee {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  overflow: hidden;
+  border-top: 1px solid var(--border-rose) !important;
+}
+.hero-marquee::before,
+.hero-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 60px;
+  z-index: 12;
+  pointer-events: none;
+}
+.hero-marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg2) 0%, transparent 100%);
+}
+.hero-marquee::after {
+  right: 0;
+  background: linear-gradient(-90deg, var(--bg2) 0%, transparent 100%);
+}
+
+/* Side drawer — accent rose en haut */
+#cartDrawer, #accountDrawer, #contactDrawer, #checkoutDrawer {
+  position: relative;
+}
+#cartDrawer::before,
+#accountDrawer::before,
+#contactDrawer::before,
+#checkoutDrawer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--rose), var(--gold));
+  opacity: .8;
+  z-index: 1;
+}
+
+/* Loader brand — gradient subtil or-rose */
+.loader-brand {
+  background: linear-gradient(135deg,
+    #EDE2CE 0%,
+    var(--rose-light) 50%,
+    #EDE2CE 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ================================================================
+   🎬 GSAP READY hooks — éléments à animer via JS
+   ================================================================ */
+
+/* Cards d'accueil - state initial pour stagger reveal */
+.product-card[data-gsap-ready="false"] {
+  opacity: 0;
+  transform: translateY(20px);
+}
