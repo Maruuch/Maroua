@@ -4403,10 +4403,12 @@ input[type="url"], textarea, select,
   background: linear-gradient(-90deg, var(--bg2) 0%, transparent 100%);
 }
 
-/* Side drawer — accent rose en haut */
-#cartDrawer, #accountDrawer, #contactDrawer, #checkoutDrawer {
-  position: relative;
-}
+/* Side drawer — accent rose en haut
+   NB : pas besoin de redéclarer position:relative ici — les drawers sont
+   déjà position:fixed (lignes 1606, 1836, 2411), ce qui sert de containing
+   block valide pour le ::before en position:absolute ci-dessous.
+   Une règle position:relative ici cassait tout : les drawers se collaient
+   en bas de page au lieu de glisser depuis le bord. */
 #cartDrawer::before,
 #accountDrawer::before,
 #contactDrawer::before,
