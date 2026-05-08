@@ -1,4 +1,4 @@
-v/* ================================================================
+/* ================================================================
    MAROUA JEWELRY — Design éditorial luxe v2
    Dark  : #080808 · #111 · gold #C9A455
    Light : #FAF5EE · #F0E8D8 · caramel #B8793A · rose #A8586E
@@ -4733,7 +4733,14 @@ select:focus-visible {
   color: var(--rose-brand) !important;
   -webkit-text-fill-color: var(--rose-brand) !important;
   background: none !important;
-  text-shadow: 0 2px 12px var(--rose-soft);
+  /* Hiérarchie typo : "à portée de main" plus discret que "L'élégance" */
+  font-size: 0.55em !important;          /* ~55% de la taille du H1 */
+  font-weight: 200 !important;           /* fine, ultra-light */
+  font-style: normal !important;
+  letter-spacing: .04em;
+  line-height: 1.2;
+  margin-top: .4em;
+  text-shadow: 0 1px 6px var(--rose-soft);
 }
 
 /* ─── 2) CARDS HERO (Nouveautés / Coups de cœur) — ombre rose ─────── */
