@@ -1,4 +1,4 @@
-/* ================================================================
+v/* ================================================================
    MAROUA JEWELRY — Design éditorial luxe v2
    Dark  : #080808 · #111 · gold #C9A455
    Light : #FAF5EE · #F0E8D8 · caramel #B8793A · rose #A8586E
@@ -4686,16 +4686,17 @@ select:focus-visible {
 }
 
 /* ================================================================
-   ROSE+ ENHANCEMENTS v2 — retours utilisateur
+   ROSE+ DESIGN SYSTEM v3 — refonte VISION GLOBALE
    ----------------------------------------------------------------
-   Corrections post revue visuelle de la home prod :
-   1) Hero title H1 entier (élégance + "à portée de main") en gradient
-   2) Couleur rose signature unifiée constante dark/light (--rose-brand)
-   3) Cards Nouveautés/Coups de cœur : ombre rose, plus dorée
-   4) Bouton CTA "Découvrir" : margin-bottom pour respirer avant marquee
-   5) Bande roulante : voile rose latéral + hover rose sur les liens
-   6) Titres pages internes (catégorie, etc.) : élargir le sélecteur
-   7) Mode LIGHT : voile rose intensifié, ombres rose-brand
+   Principe : le rose-brand est la COULEUR SIGNATURE constante,
+   identique en dark et light. Présente sur :
+     - décoratifs (traits, hairlines, séparateurs, accents)
+     - chips/labels (Nouveautés, Coups de cœur, eyebrows)
+     - flottants (chat FAB, drawer top accent)
+     - interactifs (boutons hover, focus, liens hover)
+     - ombres (cards, drawers, hero — 3D rose deep)
+     - titres (gradient or-rose ou rose uni selon contraste)
+   L'OR devient accent SECONDAIRE.
    ================================================================ */
 
 /* ─── COULEUR ROSE SIGNATURE — constante dans les 2 thèmes ────────── */
@@ -4706,15 +4707,17 @@ select:focus-visible {
   --rose-brand-mid:  rgba(216, 138, 160, 0.65);
 }
 
-/* ─── 1) HERO TITLE — H1 complet (em + span) en gradient or-rose-or ─ */
-.hero-title em,
-.hero-title span {
+/* ─── 1) HERO TITLE — "L'élégance" gradient, "à portée de main" rose uni ─ */
+/* Le clip-text peut casser sur certains spans → on fait simple et robuste */
+.hero-title em {
+  font-style: italic;
+  display: block;
   background: linear-gradient(
     90deg,
-    var(--gold)         0%,
-    var(--rose-brand)  30%,
+    var(--gold)        0%,
+    var(--rose-brand)  35%,
     var(--rose-deep)   50%,
-    var(--rose-brand)  70%,
+    var(--rose-brand)  65%,
     var(--gold)        100%
   ) !important;
   background-size: 200% 100% !important;
@@ -4725,8 +4728,13 @@ select:focus-visible {
   color: transparent !important;
   animation: shimmerRoseGold 9s ease-in-out infinite;
 }
-.hero-title em    { font-style: italic; display: block; }
-.hero-title span  { display: block; }
+.hero-title span {
+  display: block;
+  color: var(--rose-brand) !important;
+  -webkit-text-fill-color: var(--rose-brand) !important;
+  background: none !important;
+  text-shadow: 0 2px 12px var(--rose-soft);
+}
 
 /* ─── 2) CARDS HERO (Nouveautés / Coups de cœur) — ombre rose ─────── */
 .hero-card,
@@ -4864,4 +4872,228 @@ section > h3,
   box-shadow:
     0 14px 32px -10px var(--rose-brand-glow),
     0 0 0 1px          var(--rose-brand) !important;
+}
+
+/* ================================================================
+   DESIGN SYSTEM v3 — APPLICATION EN CASCADE PAR TYPE D'ÉLÉMENT
+   ================================================================ */
+
+/* === A. ÉLÉMENTS DÉCORATIFS (traits, hairlines, accents) === */
+
+/* Trait principal hero (.hero-line) — plus marquant, en rose */
+.hero-line {
+  height: 2px !important;
+  width: 90px !important;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--rose-brand) 30%,
+    var(--rose-deep)  60%,
+    var(--rose-brand) 100%) !important;
+  border: none !important;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px var(--rose-brand-soft);
+}
+
+/* Trait hairline du hero global */
+.hero > .hero-hairline {
+  background: linear-gradient(90deg,
+    transparent,
+    var(--rose-brand-soft) 20%,
+    var(--rose-brand)      50%,
+    var(--rose-brand-soft) 80%,
+    transparent) !important;
+  height: 1px !important;
+  opacity: .9 !important;
+}
+
+/* Eyebrow du hero (.hero-eyebrow "Votre bijouterie...") accent rose */
+.hero-eyebrow {
+  position: relative;
+  color: var(--rose-brand) !important;
+}
+
+/* === B. CHIPS / LABELS / BADGES (Nouveautés, Coups de cœur) === */
+.hero-card-label,
+.section-label,
+.cat-eyebrow,
+.catalog-hero-eyebrow,
+.badge,
+.chip {
+  background: var(--rose-brand-soft) !important;
+  border: 1px solid var(--rose-brand-mid) !important;
+  color: var(--rose-brand) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.3);
+  box-shadow: 0 4px 12px var(--rose-brand-soft);
+  transition: all .3s ease;
+}
+.hero-card-label:hover,
+.cat-eyebrow:hover {
+  background: var(--rose-brand-glow) !important;
+  border-color: var(--rose-brand) !important;
+  box-shadow: 0 6px 20px var(--rose-brand-glow);
+}
+
+/* === C. HERO CARDS — OMBRE 3D rose-deep DESSOUS (effet relief) === */
+.hero-right .hero-card,
+.hero-left .hero-card,
+.hero-card {
+  border: 1px solid var(--rose-brand-mid) !important;
+  box-shadow:
+    /* Ombre 3D principale rose-deep dessous (effet relief) */
+    0 30px 60px -20px rgba(165, 102, 118, 0.55),
+    /* Ombre médiane rose-soft pour la diffusion */
+    0 18px 36px -14px var(--rose-brand-glow),
+    /* Liseré rose subtle sur le bord */
+    0 0 0 1px var(--rose-brand-mid) inset,
+    /* Touche de profondeur dark dessous */
+    0 6px 14px -4px rgba(0,0,0,.45) !important;
+  transition:
+    transform .4s cubic-bezier(.2,.7,.2,1),
+    box-shadow .5s ease,
+    border-color .35s ease !important;
+}
+.hero-right .hero-card:hover,
+.hero-left .hero-card:hover,
+.hero-card:hover {
+  transform: translateY(-6px) scale(1.012);
+  box-shadow:
+    0 40px 80px -20px rgba(165, 102, 118, 0.70),
+    0 24px 50px -16px var(--rose-brand-glow),
+    0 0 0 1px var(--rose-brand) inset,
+    0 8px 20px -6px rgba(0,0,0,.55) !important;
+  border-color: var(--rose-brand) !important;
+}
+
+/* === D. CHAT FAB (bouton flottant en bas à droite) en rose === */
+.chat-fab {
+  background: linear-gradient(135deg,
+    var(--rose-brand)  0%,
+    var(--rose-deep)  100%) !important;
+  box-shadow:
+    0 8px 24px var(--rose-brand-glow),
+    0 4px 12px rgba(165, 102, 118, .35) !important;
+  border: 1px solid var(--rose-brand-mid);
+}
+.chat-fab:hover {
+  background: linear-gradient(135deg,
+    var(--rose-deep)   0%,
+    var(--rose-brand) 100%) !important;
+  transform: scale(1.1);
+  box-shadow:
+    0 12px 32px var(--rose-brand-glow),
+    0 6px 16px rgba(165, 102, 118, .50) !important;
+}
+.chat-fab svg {
+  stroke: #fff !important;
+}
+.chat-fab-dot {
+  background: var(--rose-light) !important;
+  box-shadow: 0 0 8px var(--rose-brand-glow);
+}
+
+/* === E. CHAT WINDOW — accents rose === */
+.chat-window {
+  border: 1px solid var(--rose-brand-mid) !important;
+  box-shadow:
+    0 24px 60px -16px rgba(165, 102, 118, .45),
+    0 12px 32px var(--rose-brand-glow) !important;
+}
+.chat-win-header {
+  background: linear-gradient(135deg,
+    var(--rose-brand-soft) 0%,
+    transparent           100%) !important;
+  border-bottom: 1px solid var(--rose-brand-mid) !important;
+}
+.chat-bubble.bot {
+  border-left: 2px solid var(--rose-brand) !important;
+  box-shadow: 0 2px 8px var(--rose-brand-soft);
+}
+.chat-bubble.user {
+  background: var(--rose-brand-soft) !important;
+  border: 1px solid var(--rose-brand-mid) !important;
+}
+.chat-qr {
+  border-color: var(--rose-brand-mid) !important;
+  color: var(--rose-brand) !important;
+  transition: all .25s ease;
+}
+.chat-qr:hover {
+  background: var(--rose-brand-soft) !important;
+  border-color: var(--rose-brand) !important;
+  color: var(--rose-deep) !important;
+}
+
+/* === F. SECTION LABELS (eyebrow style "—EXPLORER") === */
+.section-label,
+.section-eyebrow,
+.eyebrow {
+  color: var(--rose-brand) !important;
+  position: relative;
+}
+
+/* === G. TYPOGRAPHIE — titres de toutes les pages === */
+/* Couvre H1, H2, H3 dans toutes les pages internes (pas que home) */
+.page-title,
+.cat-page-title,
+.catalog-title,
+.product-title,
+.page > h1,
+.page > h2,
+.page > h3,
+.page-content > h1,
+.page-content > h2,
+.page-content > h3,
+.section-head .section-title {
+  background-image: linear-gradient(
+    90deg,
+    var(--gold)        0%,
+    var(--rose-brand)  30%,
+    var(--rose-deep)   50%,
+    var(--rose-brand)  70%,
+    var(--gold)        100%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmerRoseGold 8s ease-in-out infinite;
+}
+
+/* === H. MODE LIGHT — adaptation pour conserver le rose visible === */
+[data-theme="light"] .hero-eyebrow {
+  color: var(--rose-deep) !important;
+}
+[data-theme="light"] .hero-title span {
+  color: var(--rose-deep) !important;
+  -webkit-text-fill-color: var(--rose-deep) !important;
+}
+[data-theme="light"] .hero-card,
+[data-theme="light"] .hero-right .hero-card,
+[data-theme="light"] .hero-left .hero-card {
+  box-shadow:
+    0 30px 60px -20px rgba(192, 107, 123, 0.45),
+    0 18px 36px -14px rgba(192, 107, 123, 0.30),
+    0 0 0 1px var(--rose-brand-mid) inset,
+    0 6px 14px -4px rgba(0,0,0,.15) !important;
+}
+[data-theme="light"] .hero-line {
+  background: linear-gradient(90deg,
+    transparent,
+    var(--rose-deep) 30%,
+    var(--rose-brand) 60%,
+    var(--rose-deep) 100%) !important;
+}
+[data-theme="light"] .hero-card-label,
+[data-theme="light"] .section-label,
+[data-theme="light"] .cat-eyebrow {
+  color: var(--rose-deep) !important;
+  background: var(--rose-brand-soft) !important;
+  text-shadow: none;
+}
+[data-theme="light"] .chat-fab {
+  background: linear-gradient(135deg,
+    var(--rose-brand) 0%,
+    #92485A 100%) !important;
 }
