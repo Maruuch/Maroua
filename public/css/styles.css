@@ -4724,18 +4724,17 @@ select:focus-visible {
   --surface2: #D1BBB1;
 }
 
-/* ─── 1) HERO TITLE — "L'élégance" gradient OR pur (identité), "à portée" rose ─ */
+/* ─── 1) HERO TITLE — "L'élégance" gradient OR ↔ ROSE (votre version préférée) ── */
 .hero-title em {
   font-style: italic;
   display: block;
-  /* Gradient OR PUR avec animation shimmer (identité textuelle dorée) */
   background: linear-gradient(
     90deg,
-    var(--gold-lt)  0%,
-    var(--gold)    30%,
-    var(--accent)  50%,
-    var(--gold)    70%,
-    var(--gold-lt) 100%
+    var(--gold)        0%,
+    var(--rose-brand) 30%,
+    var(--rose-brand-deep) 50%,
+    var(--rose-brand) 70%,
+    var(--gold)       100%
   ) !important;
   background-size: 200% 100% !important;
   background-position: 100% 0 !important;
@@ -4743,11 +4742,7 @@ select:focus-visible {
           background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   color: transparent !important;
-  animation: shimmerGold 8s ease-in-out infinite;
-}
-@keyframes shimmerGold {
-  0%, 100% { background-position: 100% 0; }
-  50%      { background-position: 0 0; }
+  animation: shimmerRoseGold 9s ease-in-out infinite;
 }
 .hero-title span {
   display: block;
@@ -4961,35 +4956,30 @@ section > h3,
   box-shadow: 0 6px 20px var(--rose-brand-glow);
 }
 
-/* === C. HERO CARDS — OMBRE 3D rose-deep DESSOUS (effet relief) === */
+/* === C. HERO CARDS — OMBRE 3D rose-deep DESSOUS (sans encadrement rose) === */
 .hero-right .hero-card,
 .hero-left .hero-card,
 .hero-card {
-  border: 1px solid var(--rose-brand-mid) !important;
+  border: none !important;                         /* pas d'encadrement rose */
   box-shadow:
-    /* Ombre 3D principale rose-deep dessous (effet relief) */
-    0 30px 60px -20px rgba(165, 102, 118, 0.55),
-    /* Ombre médiane rose-soft pour la diffusion */
-    0 18px 36px -14px var(--rose-brand-glow),
-    /* Liseré rose subtle sur le bord */
-    0 0 0 1px var(--rose-brand-mid) inset,
-    /* Touche de profondeur dark dessous */
-    0 6px 14px -4px rgba(0,0,0,.45) !important;
+    /* Ombre 3D principale rose-deep DESSOUS (effet relief subtil) */
+    0 28px 50px -22px rgba(142, 77, 92, 0.55),
+    /* Ombre médiane diffusion */
+    0 14px 28px -14px rgba(142, 77, 92, 0.30),
+    /* Profondeur dark naturelle */
+    0 6px 14px -4px rgba(0,0,0,.40) !important;
   transition:
     transform .4s cubic-bezier(.2,.7,.2,1),
-    box-shadow .5s ease,
-    border-color .35s ease !important;
+    box-shadow .5s ease !important;
 }
 .hero-right .hero-card:hover,
 .hero-left .hero-card:hover,
 .hero-card:hover {
-  transform: translateY(-6px) scale(1.012);
+  transform: translateY(-4px);
   box-shadow:
-    0 40px 80px -20px rgba(165, 102, 118, 0.70),
-    0 24px 50px -16px var(--rose-brand-glow),
-    0 0 0 1px var(--rose-brand) inset,
+    0 36px 70px -20px rgba(142, 77, 92, 0.70),
+    0 18px 36px -14px rgba(142, 77, 92, 0.45),
     0 8px 20px -6px rgba(0,0,0,.55) !important;
-  border-color: var(--rose-brand) !important;
 }
 
 /* === D. CHAT FAB (bouton flottant en bas à droite) en rose === */
@@ -5131,28 +5121,68 @@ section > h3,
     var(--rose-brand-deep) 100%) !important;
 }
 
-/* === I. ESPACEMENTS — resserrer pour cohésion premium minimaliste === */
-/* Sections internes : padding réduit pour moins de vide */
+/* === I. ESPACEMENTS — resserrer fort pour cohésion premium minimaliste === */
 .section-cats,
 .section-featured {
-  padding: 4.5rem 0 !important;             /* était 7rem */
+  padding: 3rem 0 !important;               /* 7 → 3rem */
 }
 .section-promise {
-  padding: 3.5rem 0 !important;             /* était 5rem */
+  padding: 2.5rem 0 !important;             /* 5 → 2.5rem */
 }
 .section-head {
-  margin-bottom: 2.4rem !important;         /* était 3.5rem */
+  margin-bottom: 1.8rem !important;         /* 3.5 → 1.8rem */
 }
 .section-head-row {
-  margin-bottom: 2rem !important;           /* était 3rem */
+  margin-bottom: 1.5rem !important;
 }
-/* Hero CTA : moins d'espace mort avant la marquee */
 .hero-cta {
-  margin-bottom: clamp(1.5rem, 3vh, 2.5rem) !important;   /* était 2.5rem-5rem */
+  margin-bottom: clamp(1rem, 2.5vh, 2rem) !important;
 }
-/* Hero title : margin-bottom resserré */
 .hero-title {
-  margin-bottom: 1.2rem !important;         /* était 1.8rem */
+  margin-bottom: 1rem !important;
+}
+/* Réduire les marges entre la marquee et la section catégories */
+.hero-marquee + section,
+.hero + section,
+section + section {
+  padding-top: 2.5rem !important;
+}
+
+/* === L. ANIMATION PREMIUM ENTRE SECTIONS — scroll-driven CSS === */
+/* Apparition douce des sections au scroll (Chrome 115+, Safari 17+) */
+@supports (animation-timeline: view()) {
+  .page > section,
+  #pageHome > section,
+  .section-cats,
+  .section-featured,
+  .section-promise,
+  .section-testimonials {
+    animation: sectionRevealPremium linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 45%;
+    will-change: opacity, transform, filter;
+  }
+}
+@keyframes sectionRevealPremium {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(.985);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+/* Reduced motion : pas d'animation */
+@media (prefers-reduced-motion: reduce) {
+  @supports (animation-timeline: view()) {
+    .page > section,
+    #pageHome > section {
+      animation: none !important;
+    }
+  }
 }
 
 /* === J. DÉTAILS PREMIUM — finition cohérente === */
