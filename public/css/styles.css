@@ -5257,6 +5257,264 @@ section + section {
   margin-top: 0 !important;
 }
 
+/* === N. SECTION CATÉGORIES — tout dans une viewport === */
+.section-cats {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+.cats-head-wrap {
+  padding: 1.5rem 2rem 0.6rem !important;     /* était 4rem 2rem 1rem */
+}
+.cats-head-wrap .section-title {
+  font-size: clamp(1.7rem, 3.2vw, 2.6rem) !important;
+  margin-bottom: 0.3rem !important;
+  line-height: 1.1;
+}
+.cats-head-wrap .section-sub {
+  font-size: clamp(.78rem, 1vw, .9rem) !important;
+  margin-bottom: 0 !important;
+  line-height: 1.4;
+}
+.cats-head-wrap .section-label {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Carousel : hauteur compacte pour tenir avec le header dans une view */
+@media (min-width: 1024px) {
+  .cats-track-viewport {
+    height: clamp(380px, 55vh, 520px) !important;
+  }
+  .cats-track {
+    --card-width: clamp(240px, 22vw, 320px) !important;   /* cards un peu plus petites */
+  }
+  .cats-track .cat-card {
+    height: 88% !important;
+  }
+}
+@media (max-width: 1023px) {
+  .cats-track .cat-card {
+    height: 50vh !important;
+    min-height: 320px !important;
+    max-height: 440px !important;
+  }
+}
+
+/* === O. HERO CARDS — réduire la hauteur seulement === */
+.hero-card {
+  min-height: 360px !important;     /* 450 → 360 */
+  max-height: 420px !important;     /* 530 → 420 */
+}
+@media (max-width: 1023px) {
+  .hero-card {
+    min-height: 280px !important;
+    max-height: 340px !important;
+  }
+}
+
+/* ================================================================
+   === P. MODE LIGHT — REFONTE PREMIUM CINÉMATIQUE ================
+   ----------------------------------------------------------------
+   Refonte des variables et overrides pour donner au light la même
+   profondeur et cohérence premium que le mode dark.
+   Principes :
+   - Cream plus DENSE (pas pâle) pour ancrer la composition
+   - Or plus PROFOND pour pop sur cream
+   - Rose plus DENSE (rose-deep) pour signature visible
+   - Textes très contrastés (presque noir-rouge)
+   - Cards préservent leur drama via ombres sombres
+   ================================================================ */
+
+[data-theme="light"] {
+  /* Fonds : cream-rose dense, pas pâle */
+  --bg:       #E2D2C0 !important;
+  --bg2:      #D6C2AE !important;
+  --surface:  #C9B299 !important;
+  --surface2: #BEA589 !important;
+
+  /* Bordures : warm gold-brown plus marquées */
+  --border:   rgba(80, 42, 12, .22) !important;
+  --border2:  rgba(80, 42, 12, .42) !important;
+
+  /* OR : plus profond, plus saturé pour ressortir sur cream */
+  --gold:     #7A4F1C !important;
+  --gold-lt:  #A87234 !important;
+  --gold-dim: rgba(122, 79, 28, .16) !important;
+  --accent:   #7A4F1C !important;
+  --accent2:  #5C3814 !important;
+
+  /* Textes : très contrastés */
+  --text:     #2A1812 !important;
+  --text2:    #5C3D24 !important;
+  --text3:    #8A6A48 !important;
+
+  /* ROSE : dense, signature visible (pas de rose pastel) */
+  --rose:         #A04D5E !important;
+  --rose-deep:    #7C3A4A !important;
+  --rose-light:   #C26A7C !important;
+  --rose-soft:    rgba(160, 77, 94, .22) !important;
+  --rose-glow:    rgba(160, 77, 94, .18) !important;
+  --border-rose:  rgba(160, 77, 94, .40) !important;
+
+  /* Rose-brand signature alignée mode light pour cohérence */
+  --rose-brand:        #A04D5E !important;
+  --rose-brand-soft:   rgba(160, 77, 94, .22) !important;
+  --rose-brand-glow:   rgba(160, 77, 94, .35) !important;
+  --rose-brand-mid:    rgba(160, 77, 94, .55) !important;
+  --rose-brand-deep:   #6F2F40 !important;
+}
+
+/* === Hero light : voile rose-deep mieux dosé, plus dense === */
+[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%,  rgba(160, 77, 94, .14) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 95% 25%, rgba(160, 77, 94, .12) 0%, transparent 65%),
+    var(--bg) !important;
+}
+
+/* === Hero cards light : drama préservé via ombres sombres === */
+[data-theme="light"] .hero-card {
+  filter:
+    drop-shadow(0 24px 48px rgba(58, 28, 12, .35))
+    drop-shadow(0 10px 20px rgba(124, 58, 74, .22))
+    drop-shadow(0 4px 10px rgba(124, 58, 74, .12)) !important;
+}
+[data-theme="light"] .hero-card:hover {
+  filter:
+    drop-shadow(0 32px 60px rgba(58, 28, 12, .45))
+    drop-shadow(0 12px 24px rgba(124, 58, 74, .32))
+    drop-shadow(0 0 22px rgba(160, 77, 94, .18)) !important;
+}
+
+/* === Hero title light : "à portée de main" plus dense, lisible === */
+[data-theme="light"] .hero-title span {
+  color: var(--rose-deep) !important;
+  -webkit-text-fill-color: var(--rose-deep) !important;
+  text-shadow: 0 1px 4px rgba(124, 58, 74, .15);
+}
+
+/* === Marquee light : fond cream-rose dense, bordure rose === */
+[data-theme="light"] .hero-marquee {
+  background:
+    linear-gradient(90deg,
+      rgba(160, 77, 94, .14) 0%,
+      transparent           14%,
+      transparent           86%,
+      rgba(160, 77, 94, .14) 100%),
+    var(--bg2) !important;
+  border-top: 1px solid rgba(160, 77, 94, .28) !important;
+  border-bottom: 1px solid rgba(160, 77, 94, .20);
+  box-shadow: 0 -2px 10px rgba(160, 77, 94, .14);
+}
+[data-theme="light"] .marquee-track span,
+[data-theme="light"] .marquee-track a {
+  color: #5C3D24 !important;       /* gold-brown warm pour texte */
+}
+[data-theme="light"] .marquee-track a:hover {
+  color: var(--rose-deep) !important;
+}
+
+/* === Boutons primaires light : plus visibles, gradient vif au hover === */
+[data-theme="light"] .btn-primary {
+  border-color: var(--gold) !important;
+  color: var(--gold) !important;
+}
+[data-theme="light"] .btn-primary:hover {
+  background: linear-gradient(135deg,
+    var(--gold)        0%,
+    var(--rose-deep)  60%,
+    var(--gold-lt)   100%) !important;
+  color: #FFFAEE !important;
+  border-color: var(--rose-deep) !important;
+  box-shadow:
+    0 12px 28px rgba(124, 58, 74, .35),
+    0 0 0 1px var(--rose-deep) !important;
+}
+
+/* === Chips Nouveautés / Coups de cœur light : couleur dense, contour rose === */
+[data-theme="light"] .hero-card-label {
+  background: rgba(160, 77, 94, .12) !important;
+  border: 1px solid var(--rose-deep) !important;
+  color: var(--rose-deep) !important;
+  text-shadow: none !important;
+  font-weight: 600;
+}
+
+/* === Eyebrow + section labels light : or dense === */
+[data-theme="light"] .hero-eyebrow,
+[data-theme="light"] .section-label,
+[data-theme="light"] .section-eyebrow,
+[data-theme="light"] .eyebrow {
+  color: var(--gold) !important;
+}
+
+/* === Trait .hero-line light : rose dense plus marquant === */
+[data-theme="light"] .hero-line {
+  background: linear-gradient(90deg,
+    transparent,
+    var(--rose-deep) 35%,
+    var(--rose) 60%,
+    var(--rose-deep) 100%) !important;
+  box-shadow: 0 2px 8px rgba(160, 77, 94, .25);
+}
+
+/* === Chat FAB light : rose dense, plus présent === */
+[data-theme="light"] .chat-fab {
+  background: linear-gradient(135deg,
+    var(--rose) 0%,
+    var(--rose-deep) 100%) !important;
+  border-color: var(--rose-deep);
+  box-shadow:
+    0 10px 28px rgba(124, 58, 74, .40),
+    0 4px 12px rgba(124, 58, 74, .22) !important;
+}
+
+/* === Texte général light : meilleur contraste partout === */
+[data-theme="light"] .hero-desc,
+[data-theme="light"] .section-sub,
+[data-theme="light"] .cat-page-title-sub {
+  color: var(--text2) !important;
+}
+
+/* === Cards produits light : ombre warm + bordure cohérente === */
+[data-theme="light"] .product-card {
+  box-shadow:
+    0 12px 28px -10px rgba(58, 28, 12, .20),
+    0 4px 12px -4px rgba(124, 58, 74, .15) !important;
+  border-color: rgba(80, 42, 12, .20) !important;
+}
+[data-theme="light"] .product-card:hover {
+  box-shadow:
+    0 22px 50px -16px rgba(124, 58, 74, .35),
+    0 12px 28px -10px rgba(124, 58, 74, .22),
+    0 0 0 1px var(--rose) !important;
+}
+
+/* === Carousel catégorie light : voiles cream-rose, plus de profondeur === */
+[data-theme="light"] .cats-track-viewport::before {
+  background: linear-gradient(90deg,
+    rgba(124, 58, 74, .18) 0%,
+    transparent 100%) !important;
+}
+[data-theme="light"] .cats-track-viewport::after {
+  background: linear-gradient(-90deg,
+    rgba(124, 58, 74, .18) 0%,
+    transparent 100%) !important;
+}
+[data-theme="light"] .cats-arrow {
+  background: rgba(245, 232, 218, .85) !important;
+  border-color: var(--rose-deep) !important;
+  color: var(--rose-deep) !important;
+}
+[data-theme="light"] .cats-arrow:hover {
+  background: var(--rose-deep) !important;
+  color: #FFFAEE !important;
+}
+
+/* === Logo Maroua / header light : conserve la couleur dorée propre === */
+[data-theme="light"] .logo-img--light {
+  filter: brightness(1) contrast(1.02);
+}
+
 /* === K. CAROUSEL CATÉGORIES — UX intuitive === */
 /* Flèches navigation TOUJOURS visibles (pas seulement au scroll), en rose */
 .cats-arrow {
