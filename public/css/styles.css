@@ -1457,8 +1457,7 @@ img { display: block; max-width: 100%; }
   85%  { opacity: .5; }
   100% { opacity: 0;  transform: translateY(-260px) scale(1.6); }
 }
-/* Voile renforcé pour diffuser le texte stylisé "Maroua Jewelry"
-   de l'image hero qui chevauchait le contenu */
+/* Voile catalog-hero — pas de backdrop-filter (qui floutait l'image) */
 [data-theme="dark"] .catalog-hero-shade {
   background:
     linear-gradient(180deg,
@@ -1469,9 +1468,7 @@ img { display: block; max-width: 100%; }
     linear-gradient(90deg,
       rgba(28,18,8,.78) 0%,
       rgba(28,18,8,.50) 45%,
-      rgba(28,18,8,.40) 100%);   /* fin droit conserve voile (avant : 0) */
-  backdrop-filter: blur(2px);    /* léger flou : adoucit le script doré */
-  -webkit-backdrop-filter: blur(2px);
+      rgba(28,18,8,.40) 100%);
 }
 [data-theme="light"] .catalog-hero-shade {
   background:
@@ -1483,18 +1480,12 @@ img { display: block; max-width: 100%; }
     linear-gradient(90deg,
       rgba(245,237,224,.72) 0%,
       rgba(245,237,224,.45) 45%,
-      rgba(245,237,224,.30) 100%);   /* fin droit conserve voile (avant : 0) */
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+      rgba(245,237,224,.30) 100%);
 }
 
-/* Image hero : décalage subtil pour décentrer le texte stylisé hors du focus */
+/* Image catalog-hero : pas de filter (pas de désaturation) — image nette */
 .catalog-hero-img {
-  background-position: 70% 40% !important;   /* texte poussé hors-centre */
-}
-/* Légère désaturation de l'image pour ne plus dominer la lecture */
-.catalog-hero-img {
-  filter: saturate(.85) brightness(.92);
+  background-position: 70% 40% !important;
 }
 
 /* Si aucune image n'est définie → look propre sans média (état initial avant déploiement) */
@@ -4950,11 +4941,12 @@ section > h3,
   color: var(--gold) !important;
 }
 
-/* === B. CHIPS / LABELS / BADGES (Nouveautés, Coups de cœur) === */
+/* === B. CHIPS / LABELS / BADGES (Nouveautés, Coups de cœur)
+   ATTENTION : .catalog-hero-eyebrow est traitée séparément en bas
+   pour ne PAS s'étirer pleine largeur sur les pages catégorie */
 .hero-card-label,
 .section-label,
 .cat-eyebrow,
-.catalog-hero-eyebrow,
 .badge,
 .chip {
   background: var(--rose-brand-soft) !important;
@@ -4963,6 +4955,17 @@ section > h3,
   text-shadow: 0 1px 2px rgba(0,0,0,.3);
   box-shadow: 0 4px 12px var(--rose-brand-soft);
   transition: all .3s ease;
+}
+/* Catalog hero eyebrow ("05 / COLLECTION") : ne prend QUE la taille du texte */
+.catalog-hero-eyebrow {
+  display: inline-block !important;
+  width: max-content !important;
+  background: var(--rose-brand-soft) !important;
+  border: 1px solid var(--rose-brand-mid) !important;
+  color: var(--rose-brand) !important;
+  padding: .35rem .9rem;
+  border-radius: 999px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.3);
 }
 .hero-card-label:hover,
 .cat-eyebrow:hover {
@@ -5299,10 +5302,15 @@ section + section {
   }
 }
 
-/* === O. HERO CARDS — réduire la hauteur seulement === */
+/* === O. HERO CARDS — hauteur réduite avec ANCRAGE BAS
+   Le BAS des cards reste à sa position d'origine, seul le HAUT descend */
+.hero-right {
+  align-items: flex-end !important;     /* CRITIQUE : ancre les cards en bas */
+}
 .hero-card {
-  min-height: 360px !important;     /* 450 → 360 */
-  max-height: 420px !important;     /* 530 → 420 */
+  min-height: 360px !important;
+  max-height: 420px !important;
+  align-self: flex-end !important;       /* sécurité : bas ancré individuellement */
 }
 @media (max-width: 1023px) {
   .hero-card {
