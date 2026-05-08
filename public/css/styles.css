@@ -1457,29 +1457,44 @@ img { display: block; max-width: 100%; }
   85%  { opacity: .5; }
   100% { opacity: 0;  transform: translateY(-260px) scale(1.6); }
 }
+/* Voile renforcé pour diffuser le texte stylisé "Maroua Jewelry"
+   de l'image hero qui chevauchait le contenu */
 [data-theme="dark"] .catalog-hero-shade {
   background:
     linear-gradient(180deg,
-      rgba(28,18,8,.05) 0%,
-      rgba(28,18,8,.30) 45%,
-      rgba(28,18,8,.78) 85%,
+      rgba(28,18,8,.30) 0%,
+      rgba(28,18,8,.55) 45%,
+      rgba(28,18,8,.88) 85%,
       rgba(28,18,8,1)   100%),
     linear-gradient(90deg,
-      rgba(28,18,8,.65) 0%,
-      rgba(28,18,8,.25) 45%,
-      rgba(28,18,8,0)   85%);
+      rgba(28,18,8,.78) 0%,
+      rgba(28,18,8,.50) 45%,
+      rgba(28,18,8,.40) 100%);   /* fin droit conserve voile (avant : 0) */
+  backdrop-filter: blur(2px);    /* léger flou : adoucit le script doré */
+  -webkit-backdrop-filter: blur(2px);
 }
 [data-theme="light"] .catalog-hero-shade {
   background:
     linear-gradient(180deg,
-      rgba(245,237,224,.05) 0%,
-      rgba(245,237,224,.42) 45%,
-      rgba(245,237,224,.85) 85%,
+      rgba(245,237,224,.25) 0%,
+      rgba(245,237,224,.62) 45%,
+      rgba(245,237,224,.92) 85%,
       rgba(245,237,224,1)   100%),
     linear-gradient(90deg,
-      rgba(245,237,224,.55) 0%,
-      rgba(245,237,224,.25) 45%,
-      rgba(245,237,224,0)   85%);
+      rgba(245,237,224,.72) 0%,
+      rgba(245,237,224,.45) 45%,
+      rgba(245,237,224,.30) 100%);   /* fin droit conserve voile (avant : 0) */
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Image hero : décalage subtil pour décentrer le texte stylisé hors du focus */
+.catalog-hero-img {
+  background-position: 70% 40% !important;   /* texte poussé hors-centre */
+}
+/* Légère désaturation de l'image pour ne plus dominer la lecture */
+.catalog-hero-img {
+  filter: saturate(.85) brightness(.92);
 }
 
 /* Si aucune image n'est définie → look propre sans média (état initial avant déploiement) */
@@ -5189,6 +5204,40 @@ section + section {
 /* Titre H1 hero : light un peu plus petit pour respect proportion */
 .hero-title { font-weight: 200 !important; }     /* tout le H1 ultra-light */
 .hero-title em { font-weight: 300 !important; }  /* "L'élégance" légèrement plus visible */
+
+/* === M. ALIGNEMENT MARQUEE + HAUTEUR HERO === */
+/* Bandeau roulant : items parfaitement alignés verticalement */
+.marquee-track {
+  align-items: center !important;
+}
+.marquee-track > *,
+.marquee-track span,
+.marquee-track a {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  vertical-align: middle;
+}
+/* Diamants/séparateurs (✦ ◈ ⊙ ◇) à la même taille que le texte */
+.marquee-track .marquee-sep,
+.marquee-track .sep {
+  font-size: .65rem !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Hero : remonter le contenu (était 100vh - h, maintenant 80vh) */
+.hero {
+  min-height: calc(80vh - var(--h)) !important;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+@media (max-width: 1023px) {
+  .hero {
+    min-height: calc(75vh - var(--h)) !important;
+  }
+}
 
 /* === K. CAROUSEL CATÉGORIES — UX intuitive === */
 /* Flèches navigation TOUJOURS visibles (pas seulement au scroll), en rose */
