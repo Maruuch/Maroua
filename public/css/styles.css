@@ -5227,16 +5227,26 @@ section + section {
   align-items: center !important;
 }
 
-/* Hero : remonter le contenu (était 100vh - h, maintenant 80vh) */
+/* Hero : contenu collé en haut, plus court — fini l'espace mort au-dessus */
 .hero {
-  min-height: calc(80vh - var(--h)) !important;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
+  min-height: calc(68vh - var(--h)) !important;
+  justify-content: flex-start !important;     /* aligne en haut, pas au centre */
+  padding-top: 1.5rem !important;
+  padding-bottom: 4rem !important;             /* place pour la marquee absolute */
+}
+.hero-split {
+  margin-top: 0 !important;
+  align-self: stretch;
 }
 @media (max-width: 1023px) {
   .hero {
-    min-height: calc(75vh - var(--h)) !important;
+    min-height: calc(60vh - var(--h)) !important;
+    padding-top: 1rem !important;
   }
+}
+/* Page home elle-même : pas de padding-top supplémentaire */
+#pageHome {
+  padding-top: var(--h) !important;
 }
 
 /* === K. CAROUSEL CATÉGORIES — UX intuitive === */
