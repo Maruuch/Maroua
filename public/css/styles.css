@@ -4699,26 +4699,43 @@ select:focus-visible {
    L'OR devient accent SECONDAIRE.
    ================================================================ */
 
-/* ─── COULEUR ROSE SIGNATURE — constante dans les 2 thèmes ────────── */
+/* ─── COULEUR ROSE SIGNATURE — plus sombre/dramatic, constante dark/light ── */
 :root {
-  --rose-brand:      #D88AA0;
-  --rose-brand-soft: rgba(216, 138, 160, 0.22);
-  --rose-brand-glow: rgba(216, 138, 160, 0.40);
-  --rose-brand-mid:  rgba(216, 138, 160, 0.65);
+  --rose-brand:      #B86A7C;                       /* rose plus dense et dramatic */
+  --rose-brand-soft: rgba(184, 106, 124, 0.20);
+  --rose-brand-glow: rgba(184, 106, 124, 0.38);
+  --rose-brand-mid:  rgba(184, 106, 124, 0.55);
+  --rose-brand-deep: #8E4D5C;                       /* pour ombres 3D */
 }
 
-/* ─── 1) HERO TITLE — "L'élégance" gradient, "à portée de main" rose uni ─ */
-/* Le clip-text peut casser sur certains spans → on fait simple et robuste */
+/* ─── FOND : teinter le marron de rose pour cohésion ───────────────── */
+/* Dark : marron originel → marron-rose subtle */
+[data-theme="dark"] {
+  --bg:       #281A1E;       /* marron très foncé teinté rose */
+  --bg2:      #2E1F25;       /* variation */
+  --surface:  #382931;
+  --surface2: #443340;
+}
+/* Light : cream originel → cream-rose subtle */
+[data-theme="light"] {
+  --bg:       #ECDDD6;       /* cream teinté rose */
+  --bg2:      #E4D2CA;
+  --surface:  #DCC9C0;
+  --surface2: #D1BBB1;
+}
+
+/* ─── 1) HERO TITLE — "L'élégance" gradient OR pur (identité), "à portée" rose ─ */
 .hero-title em {
   font-style: italic;
   display: block;
+  /* Gradient OR PUR avec animation shimmer (identité textuelle dorée) */
   background: linear-gradient(
     90deg,
-    var(--gold)        0%,
-    var(--rose-brand)  35%,
-    var(--rose-deep)   50%,
-    var(--rose-brand)  65%,
-    var(--gold)        100%
+    var(--gold-lt)  0%,
+    var(--gold)    30%,
+    var(--accent)  50%,
+    var(--gold)    70%,
+    var(--gold-lt) 100%
   ) !important;
   background-size: 200% 100% !important;
   background-position: 100% 0 !important;
@@ -4726,7 +4743,11 @@ select:focus-visible {
           background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   color: transparent !important;
-  animation: shimmerRoseGold 9s ease-in-out infinite;
+  animation: shimmerGold 8s ease-in-out infinite;
+}
+@keyframes shimmerGold {
+  0%, 100% { background-position: 100% 0; }
+  50%      { background-position: 0 0; }
 }
 .hero-title span {
   display: block;
@@ -4913,10 +4934,10 @@ section > h3,
   opacity: .9 !important;
 }
 
-/* Eyebrow du hero (.hero-eyebrow "Votre bijouterie...") accent rose */
+/* Eyebrow du hero "Votre bijouterie en ligne · Maroc" — RESTE EN OR
+   (identité textuelle dorée, le rose est réservé aux décoratifs) */
 .hero-eyebrow {
-  position: relative;
-  color: var(--rose-brand) !important;
+  color: var(--gold) !important;
 }
 
 /* === B. CHIPS / LABELS / BADGES (Nouveautés, Coups de cœur) === */
@@ -5030,12 +5051,12 @@ section > h3,
   color: var(--rose-deep) !important;
 }
 
-/* === F. SECTION LABELS (eyebrow style "—EXPLORER") === */
+/* === F. SECTION LABELS ("—EXPLORER", "—DÉCOUVRIR") — RESTENT EN OR
+   identité textuelle dorée, le rose ne touche que les chips/décoratifs */
 .section-label,
 .section-eyebrow,
 .eyebrow {
-  color: var(--rose-brand) !important;
-  position: relative;
+  color: var(--gold) !important;
 }
 
 /* === G. TYPOGRAPHIE — titres de toutes les pages === */
@@ -5070,7 +5091,12 @@ section > h3,
 
 /* === H. MODE LIGHT — adaptation pour conserver le rose visible === */
 [data-theme="light"] .hero-eyebrow {
-  color: var(--rose-deep) !important;
+  color: var(--gold) !important;   /* or aussi en mode light */
+}
+[data-theme="light"] .section-label,
+[data-theme="light"] .section-eyebrow,
+[data-theme="light"] .eyebrow {
+  color: var(--gold) !important;
 }
 [data-theme="light"] .hero-title span {
   color: var(--rose-deep) !important;
@@ -5092,15 +5118,107 @@ section > h3,
     var(--rose-brand) 60%,
     var(--rose-deep) 100%) !important;
 }
-[data-theme="light"] .hero-card-label,
-[data-theme="light"] .section-label,
-[data-theme="light"] .cat-eyebrow {
-  color: var(--rose-deep) !important;
+/* Light : seul le hero-card-label (chips Nouveautés/Coups de cœur)
+   reste en rose. .section-label et .cat-eyebrow sont en or (au-dessus). */
+[data-theme="light"] .hero-card-label {
+  color: var(--rose-brand-deep) !important;
   background: var(--rose-brand-soft) !important;
   text-shadow: none;
 }
 [data-theme="light"] .chat-fab {
   background: linear-gradient(135deg,
     var(--rose-brand) 0%,
-    #92485A 100%) !important;
+    var(--rose-brand-deep) 100%) !important;
+}
+
+/* === I. ESPACEMENTS — resserrer pour cohésion premium minimaliste === */
+/* Sections internes : padding réduit pour moins de vide */
+.section-cats,
+.section-featured {
+  padding: 4.5rem 0 !important;             /* était 7rem */
+}
+.section-promise {
+  padding: 3.5rem 0 !important;             /* était 5rem */
+}
+.section-head {
+  margin-bottom: 2.4rem !important;         /* était 3.5rem */
+}
+.section-head-row {
+  margin-bottom: 2rem !important;           /* était 3rem */
+}
+/* Hero CTA : moins d'espace mort avant la marquee */
+.hero-cta {
+  margin-bottom: clamp(1.5rem, 3vh, 2.5rem) !important;   /* était 2.5rem-5rem */
+}
+/* Hero title : margin-bottom resserré */
+.hero-title {
+  margin-bottom: 1.2rem !important;         /* était 1.8rem */
+}
+
+/* === J. DÉTAILS PREMIUM — finition cohérente === */
+/* Titre H1 hero : light un peu plus petit pour respect proportion */
+.hero-title { font-weight: 200 !important; }     /* tout le H1 ultra-light */
+.hero-title em { font-weight: 300 !important; }  /* "L'élégance" légèrement plus visible */
+
+/* === K. CAROUSEL CATÉGORIES — UX intuitive === */
+/* Flèches navigation TOUJOURS visibles (pas seulement au scroll), en rose */
+.cats-arrow {
+  opacity: .7 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+  border-color: var(--rose-brand-mid) !important;
+  color: var(--rose-brand) !important;
+  background: rgba(40, 26, 30, .65) !important;     /* fond marron-rose subtle */
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, .4),
+    0 0 0 1px var(--rose-brand-soft) inset;
+  transition: all .3s ease !important;
+}
+.cats-arrow-left  { transform: translateY(-50%) translateX(0) !important; }
+.cats-arrow-right { transform: translateY(-50%) translateX(0) !important; }
+.cats-arrow:hover {
+  opacity: 1 !important;
+  background: var(--rose-brand) !important;
+  color: #fff !important;
+  border-color: var(--rose-brand) !important;
+  box-shadow:
+    0 12px 32px var(--rose-brand-glow),
+    0 0 0 1px var(--rose-brand) inset;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+/* Quand le carousel scroll dans une direction : flèche correspondante boostée */
+.cats-track-viewport.scroll-left  .cats-arrow-left,
+.cats-track-viewport.scroll-right .cats-arrow-right {
+  opacity: 1 !important;
+  background: var(--rose-brand) !important;
+  color: #fff !important;
+  box-shadow:
+    0 14px 36px var(--rose-brand-glow),
+    0 0 0 1px var(--rose-brand) inset !important;
+}
+
+/* Hint scroll au centre — plus discret, en rose */
+.cats-scroll-hint {
+  color: var(--rose-brand-mid) !important;
+  background: rgba(40, 26, 30, .55) !important;
+  border: 1px solid var(--rose-brand-soft);
+}
+
+/* Voile latéral (effet de bord rose au scroll) au lieu du noir pur */
+.cats-track-viewport::before {
+  background: linear-gradient(90deg,
+    rgba(184, 106, 124, .25) 0%,
+    transparent 100%) !important;
+}
+.cats-track-viewport::after {
+  background: linear-gradient(-90deg,
+    rgba(184, 106, 124, .25) 0%,
+    transparent 100%) !important;
+}
+
+/* Cards latérales (pas active) : conserver du contour rose subtle pour ne pas être perdues */
+.cats-track .cat-card:not(.is-active) {
+  box-shadow:
+    0 12px 28px -10px rgba(0, 0, 0, .35),
+    0 0 0 1px var(--rose-brand-soft) !important;
 }
