@@ -5887,6 +5887,12 @@ body [class*="head"] > .section-sub {
   -webkit-text-fill-color: var(--gold) !important;
 }
 
+/* === T. CHAT WINDOW — hauteur augmentée (largeur inchangée) === */
+body .chat-window {
+  max-height: min(720px, calc(100vh - 7.5rem)) !important;
+  height: min(680px, calc(100vh - 8rem)) !important;
+}
+
 /* Mobile : pile en 3 lignes, tout centré */
 @media (max-width: 767px) {
   body .section-head,
