@@ -5887,10 +5887,114 @@ body [class*="head"] > .section-sub {
   -webkit-text-fill-color: var(--gold) !important;
 }
 
-/* === T. CHAT WINDOW — hauteur augmentée (largeur inchangée) === */
+/* === T. CHAT WINDOW — hauteur augmentée mais limitée pour ne pas piétiner la marquee === */
 body .chat-window {
-  max-height: min(720px, calc(100vh - 7.5rem)) !important;
-  height: min(680px, calc(100vh - 8rem)) !important;
+  max-height: min(560px, calc(100vh - 11rem)) !important;
+  height: min(540px, calc(100vh - 12rem)) !important;
+}
+
+/* === U. CATALOG / PRODUCTS GRID — produits plus compacts, fond plat === */
+/* Container : pas de bandeau de fond, padding contrôlé */
+body .catalog-section,
+body .section-catalog,
+body .section-products,
+body .products-section,
+body .catalog-grid-wrap,
+body #pageCatalog .container,
+body .page-catalog .container {
+  background: transparent !important;
+}
+/* Grille produits : auto-fill avec colonnes plus petites */
+body .products-grid,
+body .product-grid,
+body .catalog-grid,
+body .grid-products {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  gap: 1rem !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 1rem 0 0 !important;
+}
+@media (min-width: 1024px) {
+  body .products-grid,
+  body .product-grid,
+  body .catalog-grid,
+  body .grid-products {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    gap: 1.2rem !important;
+  }
+}
+/* Card produit : compacte, fond transparent par défaut */
+body .product-card {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r) !important;
+  overflow: hidden;
+  transition:
+    transform .35s cubic-bezier(.2,.7,.2,1),
+    box-shadow .4s ease,
+    border-color .35s ease !important;
+}
+body .product-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--rose-brand-mid) !important;
+  box-shadow:
+    0 14px 32px -12px var(--rose-brand-glow),
+    0 0 0 1px var(--rose-brand-mid) !important;
+}
+/* Image produit : carré strict, max raisonnable */
+body .product-card-img-wrap,
+body .product-card-image,
+body .product-card-img,
+body .product-card .card-image,
+body .product-card .card-img-wrap {
+  aspect-ratio: 1 / 1 !important;
+  width: 100% !important;
+  max-height: 240px !important;
+  overflow: hidden;
+  background: var(--surface);
+}
+body .product-card-img img,
+body .product-card img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+/* Infos produit : padding compact */
+body .product-card-info,
+body .product-card-body,
+body .product-card .card-body {
+  padding: 0.7rem 0.9rem 0.9rem !important;
+}
+body .product-card-cat,
+body .product-card-category {
+  font-size: .62rem !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: .25rem !important;
+}
+body .product-card-title,
+body .product-card-name {
+  font-family: var(--serif) !important;
+  font-size: 1rem !important;
+  font-weight: 300 !important;
+  margin-bottom: .5rem !important;
+}
+body .product-card-price {
+  font-size: .9rem !important;
+  letter-spacing: .04em;
+}
+/* Label NOUVEAU / COUP DE COEUR : conserve son style or */
+body .product-card-label,
+body .product-card-badge {
+  font-size: .56rem !important;
+  letter-spacing: .2em !important;
+  padding: .28rem .7rem !important;
 }
 
 /* Mobile : pile en 3 lignes, tout centré */
