@@ -5523,6 +5523,172 @@ section + section {
   filter: brightness(1) contrast(1.02);
 }
 
+/* ================================================================
+   === Q. RÉFINEMENTS — selon retours utilisateur (lot final) ===
+   1) Catégories : compacter, supprimer voile latéral, cards rapprochées
+   2) Coups de cœur : cards plus compactes + skeleton placeholder propre
+   3) Section promesse : masquée
+   4) Témoignages : version discrète premium avec hover animé
+   5) Menu mobile : logo fondu sans cadre
+   ================================================================ */
+
+/* ─── 1. SECTION PAR CATÉGORIE — tout compact, voile blanc retiré ─── */
+.section-cats {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+.cats-head-wrap {
+  padding: 0.8rem 2rem 0.3rem !important;
+}
+.cats-head-wrap .section-title {
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem) !important;
+  margin-bottom: 0.2rem !important;
+}
+.cats-head-wrap .section-sub {
+  font-size: clamp(.74rem, .95vw, .85rem) !important;
+}
+@media (min-width: 1024px) {
+  .cats-track-viewport {
+    height: clamp(340px, 50vh, 460px) !important;
+    mask-image: none !important;                /* supprime le mask qui créait le voile blanc */
+    -webkit-mask-image: none !important;
+  }
+  .cats-track {
+    --card-width: clamp(220px, 20vw, 280px) !important;   /* cards plus compactes */
+  }
+  .cats-track .cat-card {
+    height: 92% !important;
+  }
+}
+/* Supprimer les voiles latéraux gauche/droite qui créaient l'effet "blanc" */
+.cats-track-viewport::before,
+.cats-track-viewport::after {
+  display: none !important;
+}
+
+/* ─── 2. SECTION COUPS DE CŒUR / FEATURED — cards plus compactes ─── */
+.section-featured {
+  padding: 1.5rem 0 !important;
+}
+.section-featured .featured-grid,
+.section-featured .products-grid {
+  gap: 1rem !important;
+}
+.section-featured .product-card {
+  max-width: 320px;
+  margin: 0 auto;
+}
+.section-featured .product-card-img-wrap,
+.section-featured .product-card-image {
+  aspect-ratio: 1 / 1.05 !important;
+  max-height: 360px;
+}
+
+/* Skeleton placeholder : fond cohérent avec le thème, plus de blanc/rose criard */
+.product-card-skeleton,
+.product-card.is-loading,
+.skeleton,
+.skeleton-card,
+[data-skeleton="true"] {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+}
+.skeleton::before,
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--rose-brand-soft) 50%,
+    transparent 100%
+  ) !important;
+}
+
+/* ─── 3. SECTION PROMESSE — masquée ─── */
+.section-promise {
+  display: none !important;
+}
+
+/* ─── 4. TÉMOIGNAGES — discret premium avec hover animé ─── */
+.section-testimonials,
+.section-reviews {
+  padding: 2rem 0 !important;
+}
+.testimonial-card,
+.review-card {
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r) !important;
+  padding: 1.4rem !important;
+  box-shadow: none !important;
+  transition:
+    transform .4s cubic-bezier(.2,.7,.2,1),
+    background .35s ease,
+    border-color .35s ease,
+    box-shadow .4s ease !important;
+}
+.testimonial-card:hover,
+.review-card:hover {
+  background: var(--rose-brand-soft) !important;
+  border-color: var(--rose-brand-mid) !important;
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 40px -14px var(--rose-brand-glow),
+    0 0 0 1px var(--rose-brand-mid) !important;
+}
+.testimonial-card:hover .testimonial-stars,
+.review-card:hover .review-stars,
+.testimonial-card:hover [class*="star"],
+.review-card:hover [class*="star"] {
+  color: var(--rose-brand) !important;
+  transition: color .35s ease;
+}
+.testimonial-card .testimonial-stars,
+.review-card .review-stars,
+.testimonial-card [class*="star"],
+.review-card [class*="star"] {
+  font-size: .8rem;
+  letter-spacing: .15em;
+  opacity: .85;
+}
+/* Footer auteur : plus discret par défaut */
+.testimonial-card .testimonial-author,
+.review-card .review-author {
+  border-top: 1px solid var(--border) !important;
+  padding-top: 0.9rem !important;
+  margin-top: 0.9rem !important;
+}
+
+/* ─── 5. MENU MOBILE — logo fondu sans cadre ─── */
+#mobileNav .nav-logo,
+#mobileNav .nav-logo *,
+#mobileNav .logo-img,
+#mobileNav .logo-img--dark,
+#mobileNav .logo-img--light {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+#mobileNav .nav-logo {
+  padding: 1.2rem 1rem !important;
+  margin-bottom: .4rem;
+}
+/* Ajout d'un fondu doux entre le logo et le reste du menu */
+#mobileNav .nav-logo::after {
+  content: '';
+  position: absolute;
+  left: 1rem; right: 1rem; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--rose-brand-soft) 50%,
+    transparent);
+  opacity: .6;
+}
+#mobileNav .nav-logo {
+  position: relative;
+}
+
 /* === K. CAROUSEL CATÉGORIES — UX intuitive === */
 /* Flèches navigation TOUJOURS visibles (pas seulement au scroll), en rose */
 .cats-arrow {
