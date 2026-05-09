@@ -6252,6 +6252,173 @@ body::after {
 }
 
 /* ================================================================
+   === Z. RAFFINEMENTS FINAUX (lot 3 corrections) ==================
+   1) Section "Par catégorie" — titre/eyebrow/sous-titre alignés
+   2) Marquee — séparateurs géométriques remplacés par étincelles dorées
+   3) Mobile — premier affichage = header + animation, hero scrollable
+   ================================================================ */
+
+/* === 1. SECTION HEAD : positionnement strict ===================== */
+body .section-head,
+body .section-head-cats,
+body .cats-head-wrap,
+body .featured-head,
+body .section-head-wrap {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  grid-template-rows: auto auto !important;
+  grid-template-areas:
+    "eyebrow title    spacer"
+    "sub     sub      sub" !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  text-align: initial !important;
+}
+body .section-head .section-label,
+body .cats-head-wrap .section-label,
+body .section-head-cats .section-label,
+body .featured-head .section-label {
+  grid-area: eyebrow !important;
+  justify-self: start !important;
+}
+body .section-head .section-title,
+body .cats-head-wrap .section-title,
+body .section-head-cats .section-title,
+body .featured-head .section-title {
+  grid-area: title !important;
+  justify-self: center !important;
+  text-align: center !important;
+  width: max-content !important;
+  margin: 0 auto !important;
+}
+body .section-head .section-sub,
+body .cats-head-wrap .section-sub,
+body .section-head-cats .section-sub,
+body .featured-head .section-sub {
+  grid-area: sub !important;
+  justify-self: center !important;
+  text-align: center !important;
+  width: 100% !important;
+  max-width: 56ch !important;
+  margin: 0.4rem auto 0 !important;
+}
+
+/* === 2. MARQUEE — étincelles dorées entre items ================= */
+/* Cacher les séparateurs géométriques existants ◆ ◇ ◈ ⊙ ✦ */
+.marquee-track .marquee-sep,
+.marquee-track .sep,
+.marquee-track > span:not(.marquee-item):not(:has(a)),
+.hero-marquee .marquee-track > span[aria-hidden="true"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+/* Étincelle dorée animée entre chaque item */
+.marquee-track a,
+.marquee-track .marquee-item {
+  position: relative;
+  padding-right: 3rem !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+.marquee-track a::after,
+.marquee-track .marquee-item::after {
+  content: '';
+  position: absolute;
+  right: 1.2rem;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    #FFEFC8 0%,
+    var(--gold-lt, #EDD080) 35%,
+    var(--gold) 60%,
+    transparent 100%);
+  box-shadow:
+    0 0 6px rgba(255, 232, 180, .9),
+    0 0 12px rgba(212, 170, 98, .6),
+    0 0 22px rgba(212, 170, 98, .3);
+  transform: translateY(-50%) scale(.7);
+  opacity: .35;
+  animation: marqueeSparkle 2.4s ease-in-out infinite;
+}
+.marquee-track a:nth-of-type(2)::after { animation-delay: .3s; }
+.marquee-track a:nth-of-type(3)::after { animation-delay: .6s; }
+.marquee-track a:nth-of-type(4)::after { animation-delay: .9s; }
+.marquee-track a:nth-of-type(5)::after { animation-delay: 1.2s; }
+.marquee-track a:nth-of-type(6)::after { animation-delay: 1.5s; }
+.marquee-track a:nth-of-type(7)::after { animation-delay: 1.8s; }
+.marquee-track a:last-child::after { display: none; }
+@keyframes marqueeSparkle {
+  0%, 100% { opacity: .25; transform: translateY(-50%) scale(.6); }
+  50%      { opacity: 1;   transform: translateY(-50%) scale(1.4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track a::after { animation: none !important; opacity: .6; }
+}
+
+/* === 3. MOBILE — premier viewport = header + animation, hero scrollable === */
+@media (max-width: 767px) {
+  /* Hero prend 100vh, contenu repoussé en bas pour scroll */
+  body .hero {
+    min-height: 100vh !important;
+    height: auto !important;
+    padding-top: 45vh !important;          /* contenu débute après le 1er écran */
+    padding-bottom: 7rem !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+  /* Hero-split : empile en colonne, plus de side-by-side qui se chevauche */
+  body .hero-split {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 2rem !important;
+    padding: 0 1rem !important;
+  }
+  body .hero-right,
+  body .hero-left {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  body .hero-left {
+    order: 1 !important;
+    text-align: center !important;
+    align-items: center !important;
+  }
+  body .hero-right {
+    order: 2 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.8rem !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+  }
+  body .hero-card {
+    flex: 1 1 0 !important;
+    min-height: 220px !important;
+    max-height: 280px !important;
+  }
+  /* Hero-line / eyebrow / desc / CTA centrés sur mobile */
+  body .hero-line,
+  body .hero-eyebrow,
+  body .hero-title,
+  body .hero-desc,
+  body .hero-cta {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  body .hero-cta {
+    justify-content: center !important;
+  }
+  /* Le marquee reste collé en bas du hero */
+  body .hero-marquee {
+    bottom: 0 !important;
+  }
+}
+
+/* ================================================================
    === W. FOOTER — animation premium ===============================
    - "MAROUA" en gradient or-rose animé (shimmer perpétuel)
    - Colonne "Nous joindre" : fond mouvant + bulles dorées
