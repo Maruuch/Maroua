@@ -6018,6 +6018,163 @@ body .product-card-badge {
   }
 }
 
+/* ================================================================
+   === V. AMBIANCE GLOBALE — vitrine dorée + voile rose profond ====
+   Voile fixe sur tout le site dans les 2 modes :
+   - Lueur or qui se déplace lentement (effet vitrine premium)
+   - Voile rose profond uniforme pour atténuer/contraster
+   ================================================================ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    /* Vitrine or qui glisse */
+    radial-gradient(ellipse 60% 40% at 30% 30%,
+      rgba(212, 170, 98, .08) 0%,
+      transparent 60%),
+    radial-gradient(ellipse 50% 35% at 75% 70%,
+      rgba(232, 196, 140, .06) 0%,
+      transparent 60%),
+    /* Voile rose profond uniforme (signature constante dark/light) */
+    radial-gradient(ellipse 100% 80% at 50% 50%,
+      rgba(124, 58, 74, .05) 0%,
+      transparent 70%);
+  background-size: 200% 200%, 220% 220%, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 50% 50%;
+  animation: showcaseDrift 36s ease-in-out infinite;
+  mix-blend-mode: soft-light;
+}
+@keyframes showcaseDrift {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  50% {
+    background-position: 100% 50%, 0% 0%, 50% 50%;
+  }
+}
+/* Identique en light : on conserve la même couleur rose-deep pour cohérence */
+[data-theme="light"] body::after {
+  background:
+    radial-gradient(ellipse 60% 40% at 30% 30%,
+      rgba(122, 79, 28, .07) 0%,
+      transparent 60%),
+    radial-gradient(ellipse 50% 35% at 75% 70%,
+      rgba(168, 114, 52, .05) 0%,
+      transparent 60%),
+    radial-gradient(ellipse 100% 80% at 50% 50%,
+      rgba(124, 58, 74, .07) 0%,
+      transparent 70%);
+  background-size: 200% 200%, 220% 220%, 100% 100%;
+  mix-blend-mode: multiply;
+}
+
+/* Reduced motion : pas d'animation */
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none !important; }
+}
+
+/* S'assurer que le contenu principal reste au-dessus du voile */
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================================================
+   === W. FOOTER — animation premium ===============================
+   - "MAROUA" en gradient or-rose animé (shimmer perpétuel)
+   - Colonne "Nous joindre" : fond mouvant + bulles dorées
+   ================================================================ */
+
+/* "MAROUA" : gradient or-rose-or animé */
+#siteFooter .footer-brand-name {
+  background: linear-gradient(
+    90deg,
+    var(--gold)              0%,
+    var(--rose-brand)       30%,
+    var(--rose-brand-deep)  50%,
+    var(--rose-brand)       70%,
+    var(--gold)            100%
+  ) !important;
+  background-size: 200% 100% !important;
+  background-position: 100% 0 !important;
+  -webkit-background-clip: text !important;
+          background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  animation: shimmerRoseGold 9s ease-in-out infinite;
+}
+
+/* Colonne "Nous joindre" — animation type hero (bulles + lueur) */
+#siteFooter .footer-col:last-child,
+#siteFooter .footer-col:nth-child(4) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 1.2rem 1.4rem !important;
+  border-radius: var(--r);
+}
+/* Couche 1 : lueur dorée mouvante en arrière-plan */
+#siteFooter .footer-col:last-child::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 60% 60% at 30% 40%,
+      rgba(212, 170, 98, .14) 0%,
+      transparent 60%),
+    radial-gradient(ellipse 50% 50% at 70% 70%,
+      rgba(216, 138, 160, .10) 0%,
+      transparent 60%);
+  background-size: 180% 180%;
+  animation: footerCornerDrift 18s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+@keyframes footerCornerDrift {
+  0%, 100% { background-position: 0% 0%, 100% 100%; }
+  50%      { background-position: 100% 50%, 0% 0%; }
+}
+/* Couche 2 : bulles dorées qui montent (3 bulles en pseudo-éléments) */
+#siteFooter .footer-col:last-child::after {
+  content: '';
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    var(--gold-lt) 0%,
+    var(--gold) 50%,
+    transparent 100%);
+  bottom: 10%; left: 30%;
+  box-shadow:
+    20px -40px 0 -1px var(--gold),
+    -10px -90px 0 -1.5px var(--gold-lt),
+    35px -130px 0 -2px var(--gold),
+    -25px -180px 0 -1px var(--gold-lt),
+    15px -230px 0 -2px var(--gold);
+  animation: footerBubblesRise 14s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .6;
+}
+@keyframes footerBubblesRise {
+  0%   { transform: translateY(60px); opacity: 0; }
+  20%  { opacity: .55; }
+  80%  { opacity: .55; }
+  100% { transform: translateY(-220px); opacity: 0; }
+}
+
+/* Reduced motion : on coupe les animations footer */
+@media (prefers-reduced-motion: reduce) {
+  #siteFooter .footer-brand-name,
+  #siteFooter .footer-col:last-child::before,
+  #siteFooter .footer-col:last-child::after {
+    animation: none !important;
+  }
+}
+
 /* === K. CAROUSEL CATÉGORIES — UX intuitive === */
 /* Flèches navigation TOUJOURS visibles (pas seulement au scroll), en rose */
 .cats-arrow {
