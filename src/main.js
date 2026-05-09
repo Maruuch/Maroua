@@ -458,8 +458,8 @@ function initCategoriesScroll() {
   if (isDesktop && viewport) {
 
     const N = cards.length;                                    // nombre de catégories (5)
-    const cardWidthVw  = 26;                                    // doit matcher le CSS (--card-width)
-    const slotGapVw    = 4;                                     // espace entre slots (cards rapprochées)
+    const cardWidthVw  = 18;                                    // doit matcher le CSS (--card-width)
+    const slotGapVw    = 1;                                     // cards rapprochées (était 4)
     const getCardSpanPx = () => ((cardWidthVw + slotGapVw) / 100) * window.innerWidth;
 
     let phase    = 0;        // continu (peut être fractionnaire), wrap modulo N
@@ -489,26 +489,23 @@ function initCategoriesScroll() {
         const distFromSnap = Math.abs(rel - slot);    // 0 à 0.5
         const x = slot * span;                          // position discrète
 
-        // Opacity = 1 quand bien snappée, 0 à mi-chemin
-        // → quand le slot change (rel franchit 0.5), opacity ≈ 0 → pas de jump visible
-        const opacityBase = 1 - distFromSnap * 2;
-
-        // Visibilité par slot : center et adjacents visibles, autres cachés
+        // Opacity : visibles à 100%, hors champ légèrement atténués
+        // → les cartes passent sans perdre de vue leur contenu
         const visible = Math.abs(slot) <= 1;
-        const opacity = visible ? Math.max(0, opacityBase) : 0;
+        const opacity = visible ? 1 : 0.35;
 
-        // Scale : centre = 1.05, latéraux = 0.88, hors champ = 0.7
-        const targetScale = slot === 0 ? 1.05 : (Math.abs(slot) === 1 ? 0.88 : 0.7);
+        // Scale : centre légèrement plus grand pour focus visuel,
+        // latéraux et hors champ à taille pleine ou presque
+        const targetScale = slot === 0
+          ? 1.04
+          : (Math.abs(slot) === 1 ? 0.96 : 0.86);
 
-        // FILTRE OR-ROSE au lieu de b&w :
-        // - sepia donne une teinte chaude (jaune-or)
-        // - hue-rotate(335deg) la décale vers le rose
-        // - saturate booste l'intensité
-        // - active card : pas de filtre (couleur pleine)
+        // PAS DE FILTRE altérant — couleurs originales préservées sur toutes les cartes
+        // Seul le motionBlur très léger est conservé pour la fluidité du scroll
         const isActiveSlot = slot === 0;
-        const filter = isActiveSlot
-          ? `saturate(1.06) brightness(1) blur(${motionBlur.toFixed(2)}px)`
-          : `sepia(.55) hue-rotate(330deg) saturate(1.35) brightness(.78) blur(${motionBlur.toFixed(2)}px)`;
+        const filter = motionBlur > 0.1
+          ? `blur(${motionBlur.toFixed(2)}px)`
+          : 'none';
 
         gsap.set(card, {
           x,
