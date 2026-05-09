@@ -5166,40 +5166,14 @@ section + section {
   padding-top: 2.5rem !important;
 }
 
-/* === L. ANIMATION PREMIUM ENTRE SECTIONS — scroll-driven CSS === */
-/* Apparition douce des sections au scroll (Chrome 115+, Safari 17+) */
+/* === L. ANIMATION SCROLL — désactivée (faisait disparaître les cartes) ===
+   On garde uniquement un léger fade subtle, sans translate/scale/blur
+   qui faisait "danser" les cartes du carousel au défilement. */
 @supports (animation-timeline: view()) {
   .page > section,
-  #pageHome > section,
-  .section-cats,
-  .section-featured,
-  .section-promise,
-  .section-testimonials {
-    animation: sectionRevealPremium linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 45%;
-    will-change: opacity, transform, filter;
-  }
-}
-@keyframes sectionRevealPremium {
-  from {
-    opacity: 0;
-    transform: translateY(50px) scale(.985);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-/* Reduced motion : pas d'animation */
-@media (prefers-reduced-motion: reduce) {
-  @supports (animation-timeline: view()) {
-    .page > section,
-    #pageHome > section {
-      animation: none !important;
-    }
+  #pageHome > section {
+    /* Pas d'animation globale — laissons les sections statiques */
+    animation: none !important;
   }
 }
 
@@ -5702,11 +5676,11 @@ section + section {
    Sélecteurs multi-fallback pour tous les noms de classe possibles
    ================================================================ */
 
-/* ─── 1. CATÉGORIES ultra-compact + cards rapprochées + voile retiré ─── */
+/* ─── 1. CATÉGORIES — hauteur -30% + cards rapprochées + voile retiré ─── */
 @media (min-width: 1024px) {
   body .cats-track-viewport,
   .section-cats .cats-track-viewport {
-    height: clamp(320px, 48vh, 440px) !important;
+    height: clamp(220px, 33vh, 310px) !important;   /* -30% (était 48vh, 440px) */
     mask-image: none !important;
     -webkit-mask-image: none !important;
     margin-top: 0 !important;
@@ -5723,6 +5697,16 @@ body .cats-track-viewport::after {
   display: none !important;
   background: none !important;
   opacity: 0 !important;
+}
+/* Désactiver toute animation/transform sur la section catégorie au scroll */
+body .section-cats,
+body .section-cats * {
+  animation-name: none !important;
+}
+body .section-cats {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
 }
 
 /* ─── 2. FEATURED / COUPS DE CŒUR — cards compactes ─── */
@@ -5814,6 +5798,114 @@ body .section-reviews,
 body section[class*="testimonial"],
 body section[class*="review"] {
   padding: 1.5rem 0 2rem !important;
+}
+
+/* ================================================================
+   === S. SECTION HEAD LAYOUT — système de positionnement unifié ===
+   Ligne 1 : [eyebrow gauche] [titre centré]
+   Ligne 2 : [slogan centré, en doré italique, plus petit]
+   ================================================================ */
+
+/* Wrapper grid 3 colonnes : eyebrow gauche / titre centre / spacer droit */
+body .section-head,
+body .section-head-cats,
+body .section-head-featured,
+body .cats-head-wrap,
+body .featured-head,
+body .section-head-wrap {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  grid-template-areas:
+    "eyebrow title    spacer"
+    "sub     sub      sub" !important;
+  align-items: center !important;
+  column-gap: 1.5rem !important;
+  row-gap: 0.5rem !important;
+  width: 100% !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  padding: 1.5rem 2rem 1rem !important;
+  text-align: initial !important;
+}
+
+/* Eyebrow / label : à GAUCHE ligne 1 */
+body .section-head .section-label,
+body .section-head .section-eyebrow,
+body .section-head .eyebrow,
+body .section-head-cats .section-label,
+body .cats-head-wrap .section-label,
+body .featured-head .section-label,
+body [class*="head"] > .section-label {
+  grid-area: eyebrow !important;
+  justify-self: start !important;
+  align-self: center !important;
+  text-align: left !important;
+  margin: 0 !important;
+  white-space: nowrap;
+}
+
+/* Titre : CENTRÉ ligne 1 */
+body .section-head .section-title,
+body .section-head-cats .section-title,
+body .cats-head-wrap .section-title,
+body .featured-head .section-title,
+body [class*="head"] > .section-title {
+  grid-area: title !important;
+  justify-self: center !important;
+  text-align: center !important;
+  margin: 0 !important;
+  width: max-content;
+}
+
+/* Slogan / sous-titre : CENTRÉ ligne 2, plus petit, en DORÉ italique */
+body .section-head .section-sub,
+body .section-head-cats .section-sub,
+body .cats-head-wrap .section-sub,
+body .featured-head .section-sub,
+body [class*="head"] > .section-sub {
+  grid-area: sub !important;
+  justify-self: center !important;
+  text-align: center !important;
+  margin: 0.4rem auto 0 !important;
+  font-size: clamp(.78rem, 1vw, .9rem) !important;
+  font-family: var(--serif) !important;
+  font-style: italic !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.01em !important;
+  color: var(--gold) !important;
+  -webkit-text-fill-color: var(--gold) !important;
+  background: none !important;
+  max-width: 56ch !important;
+  line-height: 1.5 !important;
+}
+
+/* Mode light : slogan en or-deep pour contraste sur cream */
+[data-theme="light"] body .section-head .section-sub,
+[data-theme="light"] body .cats-head-wrap .section-sub,
+[data-theme="light"] body .featured-head .section-sub {
+  color: var(--gold) !important;
+  -webkit-text-fill-color: var(--gold) !important;
+}
+
+/* Mobile : pile en 3 lignes, tout centré */
+@media (max-width: 767px) {
+  body .section-head,
+  body .section-head-cats,
+  body .cats-head-wrap,
+  body .featured-head,
+  body .section-head-wrap {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "eyebrow"
+      "title"
+      "sub" !important;
+    text-align: center !important;
+  }
+  body .section-head .section-label,
+  body .cats-head-wrap .section-label {
+    justify-self: center !important;
+    text-align: center !important;
+  }
 }
 
 /* === K. CAROUSEL CATÉGORIES — UX intuitive === */
