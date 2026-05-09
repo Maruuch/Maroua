@@ -5658,7 +5658,7 @@ section + section {
   margin-top: 0.9rem !important;
 }
 
-/* ─── 5. MENU MOBILE — logo fondu sans cadre ─── */
+/* ─── 5. MENU MOBILE — logo fondu (mix-blend-mode pour fusion) ─── */
 #mobileNav .nav-logo,
 #mobileNav .nav-logo *,
 #mobileNav .logo-img,
@@ -5670,10 +5670,21 @@ section + section {
   outline: none !important;
 }
 #mobileNav .nav-logo {
+  position: relative;
   padding: 1.2rem 1rem !important;
   margin-bottom: .4rem;
 }
-/* Ajout d'un fondu doux entre le logo et le reste du menu */
+/* Fondu : mix-blend-mode multiply en dark fait disparaître le fond cream
+   du logo dans le fond sombre du menu, laissant juste le texte doré */
+[data-theme="dark"] #mobileNav .logo-img--dark {
+  mix-blend-mode: multiply !important;
+  filter: brightness(1.4) contrast(1.15) !important;
+}
+[data-theme="light"] #mobileNav .logo-img--light {
+  mix-blend-mode: multiply !important;
+  filter: contrast(1.05) !important;
+}
+/* Trait rose subtil sous le logo pour transition douce */
 #mobileNav .nav-logo::after {
   content: '';
   position: absolute;
@@ -5685,8 +5696,124 @@ section + section {
     transparent);
   opacity: .6;
 }
-#mobileNav .nav-logo {
-  position: relative;
+
+/* ================================================================
+   === R. FORCING DES POINTS 1→4 (cascade renforcée) ===============
+   Sélecteurs multi-fallback pour tous les noms de classe possibles
+   ================================================================ */
+
+/* ─── 1. CATÉGORIES ultra-compact + cards rapprochées + voile retiré ─── */
+@media (min-width: 1024px) {
+  body .cats-track-viewport,
+  .section-cats .cats-track-viewport {
+    height: clamp(320px, 48vh, 440px) !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    margin-top: 0 !important;
+  }
+  body .cats-track {
+    --card-width: clamp(200px, 18vw, 260px) !important;
+  }
+  body .cats-track .cat-card {
+    height: 95% !important;
+  }
+}
+body .cats-track-viewport::before,
+body .cats-track-viewport::after {
+  display: none !important;
+  background: none !important;
+  opacity: 0 !important;
+}
+
+/* ─── 2. FEATURED / COUPS DE CŒUR — cards compactes ─── */
+.section-featured .product-card,
+.section-featured .featured-card,
+section[data-section="featured"] .product-card,
+.featured-products .product-card {
+  max-width: 280px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.section-featured .product-card-img,
+.section-featured .product-card-img-wrap,
+.section-featured .product-card .card-image {
+  aspect-ratio: 1 / 1 !important;
+  max-height: 300px !important;
+}
+.section-featured {
+  padding: 1.5rem 0 2rem !important;
+}
+
+/* Skeleton/placeholder cohérent avec thème */
+.skeleton,
+.product-skeleton,
+.product-card.is-loading,
+.product-card[data-loading="true"],
+.product-card-skeleton,
+.skeleton-card,
+.is-skeleton {
+  background: var(--surface) !important;
+  background-image: linear-gradient(
+    90deg,
+    var(--surface) 0%,
+    var(--surface2) 50%,
+    var(--surface) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: skeletonShimmer 2s ease-in-out infinite !important;
+  border: 1px solid var(--border) !important;
+}
+@keyframes skeletonShimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ─── 3. PROMESSE masquée (force) ─── */
+body .section-promise,
+body section.section-promise,
+section.section-promise,
+.section-promise,
+[data-section="promise"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ─── 4. TÉMOIGNAGES — discret premium avec hover animé (force) ─── */
+body .testimonial-card,
+body .review-card,
+body [class*="testimonial"][class*="card"],
+body [class*="review"][class*="card"] {
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r) !important;
+  padding: 1.4rem !important;
+  box-shadow: none !important;
+  transition:
+    transform .4s cubic-bezier(.2,.7,.2,1),
+    background .35s ease,
+    border-color .35s ease,
+    box-shadow .4s ease !important;
+}
+body .testimonial-card:hover,
+body .review-card:hover,
+body [class*="testimonial"][class*="card"]:hover,
+body [class*="review"][class*="card"]:hover {
+  background: var(--rose-brand-soft) !important;
+  border-color: var(--rose-brand-mid) !important;
+  transform: translateY(-4px) !important;
+  box-shadow:
+    0 16px 40px -14px var(--rose-brand-glow),
+    0 0 0 1px var(--rose-brand-mid) !important;
+}
+body .section-testimonials,
+body .section-reviews,
+body section[class*="testimonial"],
+body section[class*="review"] {
+  padding: 1.5rem 0 2rem !important;
 }
 
 /* === K. CAROUSEL CATÉGORIES — UX intuitive === */
