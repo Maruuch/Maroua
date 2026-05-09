@@ -6099,6 +6099,37 @@ body::after {
   body::before { animation: none !important; }
 }
 
+/* === X. CARDS CATÉGORIES LATÉRALES EN MODE LIGHT — filtre rose === */
+/* En light, les cards inactives sont trop claires/délavées.
+   On applique une teinte rose-deep pour les rendre visibles et cohérentes. */
+[data-theme="light"] .cats-track .cat-card:not(.is-active) {
+  position: relative;
+}
+[data-theme="light"] .cats-track .cat-card:not(.is-active)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    rgba(160, 77, 94, .35) 0%,
+    rgba(124, 58, 74, .42) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: multiply;
+  transition: opacity .4s ease;
+}
+/* Quand la card devient active (au scroll/hover), on retire le filtre rose */
+[data-theme="light"] .cats-track .cat-card.is-active::after {
+  opacity: 0;
+}
+/* Fallback : applique aussi un léger filtre via filter en complément */
+[data-theme="light"] .cats-track .cat-card:not(.is-active) {
+  filter: saturate(.92) hue-rotate(-2deg);
+}
+[data-theme="light"] .cats-track .cat-card.is-active {
+  filter: none;
+}
+
 /* ================================================================
    === W. FOOTER — animation premium ===============================
    - "MAROUA" en gradient or-rose animé (shimmer perpétuel)
