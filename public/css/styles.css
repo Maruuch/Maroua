@@ -6258,49 +6258,65 @@ body::after {
    3) Mobile — premier affichage = header + animation, hero scrollable
    ================================================================ */
 
-/* === 1. SECTION HEAD : positionnement strict ===================== */
-body .section-head,
-body .section-head-cats,
+/* === 1. SECTION HEAD : eyebrow ABSOLU à gauche, titre et sub centrés === */
+/* Container : pleine largeur (annule le max-width: 720px d'origine) */
 body .cats-head-wrap,
 body .featured-head,
 body .section-head-wrap {
-  display: grid !important;
-  grid-template-columns: 1fr auto 1fr !important;
-  grid-template-rows: auto auto !important;
-  grid-template-areas:
-    "eyebrow title    spacer"
-    "sub     sub      sub" !important;
-  align-items: center !important;
-  justify-items: stretch !important;
-  text-align: initial !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 1.5rem 2rem 1rem !important;
 }
-body .section-head .section-label,
-body .cats-head-wrap .section-label,
-body .section-head-cats .section-label,
-body .featured-head .section-label {
-  grid-area: eyebrow !important;
-  justify-self: start !important;
-}
-body .section-head .section-title,
-body .cats-head-wrap .section-title,
-body .section-head-cats .section-title,
-body .featured-head .section-title {
-  grid-area: title !important;
-  justify-self: center !important;
-  text-align: center !important;
-  width: max-content !important;
-  margin: 0 auto !important;
-}
-body .section-head .section-sub,
-body .cats-head-wrap .section-sub,
-body .section-head-cats .section-sub,
-body .featured-head .section-sub {
-  grid-area: sub !important;
-  justify-self: center !important;
+/* Inner section-head : block avec eyebrow position absolute */
+body .section-head,
+body .section-head-cats,
+body .section-head-featured,
+body .cats-head-wrap > .section-head,
+body .cats-head-wrap .section-head-cats {
+  position: relative !important;
+  display: block !important;
   text-align: center !important;
   width: 100% !important;
-  max-width: 56ch !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+/* Eyebrow : absolu à gauche, vertically centered */
+body .section-head .section-label,
+body .section-head-cats .section-label,
+body .cats-head-wrap .section-label,
+body .featured-head .section-label {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  margin: 0 !important;
+  text-align: left !important;
+  white-space: nowrap;
+}
+/* Titre : centré sur la page entière */
+body .section-head .section-title,
+body .section-head-cats .section-title,
+body .cats-head-wrap .section-title,
+body .featured-head .section-title {
+  display: block !important;
+  text-align: center !important;
+  width: auto !important;
+  margin: 0 auto !important;
+  position: relative !important;
+}
+/* Sous-titre : 2e ligne centrée */
+body .section-head .section-sub,
+body .section-head-cats .section-sub,
+body .cats-head-wrap .section-sub,
+body .featured-head .section-sub {
+  display: block !important;
+  text-align: center !important;
   margin: 0.4rem auto 0 !important;
+  max-width: 56ch !important;
+  font-style: italic !important;
+  color: var(--gold) !important;
+  -webkit-text-fill-color: var(--gold) !important;
+  background: none !important;
+  font-size: clamp(.78rem, 1vw, .9rem) !important;
 }
 
 /* === 2. MARQUEE — étincelles dorées entre items ================= */
