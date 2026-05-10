@@ -6259,13 +6259,17 @@ body::after {
    ================================================================ */
 
 /* === 1. SECTION HEAD : eyebrow ABSOLU à gauche, titre et sub centrés === */
-/* Container : pleine largeur (annule le max-width: 720px d'origine) */
+/* Container : PLEINE LARGEUR (annule .container max-width 1340px ET 720px) */
 body .cats-head-wrap,
+body .cats-head-wrap.container,
 body .featured-head,
+body .featured-head.container,
 body .section-head-wrap {
-  max-width: 100% !important;
+  max-width: none !important;
   width: 100% !important;
-  padding: 1.5rem 2rem 1rem !important;
+  margin: 0 !important;
+  padding: 1.5rem clamp(1rem, 4vw, 3rem) 1rem !important;
+  box-sizing: border-box;
 }
 /* Inner section-head : block avec eyebrow position absolute */
 body .section-head,
@@ -6303,7 +6307,7 @@ body .featured-head .section-title {
   margin: 0 auto !important;
   position: relative !important;
 }
-/* Sous-titre : 2e ligne centrée */
+/* Sous-titre : 2e ligne centrée, UNE SEULE LIGNE */
 body .section-head .section-sub,
 body .section-head-cats .section-sub,
 body .cats-head-wrap .section-sub,
@@ -6311,12 +6315,23 @@ body .featured-head .section-sub {
   display: block !important;
   text-align: center !important;
   margin: 0.4rem auto 0 !important;
-  max-width: 56ch !important;
+  max-width: none !important;
+  white-space: nowrap !important;
   font-style: italic !important;
   color: var(--gold) !important;
   -webkit-text-fill-color: var(--gold) !important;
   background: none !important;
   font-size: clamp(.78rem, 1vw, .9rem) !important;
+}
+/* Mobile : sous-titre repasse en multi-ligne (sinon il déborde) */
+@media (max-width: 767px) {
+  body .section-head .section-sub,
+  body .section-head-cats .section-sub,
+  body .cats-head-wrap .section-sub,
+  body .featured-head .section-sub {
+    white-space: normal !important;
+    max-width: 90% !important;
+  }
 }
 
 /* === 2. MARQUEE — étincelles dorées entre items ================= */
